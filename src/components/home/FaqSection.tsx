@@ -30,7 +30,7 @@ export function FaqSection() {
               rel="noopener noreferrer"
               data-cta="whatsapp"
               data-topic="general"
-              className="font-medium text-ink underline underline-offset-4"
+              className="inline-flex min-h-8 items-center font-medium text-ink underline underline-offset-4"
             >
               Ask us on WhatsApp
               <span className="sr-only"> (opens WhatsApp in a new tab)</span>

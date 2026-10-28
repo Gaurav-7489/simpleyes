@@ -45,8 +45,12 @@ export function Hero() {
           <WhatsAppButton topic="general">Get Help on WhatsApp</WhatsAppButton>
         </div>
 
-        <p className="hero-intro mt-6 inline-flex items-center gap-2 text-[0.8125rem] text-ink-2" style={revealDelay(240)}>
-          <ShieldCheck aria-hidden="true" className="size-4 text-accent-700" strokeWidth={1.75} />
+        <p className="hero-intro mt-6 max-w-[34ch] text-[0.8125rem] text-ink-2 sm:max-w-none" style={revealDelay(240)}>
+          <ShieldCheck
+            aria-hidden="true"
+            className="mr-1.5 inline-block size-4 align-[-3px] text-accent-700"
+            strokeWidth={1.75}
+          />
           Independent private service — not a government authority
         </p>
       </div>

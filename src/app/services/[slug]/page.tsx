@@ -50,7 +50,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
           { name: service.title, path },
         ]}
       >
-        <WhatsAppButton topic={service.whatsappTopic}>Ask About {service.title}</WhatsAppButton>
+        <WhatsAppButton topic={service.whatsappTopic}>Ask About This Service</WhatsAppButton>
       </PageHero>
 
       <section aria-label={`${service.title} details`} className="pb-[var(--section-y)]">
