@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore: ["**.md"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write # bootstrap commit (lockfile/fonts) and QA build branch
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  # CI builds as production so canonical/robots behaviour is what ships.
+  NEXT_PUBLIC_SITE_ENV: production
+  NEXT_PUBLIC_SITE_URL: https://simplyes.de
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      # One-time bootstrap: resolve current stable versions, pin them and create
+      # the lockfile; vendor the Satoshi font. Committed back to the branch.
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+            node scripts/pin-versions.mjs
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Vendor fonts
+        run: bash scripts/vendor-fonts.sh
+
+      - name: Commit bootstrap files
+        if: github.event_name == 'push'
+        run: |
+          git add package.json package-lock.json src/app/fonts || true
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: pin dependencies and vendor Satoshi font [ci bootstrap]"
+            git push
+          fi
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (static export)
+        run: npm run build
+
+      - name: Typecheck (strict, incl. tests)
+        run: npm run typecheck
+
+      - name: Bundle report
+        if: always()
+        run: |
+          {
+            echo "### Static export size"
+            echo '```'
+            du -sh out
+            echo "JS chunks (raw / gzip):"
+            for f in $(ls -S out/_next/static/chunks/*.js | head -12); do
+              printf "%8s %8s  %s\n" "$(stat -c%s "$f")" "$(gzip -c "$f" | wc -c)" "$(basename "$f")"
+            done
+            echo "CSS:"
+            for f in out/_next/static/css/*.css; do printf "%8s %8s  %s\n" "$(stat -c%s "$f")" "$(gzip -c "$f" | wc -c)" "$(basename "$f")"; done
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E, responsive, accessibility & SEO tests
+        id: e2e
+        run: npm run test:e2e
+
+      - name: Summarise test results
+        if: always() && steps.e2e.outcome != 'skipped'
+        run: |
+          node -e '
+            const fs=require("fs"); if(!fs.existsSync("test-results/results.json")) process.exit(0);
+            const r=JSON.parse(fs.readFileSync("test-results/results.json","utf8"));
+            const fails=[]; let pass=0, fail=0, skip=0;
+            const walk=s=>{(s.suites||[]).forEach(walk);(s.specs||[]).forEach(sp=>sp.tests.forEach(t=>{
+              const st=t.results.at(-1)?.status; if(t.status==="skipped"||st==="skipped"){skip++;return}
+              if(t.status==="expected"||t.status==="flaky"){pass++}else{fail++;fails.push(`[${t.projectName}] ${sp.title}: ${(t.results.at(-1)?.error?.message||"").split("\n").slice(0,6).join(" ").slice(0,600)}`)}}))};
+            r.suites.forEach(walk);
+            const msg=`passed ${pass}, failed ${fail}, skipped ${skip}`;
+            console.log(`::notice title=Playwright::${msg}`);
+            fails.slice(0,9).forEach(f=>console.log(`::error title=Test failure::${f.replace(/\r?\n/g," ")}`));
+            fs.mkdirSync("qa",{recursive:true}); fs.writeFileSync("qa/test-summary.txt", msg+"\n\n"+fails.join("\n\n")+"\n");
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Playwright\n${msg}\n`);
+          '
+
+      - name: Lighthouse (lab)
+        if: always() && steps.e2e.outcome != 'skipped'
+        run: |
+          node scripts/serve-static.mjs out 4173 &
+          sleep 2
+          export CHROME_PATH="$(node -e 'console.log(require("playwright").chromium.executablePath())')"
+          node scripts/lighthouse.mjs
+          cat qa/lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
+          node -e '
+            const rows=require("./qa/lighthouse-summary.json");
+            for (const r of rows) console.log(`::notice title=Lighthouse ${r.preset} ${r.page}::P${r.performance} A${r.accessibility} BP${r.bestPractices} SEO${r.seo} LCP ${r.lcp} CLS ${r.cls} TBT ${r.tbt}`);
+          '
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-reports
+          path: |
+            playwright-report
+            test-results
+            qa
+          retention-days: 14
+
+      # Publishes the built static site + QA summaries to a QA-only branch so
+      # reviewers can inspect the exact build locally (git fetch), independent
+      # of artifact access. Not a deployment; safe to delete.
+      - name: Publish QA build branch
+        if: always() && github.event_name == 'push' && github.ref_name == 'feat/agencee-redesign'
+        run: |
+          set -e
+          rm -rf /tmp/qa && mkdir -p /tmp/qa
+          cp -r out /tmp/qa/out 2>/dev/null || true
+          cp -r qa /tmp/qa/qa 2>/dev/null || true
+          rm -rf /tmp/qa/qa/lighthouse
+          echo "${GITHUB_SHA}" > /tmp/qa/SOURCE_SHA
+          cd /tmp/qa
+          git init -q -b qa/preview-build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "QA build of ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" qa/preview-build

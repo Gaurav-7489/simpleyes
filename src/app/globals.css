@@ -1,0 +1,660 @@
+@import "tailwindcss";
+
+/*
+ * Simplyes design tokens.
+ * Neutral palette, radii, spacing and type scale are measured from the
+ * Agencee reference (see docs/REFERENCE-SPEC.md). The reference's teal accent
+ * is replaced by the Simplyes brand green (from the existing simplyes.de).
+ */
+@theme {
+  --font-display: var(--font-satoshi), "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: #f7f7f7;
+  --color-canvas-alt: #eff0f0;
+  --color-surface: #eff0f0;
+  --color-ink: #000000;
+  --color-ink-2: #505050;
+  --color-ink-3: #767676;
+  --color-line: #dcdddd;
+
+  --color-accent-50: #f1f6ea;
+  --color-accent-100: #e2ecd3;
+  --color-accent-200: #cfe0b6;
+  --color-accent-300: #b2cd8a;
+  --color-accent-500: #6f9a3c;
+  --color-accent-600: #567d2a;
+  --color-accent-700: #3e6a00;
+  --color-accent-900: #22390a;
+  --color-warm-300: #f2c9a3;
+
+  --radius-card: 8px;
+  --radius-frame-inner: 14px;
+  --radius-frame: 20px;
+
+  --container-site: 1200px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  --header-h: 80px;
+  --gutter: 18px;
+  --section-y: 80px;
+
+  /* Layered shadows measured from the reference (frame, card, dark button). */
+  --shadow-frame: 0 0.7px 0.7px -0.67px rgb(0 0 0 / 0.04), 0 1.8px 1.8px -1.33px rgb(0 0 0 / 0.04),
+    0 3.6px 3.6px -2px rgb(0 0 0 / 0.04), 0 6.9px 6.9px -2.67px rgb(0 0 0 / 0.03),
+    0 13.6px 13.6px -3.33px rgb(0 0 0 / 0.03), 0 30px 30px -4px rgb(0 0 0 / 0.02);
+  --shadow-frame-inset: inset 0 0 5px 0 rgb(0 0 0 / 0.2);
+  --shadow-card: 0 0.8px 0.8px -1px rgb(0 0 0 / 0.08), 0 2.4px 2.4px -2px rgb(0 0 0 / 0.07),
+    0 6.4px 6.4px -3px rgb(0 0 0 / 0.06), 0 14px 14px -4px rgb(0 0 0 / 0.04);
+  --shadow-btn-dark: inset 0 -5px 2px 0 rgb(255 255 255 / 0.25), 0 0.7px 0.7px -0.58px rgb(0 0 0 / 0.19),
+    0 1.8px 1.8px -1.17px rgb(0 0 0 / 0.19), 0 3.6px 3.6px -1.75px rgb(0 0 0 / 0.18),
+    0 6.9px 6.9px -2.33px rgb(0 0 0 / 0.17), 0 13.6px 13.6px -2.92px rgb(0 0 0 / 0.14),
+    0 30px 30px -3.5px rgb(0 0 0 / 0.05);
+  --shadow-btn-light: 0 0.7px 0.7px -0.58px rgb(0 0 0 / 0.06), 0 1.8px 1.8px -1.17px rgb(0 0 0 / 0.06),
+    0 3.6px 3.6px -1.75px rgb(0 0 0 / 0.06), 0 6.9px 6.9px -2.33px rgb(0 0 0 / 0.05),
+    0 13.6px 13.6px -2.92px rgb(0 0 0 / 0.04), inset 0 1px 0 0 rgb(255 255 255 / 0.9);
+}
+
+@media (min-width: 810px) {
+  :root {
+    --gutter: 40px;
+    --section-y: 100px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --section-y: 120px;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    interpolate-size: allow-keywords;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-accent-200);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-700);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  /* ----- Layout ----------------------------------------------------- */
+  .container-site {
+    width: 100%;
+    max-width: calc(var(--container-site) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: max(var(--gutter), env(safe-area-inset-left));
+  }
+
+  .section {
+    padding-block: var(--section-y);
+  }
+
+  /* ----- Type scale (reference: 100/56/36/20 desktop, 72/44/32 tablet, 40/36/24 mobile) */
+  .type-hero {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1rem + 6.4vw, 6.25rem);
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+
+  .type-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .type-intro {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .type-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
+    line-height: 1.5;
+  }
+
+  .type-card-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .type-lead {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+  }
+
+  @media (min-width: 810px) {
+    .type-lead {
+      font-size: 1rem;
+    }
+  }
+
+  .type-body {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  /* ----- Badge (section label pill) ---------------------------------- */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: rgb(255 255 255 / 0.55);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06), inset 0 1px 0 rgb(255 255 255 / 0.9);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+  }
+
+  /* ----- Buttons (reference: 52px pill = 6px rim + 40px face) --------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 100px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      transform 0.35s var(--ease-out-soft),
+      box-shadow 0.35s var(--ease-out-soft),
+      filter 0.35s var(--ease-out-soft);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-face {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 9px 20px;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .btn-dark {
+    color: #fff;
+    background: linear-gradient(180deg, rgb(0 0 0 / 0.6) -15%, #030c0d 100%);
+    box-shadow: var(--shadow-btn-dark);
+  }
+
+  .btn-dark .btn-face {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.07) 0%, rgb(255 255 255 / 0) 100%);
+  }
+
+  .btn-light {
+    color: var(--color-ink-2);
+    background: linear-gradient(180deg, rgb(0 0 0 / 0.08) -97%, rgb(0 0 0 / 0) 100%);
+    box-shadow: var(--shadow-btn-light);
+  }
+
+  .btn-light .btn-face {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.85) 0%, rgb(255 255 255 / 0.25) 65%);
+  }
+
+  .btn-sm {
+    padding: 4px;
+  }
+
+  .btn-sm .btn-face {
+    min-height: 36px;
+    padding: 7px 14px;
+    font-size: 0.8125rem;
+  }
+
+  @media (hover: hover) {
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .btn-light:hover {
+      filter: none;
+      box-shadow: var(--shadow-btn-light), 0 8px 18px -8px rgb(0 0 0 / 0.18);
+    }
+  }
+
+  .btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .btn-icon {
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+
+  @media (hover: hover) {
+    .btn:hover .btn-icon,
+    .card-link:hover .btn-icon {
+      transform: translateX(2px);
+    }
+  }
+
+  /* ----- Card frames (reference: 20px frame > 14px inset > 8px card) -- */
+  .frame {
+    border-radius: var(--radius-frame);
+    padding: 6px;
+    background: var(--color-canvas);
+    box-shadow: var(--shadow-frame);
+  }
+
+  .frame-inner {
+    height: 100%;
+    border-radius: var(--radius-frame-inner);
+    padding: 6px;
+    background: var(--color-canvas);
+    box-shadow: var(--shadow-frame-inset);
+  }
+
+  .card {
+    height: 100%;
+    border-radius: var(--radius-card);
+    padding: 20px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-art {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: linear-gradient(180deg, #f4f5f5 0%, #e9ebea 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      0 0.8px 0.8px -1px rgb(0 0 0 / 0.08),
+      0 6px 14px -6px rgb(0 0 0 / 0.12);
+  }
+
+  .card-hover {
+    transition:
+      transform 0.5s var(--ease-out-soft),
+      box-shadow 0.5s var(--ease-out-soft);
+  }
+
+  @media (hover: hover) {
+    .card-hover:hover {
+      transform: translateY(-3px);
+    }
+  }
+
+  .divider-dashed {
+    border: 0;
+    border-top: 1px dashed rgb(0 0 0 / 0.16);
+  }
+
+  /* Neumorphic orb used for step numbers and benefit icons. */
+  .orb {
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    color: #fff;
+    background: radial-gradient(circle at 50% 35%, var(--color-accent-500) 0%, var(--color-accent-600) 60%, var(--color-accent-700) 100%);
+    box-shadow:
+      0 0 0 6px rgb(255 255 255 / 0.65),
+      0 0 0 7px rgb(0 0 0 / 0.04),
+      0 10px 24px -6px rgb(86 125 42 / 0.55),
+      inset 0 2px 3px rgb(255 255 255 / 0.35);
+  }
+
+  .orb-soft {
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--color-accent-700);
+    background: radial-gradient(circle at 50% 30%, #ffffff 0%, #f1f3f2 55%, #e6e9e7 100%);
+    box-shadow:
+      0 0 0 6px rgb(255 255 255 / 0.55),
+      0 10px 24px -8px rgb(0 0 0 / 0.18),
+      inset 0 -3px 6px rgb(0 0 0 / 0.05);
+  }
+
+  /* "made simpler" glass pill — accessible contrast on a green glass base. */
+  .glass-word {
+    display: inline-block;
+    padding: 0 0.2em 0.04em;
+    border-radius: 999px;
+    color: #f6f9f2;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.28) 0%, rgb(255 255 255 / 0) 55%),
+      linear-gradient(180deg, #6c9440 0%, #4f7524 100%);
+    box-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.65),
+      inset 0 -0.08em 0.16em rgb(0 0 0 / 0.12),
+      0 0 0 0.05em rgb(255 255 255 / 0.7),
+      0 0.15em 0.4em -0.1em rgb(62 106 0 / 0.35);
+    text-shadow: 0 1px 0 rgb(0 0 0 / 0.08);
+  }
+
+  /* CTA strip under service / benefit grids. */
+  .cta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 20px;
+    padding: 8px 8px 8px 20px;
+    border-radius: 100px;
+    background: var(--color-canvas-alt);
+  }
+
+  @media (max-width: 639px) {
+    .cta-strip {
+      flex-direction: column;
+      padding: 16px;
+      border-radius: 20px;
+      text-align: center;
+    }
+  }
+
+  /* ----- Long-form prose (service, legal pages) ------------------------ */
+  .prose-simple {
+    color: var(--color-ink-2);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .prose-simple h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-ink);
+    font-size: 1.5rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .prose-simple h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-ink);
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  .prose-simple p + p {
+    margin-top: 1rem;
+  }
+
+  .prose-simple ul {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+
+  .prose-simple li + li {
+    margin-top: 0.4rem;
+  }
+
+  .prose-simple a {
+    color: var(--color-accent-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ----- FAQ accordion (native <details>) ------------------------------ */
+  .faq-item {
+    border-radius: var(--radius-card);
+    background: #f9f9f9;
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.06),
+      var(--shadow-card);
+  }
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 52px;
+    padding: 12px 14px 12px 16px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-ink);
+    border-radius: var(--radius-card);
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    color: var(--color-ink-2);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.14);
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+
+  .faq-item[open] .faq-toggle {
+    transform: rotate(45deg);
+  }
+
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.35s var(--ease-out-soft),
+      content-visibility 0.35s allow-discrete;
+  }
+
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+
+  .faq-answer {
+    padding: 0 16px 16px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+
+  /* ----- Marquee -------------------------------------------------------- */
+  .marquee {
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ----- Footer display type ------------------------------------------- */
+  .type-display {
+    font-family: var(--font-display);
+    font-size: clamp(3.25rem, 0.6rem + 12.3vw, 11.45rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* ----- Hero background (original CSS orb, no images, no blur filters) --- */
+.hero-orb {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(760px, 150vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 30%, rgb(242 201 163 / 0.45) 0%, rgb(242 201 163 / 0) 26%),
+    radial-gradient(circle at 50% 62%, rgb(111 154 60 / 0.42) 0%, rgb(111 154 60 / 0) 38%),
+    radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0) 52%, rgb(255 255 255 / 0.85) 60%, rgb(226 236 211 / 0.4) 64%, rgb(255 255 255 / 0) 71%);
+}
+
+.hero-rings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgb(255 255 255 / 0) 30%, var(--color-canvas) 78%),
+    repeating-radial-gradient(ellipse at 50% 45%, rgb(0 0 0 / 0) 0 38px, rgb(0 0 0 / 0.025) 39px, rgb(0 0 0 / 0) 40px),
+    radial-gradient(ellipse at 50% 40%, #e9eeea 0%, var(--color-canvas) 70%);
+}
+
+/* ----- Scroll reveal (progressive enhancement) ----------------------------
+ * Content is fully visible without JS. A tiny inline script adds `.js` to
+ * <html>; only then are [data-reveal] elements hidden until intersecting. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+    transition:
+      opacity 0.8s var(--ease-out-soft),
+      transform 0.8s var(--ease-out-soft),
+      filter 0.8s var(--ease-out-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* Hero: animate transform + blur only (never opacity) so LCP is not delayed. */
+  .hero-intro {
+    animation: hero-in 0.9s var(--ease-out-soft) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  @keyframes hero-in {
+    from {
+      transform: translateY(14px);
+      filter: blur(8px);
+    }
+    to {
+      transform: none;
+      filter: none;
+    }
+  }
+}
+
+/* Mobile menu */
+.mobile-panel {
+  transition:
+    opacity 0.3s var(--ease-out-soft),
+    transform 0.3s var(--ease-out-soft),
+    visibility 0.3s;
+}
+
+.mobile-panel[data-open="false"] {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mobile-panel[data-open="true"] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-panel,
+  .btn,
+  .card-hover,
+  .faq-toggle,
+  .faq-item::details-content {
+    transition: none;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 100px;
+  background: #000;
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
