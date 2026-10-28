@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write # bootstrap commit (lockfile/fonts) and QA build branch
+  contents: write # publishes the QA build branch (see last step)
 
 env:
   NEXT_TELEMETRY_DISABLED: "1"
@@ -40,40 +40,17 @@ jobs:
           key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: npm-${{ runner.os }}-
 
-      # One-time bootstrap: resolve current stable versions, pin them and create
-      # the lockfile; vendor the Satoshi font. Committed back to the branch.
       - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci --no-audit --no-fund
-          else
-            npm install --no-audit --no-fund
-            node scripts/pin-versions.mjs
-            npm install --no-audit --no-fund
-          fi
-
-      - name: Vendor fonts
-        run: bash scripts/vendor-fonts.sh
-
-      - name: Commit bootstrap files
-        if: github.event_name == 'push'
-        run: |
-          git add package.json package-lock.json src/app/fonts || true
-          if ! git diff --cached --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore: pin dependencies and vendor Satoshi font [ci bootstrap]"
-            git push
-          fi
+        run: npm ci --no-audit --no-fund
 
       - name: Lint
-        run: npm run lint
+        run: bash scripts/ci-run.sh Lint npm run lint
 
       - name: Build (static export)
-        run: npm run build
+        run: bash scripts/ci-run.sh Build npm run build
 
       - name: Typecheck (strict, incl. tests)
-        run: npm run typecheck
+        run: bash scripts/ci-run.sh Typecheck npm run typecheck
 
       - name: Bundle report
         if: always()
@@ -144,7 +121,7 @@ jobs:
       # reviewers can inspect the exact build locally (git fetch), independent
       # of artifact access. Not a deployment; safe to delete.
       - name: Publish QA build branch
-        if: always() && github.event_name == 'push' && github.ref_name == 'feat/agencee-redesign'
+        if: always() && github.event_name == 'push' && github.ref_name == 'feat/simplyes-redesign'
         run: |
           set -e
           rm -rf /tmp/qa && mkdir -p /tmp/qa

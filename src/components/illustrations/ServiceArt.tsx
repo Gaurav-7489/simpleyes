@@ -250,14 +250,22 @@ function Personal({ id }: { id: string }) {
   );
 }
 
-const map: Record<IllustrationKind, (props: { id: string }) => JSX.Element> = {
-  documents: Documents,
-  form: Form,
-  photo: Photo,
-  appointment: Appointment,
-  process: Process,
-  personal: Personal,
-};
+function Art({ kind, id }: { kind: IllustrationKind; id: string }): JSX.Element {
+  switch (kind) {
+    case "documents":
+      return <Documents id={id} />;
+    case "form":
+      return <Form id={id} />;
+    case "photo":
+      return <Photo id={id} />;
+    case "appointment":
+      return <Appointment id={id} />;
+    case "process":
+      return <Process id={id} />;
+    case "personal":
+      return <Personal id={id} />;
+  }
+}
 
 export function ServiceArt({
   kind,
@@ -269,7 +277,6 @@ export function ServiceArt({
   /** Suffix to keep SVG ids unique if the same art appears twice on a page. */
   uid?: string;
 }) {
-  const Art = map[kind];
   const id = `art-${kind}${uid}`;
   return (
     <svg
@@ -281,7 +288,7 @@ export function ServiceArt({
       preserveAspectRatio="xMidYMid meet"
     >
       <Defs id={id} />
-      <Art id={id} />
+      <Art kind={kind} id={id} />
     </svg>
   );
 }

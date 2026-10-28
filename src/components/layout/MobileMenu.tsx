@@ -16,21 +16,30 @@ type Props = { items: NavItem[]; whatsappHref: string };
  * - closes on navigation and when the viewport reaches desktop width
  */
 export function MobileMenu({ items, whatsappHref }: Props) {
-  const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  // The menu is "open for a given path": navigating anywhere closes it without an effect.
+  const [openPath, setOpenPath] = useState<string | null>(null);
+  const open = openPath !== null && openPath === pathname;
+  const setOpen = useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) =>
+      setOpenPath((prevPath) => {
+        const prev = prevPath !== null && prevPath === pathname;
+        const next = typeof value === "function" ? value(prev) : value;
+        return next ? pathname : null;
+      }),
+    [pathname],
+  );
   const panelId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const close = useCallback((restoreFocus: boolean) => {
-    setOpen(false);
-    if (restoreFocus) toggleRef.current?.focus();
-  }, []);
-
-  // Close on route change.
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  const close = useCallback(
+    (restoreFocus: boolean) => {
+      setOpen(false);
+      if (restoreFocus) toggleRef.current?.focus();
+    },
+    [setOpen],
+  );
 
   useEffect(() => {
     if (!open) return;

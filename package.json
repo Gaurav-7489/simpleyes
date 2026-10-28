@@ -2,14 +2,15 @@
   "name": "simplyes-web",
   "version": "1.0.0",
   "private": true,
-  "description": "Simplyes — independent consular assistance for Indians living in Germany. Next.js static site.",
+  "description": "Simplyes \u2014 independent consular assistance for Indians living in Germany. Next.js static site.",
   "engines": {
     "node": ">=20.9.0"
   },
   "scripts": {
+    "predev": "node scripts/fetch-fonts.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/fetch-fonts.mjs",
     "build": "next build",
-    "start": "npx --yes serve@14 out -l 4173",
     "preview": "node scripts/serve-static.mjs out 4173",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
