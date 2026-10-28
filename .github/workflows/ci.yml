@@ -128,6 +128,8 @@ jobs:
           cp -r out /tmp/qa/out 2>/dev/null || true
           cp -r qa /tmp/qa/qa 2>/dev/null || true
           rm -rf /tmp/qa/qa/lighthouse
+          # Never publish licensed font binaries to the (public) repository.
+          find /tmp/qa -iname 'satoshi*' -delete
           echo "${GITHUB_SHA}" > /tmp/qa/SOURCE_SHA
           cd /tmp/qa
           git init -q -b qa/preview-build
