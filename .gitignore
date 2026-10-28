@@ -24,3 +24,8 @@ lighthouse/
 .DS_Store
 *.log
 .vercel
+
+# Satoshi (ITF Free Font License) is fetched at build time and must not be
+# redistributed via this public repository. See scripts/fetch-fonts.mjs.
+src/app/fonts/*.woff2
+src/app/fonts/*LICENSE*
