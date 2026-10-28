@@ -21,14 +21,14 @@ export function Services() {
           {rows.map((row, rowIndex) => (
             <div
               key={rowIndex}
-              className={`grid gap-6 ${
+              className={`grid grid-cols-1 gap-6 ${
                 rowIndex % 2 === 0
                   ? "lg:grid-cols-[minmax(0,1.88fr)_minmax(0,1fr)]"
                   : "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.88fr)]"
               }`}
             >
               {row.map((service, i) => (
-                <div key={service.slug} data-reveal style={revealDelay(i * 90)}>
+                <div key={service.slug} className="min-w-0" data-reveal style={revealDelay(i * 90)}>
                   <ServiceCard service={service} />
                 </div>
               ))}

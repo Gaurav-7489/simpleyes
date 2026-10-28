@@ -59,14 +59,14 @@ export function BenefitArt({ kind }: { kind: BenefitArtKind }) {
       );
     case "documents":
       return (
-        <div className="flex h-full items-center justify-center gap-4 px-6 sm:gap-8">
+        <div className="flex h-full items-center justify-center gap-3 px-3 sm:gap-8 sm:px-6">
           <SoftOrb size={68}>
             <FileCheck2 className="size-6" {...iconProps} />
           </SoftOrb>
           <div className="flex flex-col items-start gap-3">
             {["Checklist", "Copies", "Forms"].map((label, i) => (
               <span key={label} className="flex items-center gap-3">
-                <Line className="w-6 sm:w-14" />
+                <Line className="w-4 sm:w-14" />
                 <Pill accent={i === 0}>
                   {label}
                   <span className={`rounded-full px-1.5 text-[10px] ${i === 0 ? "bg-white/20" : "bg-black/5"}`}>
@@ -127,16 +127,16 @@ export function BenefitArt({ kind }: { kind: BenefitArtKind }) {
       );
     case "independent":
       return (
-        <div className="flex h-full items-center justify-center gap-3 px-4 sm:gap-6">
+        <div className="flex h-full items-center justify-center gap-2 px-2 sm:gap-6 sm:px-4">
           <Pill>
             <MessagesSquare className="size-3.5" {...iconProps} />
             Guidance
           </Pill>
-          <Line className="w-4 sm:w-10" />
+          <Line className="hidden w-10 sm:block" />
           <SoftOrb size={64} accent>
             <Scale className="size-6" {...iconProps} />
           </SoftOrb>
-          <Line className="w-4 sm:w-10" />
+          <Line className="hidden w-10 sm:block" />
           <Pill>
             <Landmark className="size-3.5" {...iconProps} />
             Decisions

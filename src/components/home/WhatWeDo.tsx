@@ -18,11 +18,13 @@ export function WhatWeDo() {
           <Badge>What we do</Badge>
         </div>
 
-        <h2 id="what-we-do-title" className="type-h2 mt-6 max-w-[16ch]" data-reveal style={revealDelay(60)}>
-          Less confusion. <span className="text-ink-3">More clarity.</span> Better prepared.
+        <h2 id="what-we-do-title" className="type-h2 mt-6" data-reveal style={revealDelay(60)}>
+          <span className="block">Less confusion.</span>
+          <span className="block text-ink-3">More clarity.</span>
+          <span className="block">Better prepared.</span>
         </h2>
 
-        <p className="type-intro mt-6 max-w-[38ch] !text-[clamp(1.125rem,0.95rem+0.8vw,1.5rem)] text-ink-2" data-reveal style={revealDelay(120)}>
+        <p className="type-intro mt-6 max-w-[38ch] !text-[clamp(1.0625rem,0.95rem+0.6vw,1.375rem)] text-ink-2" data-reveal style={revealDelay(120)}>
           Indian consular and administrative processes can involve detailed requirements, documents, and forms.{" "}
           <span className="text-ink">Simplyes helps you understand what is needed and prepare for the next step.</span>
         </p>

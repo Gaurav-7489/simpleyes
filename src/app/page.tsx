@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
   title: `${site.name} — Consular assistance for Indians in Germany`,
   absoluteTitle: true,
   description:
-    "Independent help for Indians living in Germany with Indian consular and administrative processes: document guidance, form assistance, photo & signature formatting and clear next steps.",
+    "Independent help for Indians in Germany with Indian consular processes: document guidance, form help, photo & signature formatting and clear next steps.",
   path: "/",
 });
 

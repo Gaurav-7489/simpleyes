@@ -26,7 +26,7 @@ export function Wordmark({ className, asLink = true }: { className?: string; asL
   }
 
   return (
-    <Link href="/" aria-label={`${site.name} — home`} className={`inline-flex items-center gap-2 rounded-md ${className ?? ""}`}>
+    <Link href="/" aria-label={`${site.name} — home`} className={`inline-flex min-h-11 items-center gap-2 rounded-md ${className ?? ""}`}>
       {mark}
     </Link>
   );

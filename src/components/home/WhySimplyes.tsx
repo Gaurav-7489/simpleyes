@@ -22,16 +22,16 @@ export function WhySimplyes() {
           {rows.map((row, rowIndex) => (
             <div
               key={rowIndex}
-              className={`grid gap-6 md:grid-cols-2 ${
+              className={`grid grid-cols-1 gap-6 md:grid-cols-2 ${
                 row[0]?.wide
                   ? "lg:grid-cols-[minmax(0,1.88fr)_minmax(0,1fr)]"
                   : "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.88fr)]"
               }`}
             >
               {row.map((benefit, i) => (
-                <div key={benefit.title} data-reveal style={revealDelay(i * 90)}>
+                <div key={benefit.title} className="min-w-0" data-reveal style={revealDelay(i * 90)}>
                   <CardFrame className="h-full" cardClassName="flex h-full flex-col gap-4">
-                    <div aria-hidden="true" className="h-[180px] sm:h-[200px]">
+                    <div aria-hidden="true" className="h-[180px] overflow-hidden sm:h-[200px]">
                       <BenefitArt kind={benefit.art} />
                     </div>
                     <h3 className="type-card-title">{benefit.title}</h3>

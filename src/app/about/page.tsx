@@ -11,7 +11,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 export const metadata: Metadata = pageMetadata({
   title: "About Simplyes — independent consular assistance",
   description:
-    "Simplyes is an independent private assistance service helping Indians living in Germany understand Indian consular and administrative processes. Not affiliated with any government authority.",
+    "Simplyes is an independent private service helping Indians in Germany understand Indian consular processes. Not affiliated with any government authority.",
   path: "/about/",
 });
 

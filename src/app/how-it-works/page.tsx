@@ -11,7 +11,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 export const metadata: Metadata = pageMetadata({
   title: "How It Works — from your question to a clear next step",
   description:
-    "How Simplyes helps Indians in Germany with consular and administrative processes: tell us what you need, understand the requirements, prepare your documents, and proceed through the official channels.",
+    "How Simplyes works: tell us what you need, understand the requirements, prepare your documents, then proceed through the official channels with clarity.",
   path: "/how-it-works/",
 });
 

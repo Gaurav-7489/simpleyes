@@ -36,7 +36,7 @@ export function FaqSection() {
               <span className="sr-only"> (opens WhatsApp in a new tab)</span>
             </a>
           </p>
-          <Link href="/faqs/" className="text-sm text-ink-2 underline underline-offset-4 hover:text-ink">
+          <Link href="/faqs/" className="inline-flex min-h-11 items-center px-2 text-sm text-ink-2 underline underline-offset-4 hover:text-ink">
             View all FAQs
           </Link>
         </div>

@@ -15,7 +15,7 @@ export function FinalCta({
       <div className="container-site">
         <div className="frame" data-reveal>
           <div className="frame-inner">
-            <div className="relative isolate overflow-hidden rounded-[8px] bg-canvas px-6 py-[clamp(56px,8vw,112px)] text-center shadow-[var(--shadow-card)]">
+            <div className="relative isolate overflow-hidden rounded-[8px] bg-canvas px-6 py-[clamp(56px,7vw,96px)] text-center shadow-[var(--shadow-card)]">
               <div aria-hidden="true" className="hero-rings -z-10 opacity-80" />
               <div aria-hidden="true" className="hero-orb -z-10 !top-1/2 opacity-90" />
               <div className="flex flex-col items-center gap-6">
