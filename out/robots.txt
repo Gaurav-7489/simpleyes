@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+
+Host: https://simplyes.de
+Sitemap: https://simplyes.de/sitemap.xml
