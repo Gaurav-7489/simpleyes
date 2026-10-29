@@ -24,8 +24,8 @@ export default function HomePage() {
     <>
       <Hero />
       <WhatWeDo />
-      <Services />
       <AssistanceFinder />
+      <Services />
       <Process />
       <WhySimplyes />
       <Transparency />
