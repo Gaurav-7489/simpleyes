@@ -12,7 +12,7 @@ export function HeroAtmosphere() {
 
   useEffect(() => {
     const atmosphere = atmosphereRef.current;
-    const hero = atmosphere?.closest("section");
+    const hero = atmosphere?.closest<HTMLElement>("section");
     if (!atmosphere || !hero) return;
 
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
