@@ -3,6 +3,7 @@ import { marqueeItems } from "@/content/home";
 import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
 import { ButtonLink, WhatsAppButton } from "@/components/ui/Button";
+import { HeroPhysics } from "@/components/home/HeroPhysics";
 
 /** Reference hero: centered pill label, oversized two-line headline with a glass word, two CTAs, marquee. */
 export function Hero() {
@@ -13,6 +14,7 @@ export function Hero() {
     >
       <div aria-hidden="true" className="hero-rings -z-10" />
       <div aria-hidden="true" className="hero-orb -z-10" />
+      <HeroPhysics />
 
       <div className="container-site flex flex-col items-center text-center">
         <p className="badge hero-intro">
@@ -21,9 +23,15 @@ export function Hero() {
         </p>
 
         <h1 id="hero-title" className="type-hero hero-intro mt-7 max-w-[1000px]" style={revealDelay(60)}>
-          <span className="block">Consular assistance,</span>
+          <span className="word-mask block">
+            <span className="word-in" style={revealDelay(80)}>
+              Consular assistance,
+            </span>
+          </span>
           <span className="mt-[0.06em] inline-block">
-            <span className="glass-word">made simpler.</span>
+            <span className="glass-word word-pop" style={revealDelay(420)}>
+              made simpler.
+            </span>
           </span>
         </h1>
 

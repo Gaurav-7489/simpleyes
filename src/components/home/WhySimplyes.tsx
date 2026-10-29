@@ -30,7 +30,7 @@ export function WhySimplyes() {
             >
               {row.map((benefit, i) => (
                 <div key={benefit.title} className="min-w-0" data-reveal style={revealDelay(i * 90)}>
-                  <CardFrame className="h-full" cardClassName="flex h-full flex-col gap-4">
+                  <CardFrame hover className="h-full" cardClassName="flex h-full flex-col gap-4">
                     <div aria-hidden="true" className="h-[180px] overflow-hidden sm:h-[200px]">
                       <BenefitArt kind={benefit.art} />
                     </div>

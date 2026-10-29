@@ -16,7 +16,10 @@ and branding are original to Simplyes.
 - Self-hosted fonts: Satoshi (display, ITF Free Font License) + Inter (body, via `next/font`)
 - **Playwright** + **axe-core** for e2e, responsive, accessibility and SEO tests; **Lighthouse** in CI
 
-Client JavaScript is limited to the mobile menu, nav active state and one shared scroll-reveal observer.
+Client JavaScript is limited to the mobile menu, nav active state, one shared scroll-reveal observer and the
+motion layer: [Lenis](https://lenis.darkroom.engineering) smooth scroll, spring physics for magnetic buttons and
+tilting cards (`src/components/MotionLayer.tsx`) and the draggable physics chips in the hero
+(`src/components/home/HeroPhysics.tsx`). All of it is transform-only, skipped for reduced motion / touch.
 Everything else (including all content, FAQs and structured data) is server-rendered HTML.
 
 ## Getting started

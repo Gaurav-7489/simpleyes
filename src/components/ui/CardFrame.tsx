@@ -16,7 +16,7 @@ export function CardFrame({
   hover?: boolean;
 }) {
   return (
-    <div className={`frame ${hover ? "card-hover" : ""} ${className ?? ""}`}>
+    <div className={`frame ${hover ? "card-hover" : ""} ${className ?? ""}`} data-tilt={hover ? "" : undefined}>
       <div className="frame-inner">
         <div className={`card ${cardClassName ?? ""}`}>{children}</div>
       </div>
