@@ -57,3 +57,16 @@ test("reduced-motion preference keeps reveal content static", async ({ page }) =
     heroAnimation: "none",
   });
 });
+
+test("immersive hero stays decorative and respects reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const atmosphere = page.locator(".hero-atmosphere");
+  await expect(atmosphere).toHaveAttribute("aria-hidden", "true");
+  await expect(atmosphere).toHaveCSS("pointer-events", "none");
+  await expect(page.locator(".hero-atmosphere__spark").first()).toHaveCSS("animation-name", "none");
+
+  await expect(page.getByRole("heading", { name: /Consular assistance/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Not sure where to begin/i })).toBeVisible();
+});
