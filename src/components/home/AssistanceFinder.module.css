@@ -1,6 +1,7 @@
 .section {
   background: var(--color-canvas-alt);
   isolation: isolate;
+  scroll-margin-top: calc(var(--header-h) + 12px);
 }
 .heading {
   display: grid;
@@ -52,7 +53,7 @@
   padding: 20px 16px;
   border: 1px solid rgb(0 0 0 / .07);
   border-radius: 12px;
-  background: white;
+  background: linear-gradient(145deg, #ffffff 15%, #fafbf9 100%);
   box-shadow: 0 2px 5px rgb(0 0 0 / .025), inset 0 1px 0 rgb(255 255 255 / .8);
   cursor: pointer;
   transition: background-color .2s ease, border-color .2s ease, box-shadow .3s ease, transform .3s var(--ease-out-soft);
@@ -68,7 +69,7 @@
   outline-offset: 3px;
 }
 .isSelected {
-  background: #f3f8ee;
+  background: linear-gradient(145deg, #f6faef 0%, #e8f2de 100%);
   border-color: var(--color-accent-500);
   box-shadow: 0 0 0 1px rgb(62 106 0 / .12), 0 8px 24px rgb(62 106 0 / .065);
 }
@@ -131,7 +132,9 @@
   margin-top: 16px;
   padding: clamp(20px, 4vw, 36px);
   border-radius: 12px;
-  background: #242b21;
+  background:
+    radial-gradient(circle at 88% 8%, rgb(125 172 84 / .23) 0%, transparent 36%),
+    linear-gradient(135deg, #242b21 0%, #19221b 100%);
   color: white;
 }
 .resultCopy {
@@ -157,6 +160,31 @@
   margin-top: 10px;
   line-height: 1.7;
   font-size: .94rem;
+}
+.helpDetails {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgb(255 255 255 / .14);
+}
+.helpLabel {
+  color: #c3dfa7;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+.helpList {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+  padding-left: 18px;
+  list-style: disc;
+  color: #f0f4ec;
+  font-size: .875rem;
+  line-height: 1.55;
+}
+.helpList li::marker {
+  color: #badb98;
 }
 .disclaimer {
   color: #cbd5c6;
