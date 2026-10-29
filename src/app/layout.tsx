@@ -8,7 +8,7 @@ import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { RevealObserver } from "@/components/RevealObserver";
-import { MotionLayer } from "@/components/MotionLayer";
+import { LazyMotion } from "@/components/LazyMotion";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 /** Display face measured on the reference. Self-hosted (Fontshare, ITF Free Font License — see src/app/fonts/). */
@@ -67,7 +67,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         </main>
         <Footer />
         <RevealObserver />
-        <MotionLayer />
+        <LazyMotion />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </body>
     </html>

@@ -3,7 +3,7 @@ import { marqueeItems } from "@/content/home";
 import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
 import { ButtonLink, WhatsAppButton } from "@/components/ui/Button";
-import { HeroPhysics } from "@/components/home/HeroPhysics";
+import { LazyHeroPhysics } from "@/components/home/LazyHeroPhysics";
 
 /** Reference hero: centered pill label, oversized two-line headline with a glass word, two CTAs, marquee. */
 export function Hero() {
@@ -14,7 +14,7 @@ export function Hero() {
     >
       <div aria-hidden="true" className="hero-rings -z-10" />
       <div aria-hidden="true" className="hero-orb -z-10" />
-      <HeroPhysics />
+      <LazyHeroPhysics />
 
       <div className="container-site flex flex-col items-center text-center">
         <p className="badge hero-intro">

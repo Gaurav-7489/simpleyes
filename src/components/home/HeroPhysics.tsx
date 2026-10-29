@@ -322,7 +322,7 @@ export function HeroPhysics() {
           className="absolute -translate-x-1/2 -translate-y-1/2"
           style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
         >
-          <div data-chip className="physics-chip pointer-events-auto" style={{ animationDelay: `${600 + i * 90}ms` }}>
+          <div data-chip className="physics-chip pointer-events-auto" style={{ animationDelay: `${i * 80}ms` }}>
             <span className="orb-soft size-8">
               <Icon className="size-4" strokeWidth={1.75} />
             </span>

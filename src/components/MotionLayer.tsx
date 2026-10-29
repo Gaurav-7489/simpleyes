@@ -26,6 +26,7 @@ type Body = {
   tb: number;
   tc: number;
   visible: boolean;
+  rect: DOMRect | null; // cached layout rect, refreshed only after scroll/resize
 };
 
 const STIFFNESS = 220;
@@ -84,7 +85,7 @@ export function MotionLayer() {
     const byEl = new Map<HTMLElement, Body>();
     const add = (el: HTMLElement, kind: Body["kind"]) => {
       if (byEl.has(el)) return;
-      const body: Body = { el, kind, a: [0, 0], b: [0, 0], c: [0, 0], ta: 0, tb: 0, tc: 0, visible: false };
+      const body: Body = { el, kind, a: [0, 0], b: [0, 0], c: [0, 0], ta: 0, tb: 0, tc: 0, visible: false, rect: null };
       byEl.set(el, body);
       bodies.push(body);
       io.observe(el);
@@ -94,6 +95,7 @@ export function MotionLayer() {
       for (const e of entries) {
         const body = byEl.get(e.target as HTMLElement);
         if (body) body.visible = e.isIntersecting;
+        dirty = true;
       }
     });
 
@@ -105,6 +107,11 @@ export function MotionLayer() {
     let raf = 0;
     let running = false;
     let last = 0;
+    let dirty = true;
+    const markDirty = () => {
+      dirty = true;
+      if (px > -9000) start();
+    };
 
     const onMove = (e: PointerEvent) => {
       px = e.clientX;
@@ -129,15 +136,19 @@ export function MotionLayer() {
       last = now;
       let moving = false;
 
-      // Read phase: layout rects (rest position = current rect minus our own offset).
-      const rects = bodies.map((b) => (b.visible ? b.el.getBoundingClientRect() : null));
+      // Read phase: refresh cached rects only when the page scrolled/resized since last frame.
+      if (dirty) {
+        for (const b of bodies) b.rect = b.visible ? b.el.getBoundingClientRect() : null;
+        for (const b of bodies) if (b.rect && b.kind === "magnetic") b.rect = new DOMRect(b.rect.x - b.a[0], b.rect.y - b.b[0], b.rect.width, b.rect.height);
+        dirty = false;
+      }
 
-      bodies.forEach((b, i) => {
-        const r = rects[i];
+      bodies.forEach((b) => {
+        const r = b.rect;
         if (!r) return;
         if (b.kind === "magnetic") {
-          const cx = r.left + r.width / 2 - b.a[0];
-          const cy = r.top + r.height / 2 - b.b[0];
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
           const dx = px - cx;
           const dy = py - cy;
           const reach = Math.max(r.width, r.height) * 0.9 + 28;
@@ -204,11 +215,15 @@ export function MotionLayer() {
       else running = false;
     }
 
+    window.addEventListener("scroll", markDirty, { passive: true });
+    window.addEventListener("resize", markDirty);
     document.addEventListener("pointermove", onMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      window.removeEventListener("scroll", markDirty);
+      window.removeEventListener("resize", markDirty);
       document.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       for (const b of bodies) {

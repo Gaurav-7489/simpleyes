@@ -135,6 +135,12 @@
     padding-block: var(--section-y);
   }
 
+  /* Skip layout/paint of off-screen sections until they approach the viewport. */
+  .section-lazy {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
   /* ----- Type scale (reference: 100/56/36/20 desktop, 72/44/32 tablet, 40/36/24 mobile) */
   .type-hero {
     font-family: var(--font-display);
@@ -581,18 +587,15 @@
   .js [data-reveal] {
     opacity: 0;
     transform: translateY(18px);
-    filter: blur(6px);
     transition:
       opacity 0.8s var(--ease-out-soft),
-      transform 0.8s var(--ease-out-soft),
-      filter 0.8s var(--ease-out-soft);
+      transform 0.8s var(--ease-out-soft);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
   .js [data-reveal].is-revealed {
     opacity: 1;
     transform: none;
-    filter: none;
   }
 
   /* Hero: animate transform + blur only (never opacity) so LCP is not delayed. */
@@ -604,11 +607,9 @@
   @keyframes hero-in {
     from {
       transform: translateY(14px);
-      filter: blur(8px);
     }
     to {
       transform: none;
-      filter: none;
     }
   }
 }
@@ -778,19 +779,99 @@
     }
   }
 
-  /* Hero orb breathes slowly. */
-  .hero-rings {
-    animation: rings-breathe 9s ease-in-out infinite alternate;
-  }
-
-  @keyframes rings-breathe {
-    to {
-      transform: scale(1.04);
-    }
-  }
-
   /* Richer scroll reveal: soft spring-ish ease. */
   .js [data-reveal] {
     transform: translateY(28px) scale(0.985);
+  }
+}
+
+/* ----- "Sound familiar?" question wall ---------------------------------- */
+.qwall {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.qrow {
+  display: flex;
+  width: max-content;
+  gap: 14px;
+  animation: marquee 60s linear infinite;
+}
+
+.qrow[data-dir="reverse"] {
+  animation-direction: reverse;
+  animation-duration: 72s;
+}
+
+.qwall:hover .qrow,
+.qwall:focus-within .qrow {
+  animation-play-state: paused;
+}
+
+.qpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.9);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.05), var(--shadow-card);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qrow {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: center;
+  }
+}
+
+/* ----- Footer extras --------------------------------------------------- */
+.to-top {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06), var(--shadow-card);
+  color: var(--color-ink);
+  transition: transform 0.4s var(--ease-out-soft);
+}
+
+.to-top svg.ring {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.to-top circle {
+  fill: none;
+  stroke-width: 2;
+}
+
+.to-top .track {
+  stroke: rgb(0 0 0 / 0.08);
+}
+
+.to-top .bar {
+  stroke: var(--color-accent-600);
+  stroke-linecap: round;
+  stroke-dasharray: 163.4;
+  stroke-dashoffset: calc(163.4 * (1 - var(--scroll, 0)));
+}
+
+@media (hover: hover) {
+  .to-top:hover {
+    transform: translateY(-3px);
   }
 }

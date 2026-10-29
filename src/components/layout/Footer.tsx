@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { footerNav, legalNav, site } from "@/content/site";
 import { whatsappHref } from "@/lib/whatsapp";
 import { Wordmark } from "@/components/ui/Wordmark";
+import { WhatsAppButton } from "@/components/ui/Button";
+import { BackToTop } from "./BackToTop";
 
 function ColumnTitle({ children }: { children: ReactNode }) {
   return (
@@ -22,6 +24,12 @@ export function Footer() {
     <footer className="relative overflow-hidden bg-canvas" aria-labelledby="footer-title">
       <div aria-hidden="true" className="hero-orb !top-[22%] opacity-70" />
       <div className="container-site relative pb-10 pt-[clamp(96px,12vw,160px)]">
+        <div className="mb-10 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center" data-reveal>
+          <p className="type-intro max-w-[22ch] !text-[clamp(1.25rem,1rem+1vw,1.75rem)]">
+            Got a question? <span className="text-ink-3">Start with a message.</span>
+          </p>
+          <WhatsAppButton topic="general">Chat on WhatsApp</WhatsAppButton>
+        </div>
         <p id="footer-title" className="type-display flex flex-wrap items-center gap-x-[0.18em] text-ink" data-reveal>
           <span>SIMPLY</span>
           <span className="glass-word">YES</span>
@@ -103,6 +111,7 @@ export function Footer() {
             © {year} {site.name}. {site.tagline}.
           </p>
           <hr aria-hidden="true" className="divider-dashed hidden flex-1 sm:block" />
+          <BackToTop />
         </div>
       </div>
     </footer>
