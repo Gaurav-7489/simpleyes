@@ -574,41 +574,33 @@
     radial-gradient(ellipse at 50% 40%, #e9eeea 0%, var(--color-canvas) 70%);
 }
 
-/* ----- Scroll reveal (progressive enhancement) ----------------------------
- * Content is fully visible without JS. A tiny inline script adds `.js` to
- * <html>; only then are [data-reveal] elements hidden until intersecting. */
+/* ----- Readable scroll motion -------------------------------------------
+ * Keep content fully opaque and sharp, even before hydration or when a
+ * reveal observer is delayed. Use only a tiny movement as it enters view.
+ * No blur, opacity fade or content hiding during scrolling. */
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(6px);
-    transition:
-      opacity 0.8s var(--ease-out-soft),
-      transform 0.8s var(--ease-out-soft),
-      filter 0.8s var(--ease-out-soft);
+    transform: translateY(9px);
+    transition: transform 0.45s var(--ease-out-soft);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
   .js [data-reveal].is-revealed {
-    opacity: 1;
     transform: none;
-    filter: none;
   }
 
-  /* Hero: animate transform + blur only (never opacity) so LCP is not delayed. */
+  /* Hero is readable immediately, including on slow connections. */
   .hero-intro {
-    animation: hero-in 0.9s var(--ease-out-soft) both;
+    animation: hero-in 0.58s var(--ease-out-soft) both;
     animation-delay: var(--reveal-delay, 0ms);
   }
 
   @keyframes hero-in {
     from {
-      transform: translateY(14px);
-      filter: blur(8px);
+      transform: translateY(9px);
     }
     to {
       transform: none;
-      filter: none;
     }
   }
 }
