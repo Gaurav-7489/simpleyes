@@ -95,6 +95,14 @@ export function AssistanceFinder() {
                     <p className={styles.resultEyebrow}>Your selected topic</p>
                     <h3 className={styles.resultTitle}>{selected.title}</h3>
                     <p className={styles.resultDescription}>{selected.summary}</p>
+                    <div className={styles.helpDetails}>
+                      <p className={styles.helpLabel}>What this includes</p>
+                      <ul className={styles.helpList}>
+                        {selected.helpsWith.slice(0, 2).map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                   <p className={styles.disclaimer}>
                     Simplyes offers independent preparation and guidance, not official decisions or guaranteed outcomes.
