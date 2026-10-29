@@ -1,4 +1,4 @@
-import { ShieldCheck } from "lucide-react";
+import { ArrowDownRight, ShieldCheck } from "lucide-react";
 import { marqueeItems } from "@/content/home";
 import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
@@ -44,6 +44,15 @@ export function Hero() {
           </ButtonLink>
           <WhatsAppButton topic="general">Get Help on WhatsApp</WhatsAppButton>
         </div>
+
+        <a
+          href="#find-assistance"
+          className="hero-intro group mt-5 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-medium text-accent-700 underline-offset-4 transition-colors hover:text-accent-900 hover:underline focus-visible:outline-offset-2"
+          style={revealDelay(235)}
+        >
+          Not sure where to begin? Find your service
+          <ArrowDownRight aria-hidden="true" className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5 motion-reduce:transition-none" />
+        </a>
 
         <p className="hero-intro mt-6 max-w-[34ch] text-[0.8125rem] text-ink-2 sm:max-w-none" style={revealDelay(240)}>
           <ShieldCheck
