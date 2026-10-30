@@ -8,6 +8,11 @@ The site is a static export (`next build` → `out/`). No server runtime, databa
       only after the owner / a lawyer has approved Impressum and Privacy Policy.
 - [ ] Name the hosting provider in the Privacy Policy (§3) and the WhatsApp data retention period (§4).
 - [ ] Confirm the WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`).
+- [ ] Fill `site.contact` (email required for the Impressum) and confirm service scope; flip `published`
+      on Visa & Documentation Support and Corporate Services only once confirmed (B6, B11).
+- [ ] **Now, until cut-over:** set `NEXT_PUBLIC_SITE_ENV=staging` on the Vercel project (Production and
+      Preview). Without it, `simpleyes.vercel.app` builds as production and is indexable with a canonical
+      pointing at `simplyes.de`, which still serves the old site.
 - [ ] Production build uses `NEXT_PUBLIC_SITE_ENV=production` and `NEXT_PUBLIC_SITE_URL=https://simplyes.de`.
 - [ ] After launch: submit `https://simplyes.de/sitemap.xml` in Google Search Console / Bing Webmaster Tools
       and monitor Core Web Vitals (field data) there.
@@ -31,11 +36,17 @@ The site is a static export (`next build` → `out/`). No server runtime, databa
 3. Limitation: GitHub Pages cannot set custom response headers, so the CSP/HSTS/frame headers from
    `vercel.json` will not apply. If those are required, put a CDN (e.g. Cloudflare) in front or use Option A.
 
-## Retired URLs
+## Redirects (`vercel.json`, permanent)
 
-The old site linked to `/services`, `/clients` and `/contact`, which returned 404. With
-`trailingSlash: true`, `/services` and `/contact` now resolve (redirect to the trailing-slash URL on
-Vercel). `/clients` no longer exists; add a redirect to `/` if desired (Vercel: `redirects` in `vercel.json`).
+- The six retired service slugs (`/services/document-guidance/`, `application-form-assistance`,
+  `photo-signature-preparation`, `appointment-guidance`, `process-clarification`, `personalized-assistance`)
+  → `/services/`
+- `/clients` → `/` (old-site link)
+- `/datenschutz/` → `/privacy/`
+
+The local static server and `next build` do not apply `vercel.json`; verify redirects on a Vercel preview
+deployment (`curl -sI https://<preview>/services/document-guidance/`). GitHub Pages (Option B) would need
+meta-refresh stub pages instead.
 
 ## Verifying a deployment
 

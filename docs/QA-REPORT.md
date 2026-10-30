@@ -1,81 +1,74 @@
 # QA report
 
-Build verified: commit `cd77737` (CI run 40733971872, GitHub Actions, ubuntu-latest, Node 22, Chromium).
-All numbers below are **lab** measurements from CI; real-user Core Web Vitals (75th percentile) can only be
-confirmed from field data after launch (Search Console / CrUX).
+Branch `feat/eight-services`, code verified at commit `a10d792` (the docs commit that adds this file follows it).
+Run locally in a cloud container (Node 22, Chromium 1243 via Playwright) on 2026-10-30 with the CI environment:
+`NEXT_PUBLIC_SITE_ENV=production NEXT_PUBLIC_SITE_URL=https://simplyes.de`. Lab numbers only; real-user Core
+Web Vitals need field data after launch.
 
-## Automated checks
+**Caveat — fonts:** the container could not reach Fontshare, so the build used a stand-in woff2 at
+`src/app/fonts/Satoshi-Variable.woff2` (gitignored, not committed). Layout and wrapping with real Satoshi must
+be confirmed on the Vercel preview / in CI, which fetch the real font.
+
+## Baseline (unchanged `main` @ `58e9a1c`)
 
 | Check | Result |
 |---|---|
-| ESLint (`eslint-config-next` core-web-vitals + TypeScript) | pass |
-| TypeScript strict (`noUncheckedIndexedAccess`), incl. tests | pass |
-| Production build (static export, 18 routes + sitemap/robots/manifest) | pass |
-| Playwright — 103 tests (desktop + Pixel 7 projects) | **103 passed, 0 failed** (35 intentionally skipped: device-specific duplicates) |
+| typecheck / lint / build | pass |
+| Playwright (no `NEXT_PUBLIC_SITE_ENV` set) | 101 passed, 2 failed, 35 skipped |
 
-Playwright coverage: every route renders (HTTP 200, single `h1`, no console errors), 404 page, all internal
-links resolve, WhatsApp links (number, encoded prefilled text, `target=_blank`, `rel=noopener`), desktop
-navigation + `aria-current`, mobile menu (open, scroll lock, Escape → focus restored, link navigation),
-skip link, FAQ accordion (mouse + keyboard, answers present in server HTML), content visible with JS disabled,
-axe-core WCAG 2.0/2.1/2.2 A+AA on every route (no serious/critical violations), titles/descriptions/canonicals/OG
-per page, heading order, unique titles & descriptions, JSON-LD validity and absence of fake ratings/reviews/
-government types, sitemap + robots, server-rendered key content.
+Baseline failures: (1) `SEO › sitemap and robots` — environment-only: without `NEXT_PUBLIC_SITE_ENV` the
+local build is production (`Allow: /`) while the test expects `Disallow`; CI sets the variable. (2)
+`tap targets ≥ 24px` on `/faqs/` — failed once, passed on immediate rerun (flaky).
 
-## Lighthouse (lab, CI)
+## After this change
 
-| Preset | Page | Perf | A11y | BP | SEO | LCP | CLS | TBT |
-|---|---|---|---|---|---|---|---|---|
-| mobile | / | 99 | 100 | 100 | 100 | 0.9 s | 0 | 130 ms |
-| mobile | /services/ | 99 | 100 | 100 | 100 | 0.9 s | 0 | 120 ms |
-| mobile | /services/document-guidance/ | 99 | 100 | 100 | 100 | 0.8 s | 0 | 110 ms |
-| mobile | /faqs/ | 99 | 100 | 100 | 100 | 0.8 s | 0 | 120 ms |
-| mobile | /contact/ | 99 | 100 | 100 | 100 | 0.8 s | 0 | 100 ms |
-| desktop | all five pages | 100 | 100 | 100 | 100 | 0.2 s | 0 | 10–20 ms |
+| Check | Result |
+|---|---|
+| `npm run typecheck` (incl. tests) | pass, 0 errors |
+| `npm run lint` | pass, 0 errors/warnings |
+| `npm run build` incl. `check-content` in production mode | pass; 6 published service pages |
+| Playwright, desktop + Pixel 7 | **124 passed, 0 failed**, 50 skipped (device-specific duplicates) |
 
-Page weight ≈ 290–316 KiB total transfer per page (incl. fonts). Shipped JS on the homepage: 7 files,
-≈ 177 KiB gzip (React 19 + Next.js 16 runtime; app code is the mobile menu, nav state and one
-IntersectionObserver). CSS ≈ 11 KiB gzip. No images other than SVG/CSS art; no third-party requests.
+New `tests/e2e/content.spec.ts`: sitemap/llms.txt list only published services (no retired/unpublished/PCC);
+primary nav = Services, How It Works, About, FAQs, Contact with `aria-current`; every service page has the
+seven section headings + "Official sources — checked …" and a WhatsApp link (incl. floating button) naming
+the service; every WhatsApp link on every route is `wa.me/<number>`, text starts "Hello SimplYes", has no
+digits/whitespace, `target=_blank`, `rel=noopener`; no `<form>`, file/password inputs, PCC, guarantee
+promises, partner claims, customer counts, ratings/testimonials, login/upload/track/pay/coming-soon text,
+"OCI renewal" or € amounts; no placeholders on indexable routes (production); zero console errors and
+warnings; floating button hidden before the hero threshold and near the final CTA/footer, never overlapping
+the footer WhatsApp link or back-to-top at 390px, hidden while the mobile menu is open, after `<main>` and
+before the footer in DOM/tab order; under `reducedMotion: reduce` no running animations/transitions > 10 ms
+(via `document.getAnimations()`) and Lenis not initialised (verified the check fails without reduced motion:
+11 running animations + Lenis).
 
-## Responsive testing
+Not covered locally: `vercel.json` redirects (need a Vercel preview smoke test); real-device iOS Safari /
+Android Chrome and 200 % zoom (manual).
 
-Automated at **320, 360, 375, 390, 414, 430, 768, 820, 1024, 1280, 1440, 1600, 1920, 2560 px** on every
-route: no horizontal overflow, no text outside the viewport, no clipped text; tap targets ≥ 24px at 375px.
-Visual review (full-page screenshots) at 1440, 768 and 390 px.
+## Lighthouse (lab, local)
 
-Defects found and fixed during QA:
-1. Bento cards forced a ~443px min-content width below 480px (horizontal scroll; also broke the mobile
-   menu click in tests) → explicit single-column grid + `min-w-0`, compact illustration variants.
-2. Muted text `#767676` was 4.25:1 on the page background (axe, mobile quote + FAQ footnote) → `#6b6b6b` (≥4.6:1).
-3. Long CTA label overflowed at 320px on service pages → shorter label, buttons capped at container width.
-4. Breadcrumb / inline links below 24px tap height → min-height applied.
-5. Three meta descriptions over 170 characters → shortened.
-6. Mobile menu closed via setState-in-effect (lint) → derived "open for path" state.
+| Preset | Page | Perf | A11y | BP | SEO | LCP | CLS | TBT | FCP | SI | Weight |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| mobile | / | 97 | 100 | 100 | 100 | 0.9 s | 0 | 200 ms | 0.9 s | 1.2 s | Total size was 319 KiB |
+| mobile | /services/ | 98 | 100 | 100 | 100 | 0.9 s | 0 | 170 ms | 0.9 s | 0.9 s | Total size was 312 KiB |
+| mobile | /services/passport-services/ | 93 | 100 | 100 | 100 | 0.9 s | 0 | 320 ms | 0.9 s | 1.3 s | Total size was 306 KiB |
+| mobile | /faqs/ | 98 | 100 | 100 | 100 | 0.9 s | 0 | 160 ms | 0.9 s | 0.9 s | Total size was 304 KiB |
+| mobile | /contact/ | 97 | 100 | 100 | 100 | 0.8 s | 0 | 190 ms | 0.8 s | 0.8 s | Total size was 299 KiB |
+| desktop | / | 100 | 100 | 100 | 100 | 0.2 s | 0 | 10 ms | 0.2 s | 0.4 s | Total size was 322 KiB |
+| desktop | /services/ | 100 | 100 | 100 | 100 | 0.2 s | 0 | 70 ms | 0.2 s | 0.5 s | Total size was 336 KiB |
+| desktop | /services/passport-services/ | 100 | 100 | 100 | 100 | 0.2 s | 0 | 60 ms | 0.2 s | 0.5 s | Total size was 306 KiB |
+| desktop | /faqs/ | 100 | 100 | 100 | 100 | 0.2 s | 0 | 50 ms | 0.2 s | 0.3 s | Total size was 304 KiB |
+| desktop | /contact/ | 100 | 100 | 100 | 100 | 0.2 s | 0 | 30 ms | 0.2 s | 0.4 s | Total size was 299 KiB |
 
-## Visual comparison with the reference
+Target is ≥ 95 on all four categories for mobile: **not met for `/services/passport-services/` mobile
+performance (93, TBT 320 ms)**. Container CPU throttling varies; re-check in CI. If it persists, the longer
+service page (more DOM + reveal targets) is the likely cause.
 
-Compared section-by-section at 1440 / 810–768 / 390 px against the live Agencee template: header bar,
-centred hero with pill label, two-line display headline with glass word, light + dark pill CTAs, marquee,
-editorial "what we do" statement, framed service cards in alternating wide/narrow rows with CTA strip,
-sticky process column + 2×2 numbered cards, bento benefits, comparison-style pair, two-column FAQ cards,
-oversized footer display line with glass word. Intentional differences: brand green instead of teal; glass
-word is a solid green pill to keep ≥3:1 contrast; reference sections that need fabricated data (stats,
-testimonials, pricing, projects, team) are omitted. See `REFERENCE-SPEC.md`.
+## Outstanding requirements (launch blockers, not resolved by guessing)
 
-## Not verified / limitations
-
-- Real-device testing (iOS Safari, Firefox, Samsung Internet) and 200% zoom were not run in CI; layouts use
-  fluid units and no fixed heights around text, but a manual pass on real devices is recommended.
-- Field Core Web Vitals (INP especially) require post-launch real-user data.
-- No deployment was made; Vercel preview not configured.
-- Legal texts are drafts pending business details and legal review (pages are `noindex` until then).
-
-## Outstanding requirements (business owner)
-
-1. Impressum details: legal name/entity, responsible person, address, email, phone, register/VAT if any.
-2. Privacy Policy: hosting provider name/address, WhatsApp conversation retention period, legal review.
-3. Confirm the WhatsApp number `+49 176 62510556` (taken from the current simplyes.de).
-4. Confirm fee wording (site says fees, if any, are confirmed before assistance begins).
-5. Decide on a German-language version (would need professional translation + `hreflang`).
-6. Choose hosting (Vercel recommended) and switch DNS for simplyes.de at cut-over.
-7. Satoshi font: downloaded from Fontshare at build time under the ITF Free Font License (self-hosting
-   permitted; redistribution via public repositories is not, so the file is not committed).
+Legal entity / representative / address / register / VAT (B1); hosting and processors, retention,
+document-handling practice (B2); legal review incl. RDG for affidavits and UWG for the disclosure (B3, B10);
+WhatsApp number confirmation — +49 176 62510556 is from the old site (B4); contact email (B5); exact
+sub-services incl. visa scope, corporate offering, minors, submission support (B6); coverage (B7); fee
+policy (B8); enquiry owner and response times (B9); DPA for corporate (B11); languages (B12);
+simplyes.de hosting/DNS decision (B14).

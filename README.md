@@ -1,12 +1,15 @@
 # simplyes. — website
 
-Production website for **Simplyes** (*Redefining Consular Services*): an independent private assistance
-service helping Indians living in Germany with Indian consular and administrative processes.
+Production website for **SimplYes** (*Redefining Consular Services.*): an independent private
+documentation-assistance service helping Indians living in Germany with Indian consular and administrative
+paperwork across eight service areas (passport, OCI, attestation & legalisation, affidavits & declarations,
+visa & documentation support, family, student and corporate). Visa and Corporate are built but unpublished
+(`published: false`) until the owner confirms their scope.
 
 The visual design follows the client-selected reference
 [agencee-template.framer.website](https://agencee-template.framer.website/) — measured tokens, layout and
 motion are documented in [`docs/REFERENCE-SPEC.md`](docs/REFERENCE-SPEC.md). All code, copy, illustrations
-and branding are original to Simplyes.
+and branding are original to SimplYes.
 
 ## Stack
 
@@ -53,16 +56,17 @@ npm run dev        # http://localhost:3000
 ```
 src/
   app/                 routes (home, services/[slug], how-it-works, about, faqs, contact, impressum, privacy)
-                       + sitemap.ts, robots.ts, manifest.ts, icon.svg, fonts/
+                       + sitemap.ts, robots.ts, manifest.ts, llms.txt/route.ts (generated), icon.svg, fonts/
   components/
     home/              homepage sections (Hero, WhatWeDo, Services, Process, WhySimplyes, Transparency, FaqSection)
-    layout/            Header, MobileMenu, NavLinks, Footer
+    layout/            Header, MobileMenu, NavLinks, Footer, FloatingWhatsApp
+    service/           ServiceSection (titled list card for service pages)
     illustrations/     original SVG/CSS art
     ui/                Button, Badge, CardFrame, SectionHeading, Wordmark, JsonLd
   content/             ALL copy and business data (site.ts, services.ts, faqs.ts, home.ts)
   lib/                 seo.ts (metadata + JSON-LD), whatsapp.ts, style.ts
 tests/e2e/             Playwright suites
-scripts/               static server, Lighthouse runner, CI bootstrap helpers
+scripts/               static server, Lighthouse runner, font fetch, check-content (placeholder guard), CI helpers
 docs/                  reference spec, deployment guide, QA report
 ```
 
@@ -71,6 +75,14 @@ docs/                  reference spec, deployment guide, QA report
 All text lives in `src/content/`. Business/legal details are in `src/content/site.ts`; values that are
 `null` are **not yet provided** and are rendered as visible "to be provided" placeholders on the
 Impressum/Privacy pages (which stay `noindex` until `legal.reviewed` is set to `true`).
+
+- **Services:** `src/content/services.ts`. Each entry drives its page, card, sitemap entry, llms.txt line,
+  JSON-LD and WhatsApp message. Set `published: true` only once the owner confirms the scope. `pricing`,
+  `documents` and `timeline` are optional and must only be set with verified values (and an official source
+  for `documents`).
+- **Contact details:** `site.contact` (`email`, `phone`, `hours`, `responseTime`) render only when non-null.
+- **Placeholder guard:** with `NEXT_PUBLIC_SITE_ENV=production`, `prebuild` fails if any non-comment line in
+  `src/content/` contains `[confirm`, `[owner`, `TODO` or `to be provided`.
 
 ## Deployment
 
