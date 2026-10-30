@@ -13,10 +13,10 @@ const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://simplyes.de";
 const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4917662510556").replace(/\D/g, "");
 
 export const site = {
-  name: "Simplyes",
+  name: "SimplYes",
   /** Lower-case wordmark with period, as written in the brand brief. */
   wordmark: "simplyes",
-  tagline: "Redefining Consular Services",
+  tagline: "Redefining Consular Services.",
   url: rawSiteUrl.replace(/\/+$/, ""),
   locale: "en",
   language: "en-DE",
@@ -24,17 +24,31 @@ export const site = {
   /** Approved geographic statement. */
   coverageStatement: "We assist customers across Germany.",
   shortDescription:
-    "Independent assistance for Indians in Germany with Indian consular and administrative processes.",
+    "Independent documentation assistance for Indians in Germany with Indian consular and administrative paperwork.",
   description:
-    "Simplyes is an independent private assistance service that helps Indians living in Germany understand Indian consular and administrative requirements, check their documents, prepare forms, and format photos and signatures — with clear guidance on the next step.",
-  disclosure:
-    "Simplyes is an independent private assistance service. We are not affiliated with, authorised by, or acting on behalf of the Embassy of India, the Consulates General of India, or any outsourced application centre. Official applications, decisions, approvals and processing are handled solely by the respective authorities or their designated service providers.",
+    "SimplYes is an independent private documentation-assistance service helping Indians living in Germany understand requirements, prepare paperwork, organise supporting documents and receive human guidance for Indian consular and administrative processes.",
+  /** Short approved disclosure (footer, service pages, contact). Pending legal review (B3). */
   shortDisclosure:
-    "Independent private service — not affiliated with the Embassy of India, the Consulates General of India or any application centre.",
+    "SimplYes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities.",
+  /** Full approved disclosure (About, FAQs, Impressum). Pending legal review (B3). */
+  disclosure:
+    "SimplYes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities. SimplYes does not issue passports, approve visas or grant OCI status, does not guarantee outcomes or processing times, and does not itself perform official attestation, notarisation or certification. Where your matter requires legal advice, notarisation or another regulated service, we will tell you so and you should consult an appropriately qualified professional.",
+  /** One-line hero note. */
+  heroNote: "Independent private service — not a government authority or application centre.",
   whatsapp: {
     number: whatsappNumber,
     /** Human-readable form of the verified number. */
     display: "+49 176 62510556",
+  },
+  /**
+   * Public contact details beyond WhatsApp. Rendered only when non-null —
+   * the owner must supply and verify them (B5, B9).
+   */
+  contact: {
+    email: null as string | null,
+    phone: null as string | null,
+    hours: null as string | null,
+    responseTime: null as string | null,
   },
   /**
    * Legal / Impressum details. All MUST be supplied and verified by the
@@ -67,7 +81,7 @@ export type NavItem = { label: string; href: string };
 export const primaryNav: NavItem[] = [
   { label: "Services", href: "/services/" },
   { label: "How It Works", href: "/how-it-works/" },
-  { label: "Why Simplyes", href: "/#why-simplyes" },
+  { label: "About", href: "/about/" },
   { label: "FAQs", href: "/faqs/" },
   { label: "Contact", href: "/contact/" },
 ];
@@ -83,7 +97,7 @@ export const footerNav: NavItem[] = [
 
 export const legalNav: NavItem[] = [
   { label: "Impressum", href: "/impressum/" },
-  { label: "Privacy Policy", href: "/privacy/" },
+  { label: "Datenschutz / Privacy", href: "/privacy/" },
 ];
 
 /** Whether this build is the live production build (controls indexing). */

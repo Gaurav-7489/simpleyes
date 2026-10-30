@@ -1,49 +1,61 @@
 export type Faq = { question: string; answer: string };
 
-/** Answer-first FAQ copy. Rendered as server HTML (and FAQPage JSON-LD on /faqs/). */
+/**
+ * General FAQs, answer-first. Rendered as server HTML (and FAQPage JSON-LD on /faqs/).
+ * Service-specific FAQs live on each service in services.ts.
+ */
 export const faqs: Faq[] = [
   {
-    question: "What is Simplyes?",
+    question: "Is SimplYes a government service?",
     answer:
-      "Simplyes is an independent private assistance service for Indians living in Germany. We help you understand Indian consular and administrative requirements, check whether your documents appear complete, prepare forms, and format photos and signatures — so you can continue through the official channels with clarity.",
+      "No. SimplYes is an independent private documentation-assistance service. We are not affiliated with, authorised by or acting for the Embassy of India, the Consulates General of India or any outsourced application centre.",
   },
   {
-    question: "Is Simplyes part of the Embassy of India?",
+    question: "What assistance do you provide?",
     answer:
-      "No. Simplyes is not part of, affiliated with, or authorised by the Embassy of India, the Consulates General of India, or any outsourced application centre. We are a private assistance service and do not act on behalf of any authority.",
+      "We help you understand published requirements, organise and check supporting documents, prepare forms, photos and signatures to stated specifications, understand attestation and signing steps, and prepare for appointments — across passport, OCI, attestation, affidavit, family and student paperwork.",
   },
   {
-    question: "What kind of assistance does Simplyes provide?",
+    question: "How do I start an enquiry?",
     answer:
-      "We help with understanding document requirements, checking document completeness, preparing and reviewing forms, formatting photos and signatures to the stated requirements, explaining appointment-related steps, and clarifying the next step in your process.",
+      "Send us a WhatsApp message with the service and a short description of what you need. We'll reply, ask a few questions and explain the next step.",
   },
   {
-    question: "Can Simplyes submit or approve applications?",
+    question: "Can you guarantee approval?",
     answer:
-      "Simplyes cannot approve, issue or decide anything — passports, visas and all other official decisions are made only by the respective authorities or their designated service providers. Applications are handled through the official channels; if you're unsure how that works for your case, we'll explain the steps.",
+      "No. Every decision — and the processing time — rests with the relevant authority. We help you prepare carefully; we cannot influence the outcome.",
   },
   {
-    question: "Can Simplyes guarantee appointments or processing times?",
+    question: "How are document requirements established?",
     answer:
-      "No. Appointment availability and processing times are controlled by the official authorities and their service providers. Simplyes cannot guarantee, reserve or accelerate either — we help you prepare so you can proceed with confidence.",
+      "From the current official instructions published by the Indian mission responsible for your place of residence, its application centre and the relevant Indian ministries. Requirements depend on your case and can change, so we check the current official source for your situation rather than relying on a fixed list. Where the official instruction differs from anything we have said, the official instruction applies.",
   },
   {
-    question: "Do you assist people throughout Germany?",
+    question: "How are your fees communicated?",
+    answer:
+      "Before any paid assistance begins, we tell you what we will do and what our service fee is, and you decide whether to go ahead.",
+  },
+  {
+    question: "How do official charges differ from your service fee?",
+    answer:
+      "Official fees are set by the authorities and paid to them or their application centre. Courier, notary, translation and similar costs are charged by those providers. Our service fee covers only our own assistance.",
+  },
+  {
+    question: "How will I receive next-step guidance?",
+    answer:
+      "In your WhatsApp conversation with our team, usually as a short explanation and a checklist for your case.",
+  },
+  {
+    question: "Do you help people throughout Germany?",
     answer: "Yes. We assist customers across Germany, and most assistance happens conveniently over WhatsApp.",
   },
   {
-    question: "How do I get started?",
-    answer:
-      "Send us a message on WhatsApp with a short description of what you need help with. We'll reply, ask a few questions to understand your situation, and explain how we can help.",
-  },
-  {
-    question: "What documents should I prepare before contacting you?",
+    question: "What should I prepare before contacting you?",
     answer:
       "You don't need everything ready to start. A short description of your process and any instructions or checklists you've already received are enough. Please don't send copies of passports or other sensitive documents until we've discussed what is actually needed.",
   },
   {
-    question: "Is Simplyes a paid service?",
-    answer:
-      "Simplyes is a private service. Whether a service fee applies depends on the assistance you need — please confirm any fees with us before assistance begins. Official fees charged by the authorities or their service providers are separate and paid to them directly.",
+    question: "Can SimplYes submit applications for me?",
+    answer: "Applications are submitted by you through the official channel. We help you prepare.",
   },
 ];
