@@ -9,7 +9,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const base = process.env.BASE ?? "http://localhost:4173";
-const pages = ["/", "/services/", "/services/document-guidance/", "/faqs/", "/contact/"];
+const pages = ["/", "/services/", "/services/passport-services/", "/faqs/", "/contact/"];
 const presets = ["mobile", "desktop"];
 mkdirSync("qa/lighthouse", { recursive: true });
 
