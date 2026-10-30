@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { services } from "@/content/services";
 import { isProductionBuild, site } from "@/content/site";
 
 export function absoluteUrl(path = "/"): string {
@@ -9,7 +10,7 @@ type PageMetaInput = {
   title: string;
   description: string;
   path: string;
-  /** Use the title as-is instead of applying the "| Simplyes" template. */
+  /** Use the title as-is instead of applying the "| SimplYes" template. */
   absoluteTitle?: boolean;
   noindex?: boolean;
 };
@@ -57,12 +58,7 @@ export function organizationJsonLd() {
     slogan: site.tagline,
     description: site.description,
     areaServed: { "@type": "Country", name: "Germany" },
-    knowsAbout: [
-      "Indian consular procedures",
-      "Document requirements for Indian consular applications",
-      "Application form preparation",
-      "Photo and signature formatting for applications",
-    ],
+    knowsAbout: services.map((service) => service.title),
     contactPoint: [
       {
         "@type": "ContactPoint",

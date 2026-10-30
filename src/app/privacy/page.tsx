@@ -8,7 +8,7 @@ import { Missing, PendingReview } from "@/components/LegalNotice";
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description:
-    "How the Simplyes website handles personal data: no cookies, no analytics, self-hosted fonts, hosting logs and WhatsApp contact.",
+    "How the SimplYes website handles personal data: no cookies, no analytics, self-hosted fonts, hosting logs and WhatsApp contact.",
   path: "/privacy/",
   noindex: !site.legal.reviewed,
 });
@@ -22,7 +22,7 @@ export const metadata: Metadata = pageMetadata({
 export default function PrivacyPage() {
   return (
     <>
-      <PageHero badge="Legal" title="Privacy Policy" crumbs={[{ name: "Privacy Policy", path: "/privacy/" }]} />
+      <PageHero badge="Legal" title="Datenschutz / Privacy Policy" crumbs={[{ name: "Datenschutz / Privacy", path: "/privacy/" }]} />
       <section className="pb-[var(--section-y)]">
         <div className="container-site max-w-[760px]">
           {!site.legal.reviewed && (
