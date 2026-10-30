@@ -25,7 +25,7 @@ export function Footer() {
               ))}
               <li>
                 <a
-                  href={whatsappHref("general")}
+                  href={whatsappHref()}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cta="whatsapp"
@@ -41,7 +41,7 @@ export function Footer() {
         </div>
 
         <p className="rounded-[14px] bg-canvas-alt px-5 py-4 text-[0.8125rem] leading-relaxed text-ink-2">
-          <strong className="font-medium text-ink">Independent service disclosure:</strong> {site.disclosure}
+          <strong className="font-medium text-ink">Independent service disclosure:</strong> {site.shortDisclosure}
         </p>
 
         <div className="flex items-center justify-between gap-4 text-sm text-ink-2">

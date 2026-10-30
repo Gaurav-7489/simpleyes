@@ -7,6 +7,9 @@ import { isProductionBuild, site } from "@/content/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
+import { services } from "@/content/services";
+import { whatsappHref } from "@/lib/whatsapp";
 import { RevealObserver } from "@/components/RevealObserver";
 import { LazyMotion } from "@/components/LazyMotion";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -30,7 +33,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — Consular assistance for Indians in Germany`,
+    default: `${site.name} — Indian documentation help in Germany`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
@@ -65,6 +68,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <main id="main" tabIndex={-1} className="outline-none">
           {children}
         </main>
+        <FloatingWhatsApp
+          generalHref={whatsappHref()}
+          serviceHrefs={Object.fromEntries(services.map((service) => [service.slug, whatsappHref(service)]))}
+        />
         <Footer />
         <RevealObserver />
         <LazyMotion />

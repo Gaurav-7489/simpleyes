@@ -46,6 +46,7 @@ export function MobileMenu({ items, whatsappHref }: Props) {
     const root = document.documentElement;
     const previousOverflow = root.style.overflow;
     root.style.overflow = "hidden";
+    root.dataset.menuOpen = "";
 
     const firstLink = panelRef.current?.querySelector<HTMLElement>("a");
     firstLink?.focus();
@@ -81,6 +82,7 @@ export function MobileMenu({ items, whatsappHref }: Props) {
     desktop.addEventListener("change", onDesktop);
     return () => {
       root.style.overflow = previousOverflow;
+      delete root.dataset.menuOpen;
       document.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onDesktop);
     };
@@ -156,7 +158,7 @@ export function MobileMenu({ items, whatsappHref }: Props) {
           className="btn btn-dark mt-3 w-full"
         >
           <span className="btn-face w-full justify-center">
-            Get Help on WhatsApp
+            Chat on WhatsApp
             <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
             <span className="sr-only"> (opens WhatsApp in a new tab)</span>
           </span>

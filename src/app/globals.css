@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 /*
- * Simplyes design tokens.
+ * SimplYes design tokens.
  * Neutral palette, radii, spacing and type scale are measured from the
  * Agencee reference (see docs/REFERENCE-SPEC.md). The reference's teal accent
- * is replaced by the Simplyes brand green (from the existing simplyes.de).
+ * is replaced by the SimplYes brand green (from the existing simplyes.de).
  */
 @theme {
   --font-display: var(--font-satoshi), "Satoshi", ui-sans-serif, system-ui, sans-serif;
@@ -873,5 +873,66 @@
 @media (hover: hover) {
   .to-top:hover {
     transform: translateY(-3px);
+  }
+}
+
+/* ---------- Floating WhatsApp shortcut ------------------------------------ */
+html {
+  /* Keeps anchored/focused content clear of the floating button. */
+  scroll-padding-bottom: 88px;
+}
+
+.fab-wa {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 56px;
+  height: 56px;
+  box-shadow: var(--shadow-btn-dark), 0 8px 24px -12px rgb(0 0 0 / 0.3);
+}
+
+.fab-wa .btn-face {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  padding: 0;
+}
+
+.fab-wa-label {
+  display: none;
+}
+
+.fab-wa[data-visible="false"],
+html[data-menu-open] .fab-wa {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .fab-wa {
+    width: auto;
+  }
+
+  .fab-wa .btn-face {
+    padding: 9px 20px;
+  }
+
+  .fab-wa-label {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fab-wa {
+    transition:
+      opacity 0.3s var(--ease-out-soft),
+      transform 0.3s var(--ease-out-soft),
+      visibility 0.3s;
+  }
+
+  .fab-wa[data-visible="false"] {
+    transform: scale(0.9) translateY(8px);
   }
 }

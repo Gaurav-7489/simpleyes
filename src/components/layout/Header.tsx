@@ -19,8 +19,8 @@ export function Header() {
           <nav aria-label="Primary">
             <NavLinks items={primaryNav} />
           </nav>
-          <WhatsAppButton topic="general" icon="none">
-            Get Help on WhatsApp
+          <WhatsAppButton icon="none">
+            Chat on WhatsApp
           </WhatsAppButton>
         </div>
       </div>
@@ -33,7 +33,7 @@ export function Header() {
           // No backdrop-filter here: it would become the containing block of the fixed menu backdrop.
         >
           <Wordmark />
-          <MobileMenu items={primaryNav} whatsappHref={whatsappHref("general")} />
+          <MobileMenu items={primaryNav} whatsappHref={whatsappHref()} />
         </div>
       </div>
     </header>
