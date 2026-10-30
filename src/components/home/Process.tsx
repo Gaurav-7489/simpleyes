@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { CardFrame } from "@/components/ui/CardFrame";
 import { revealDelay } from "@/lib/style";
 
-export function StepCard({ step, index }: { step: (typeof processSteps)[number]; index: number }) {
+export function StepCard({ step, index }: { step: { number: string; title: string; body: string }; index: number }) {
   return (
     <div data-reveal style={revealDelay(index * 90)} className="h-full">
       <CardFrame hover className="h-full" cardClassName="flex h-full flex-col gap-6 !p-5 sm:!p-6">
@@ -40,7 +40,7 @@ export function Process() {
           <div className="flex flex-col items-start gap-5" data-reveal>
             <Badge>How it works</Badge>
             <h2 id="process-title" className="type-h2 max-w-[14ch]">
-              Simple steps, clear guidance
+              Four simple steps
             </h2>
             <p className="type-lead max-w-[40ch]">
               A straightforward way to understand your requirements and prepare for the official process.

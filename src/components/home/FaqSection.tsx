@@ -16,7 +16,7 @@ export function FaqSection() {
           lead="Quick answers to the questions we hear most often."
         />
         <div className="mx-auto mt-12 max-w-[1000px] lg:mt-14" data-reveal>
-          <FaqList items={faqs} />
+          <FaqList items={faqs.slice(0, 6)} />
         </div>
         <div className="mt-10 flex flex-col items-center gap-4" data-reveal>
           <p className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-full bg-canvas-alt py-2 pl-2 pr-5 text-sm text-ink-2">
@@ -25,7 +25,7 @@ export function FaqSection() {
             </span>
             Still have a question?
             <a
-              href={whatsappHref("general")}
+              href={whatsappHref()}
               target="_blank"
               rel="noopener noreferrer"
               data-cta="whatsapp"

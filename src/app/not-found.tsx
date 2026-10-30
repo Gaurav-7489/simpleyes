@@ -22,7 +22,7 @@ export default function NotFound() {
           <ButtonLink href="/" variant="light">
             Back to Home
           </ButtonLink>
-          <WhatsAppButton topic="general">Ask on WhatsApp</WhatsAppButton>
+          <WhatsAppButton>Ask on WhatsApp</WhatsAppButton>
         </div>
       </div>
     </section>

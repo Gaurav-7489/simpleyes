@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { site } from "@/content/site";
 
-/** Original Simplyes wordmark: a soft brand orb + lower-case name with a green full stop. */
+/** Original SimplYes wordmark: a soft brand orb + lower-case name with a green full stop. */
 export function Wordmark({ className, asLink = true }: { className?: string; asLink?: boolean }) {
   const mark = (
     <>

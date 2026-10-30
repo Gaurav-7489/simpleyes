@@ -25,12 +25,12 @@ export function Hero() {
         <h1 id="hero-title" className="type-hero hero-intro mt-7 max-w-[1000px]" style={revealDelay(60)}>
           <span className="word-mask block">
             <span className="word-in" style={revealDelay(80)}>
-              Consular assistance,
+              Indian documents,
             </span>
           </span>
           <span className="mt-[0.06em] inline-block">
             <span className="glass-word word-pop" style={revealDelay(420)}>
-              made simpler.
+              made clear.
             </span>
           </span>
         </h1>
@@ -39,8 +39,8 @@ export function Hero() {
           className="type-lead hero-intro mt-6 max-w-[34rem] text-[0.9375rem] sm:text-base"
           style={revealDelay(140)}
         >
-          Helping Indians across Germany navigate documents, applications, and consular procedures with clarity and
-          confidence.
+          Clear guidance for your Indian documentation in Germany. {site.name} helps you understand requirements, organise paperwork and prepare your application with personal
+          guidance across passport, OCI and other documentation services.
         </p>
 
         <div
@@ -48,9 +48,9 @@ export function Hero() {
           style={revealDelay(200)}
         >
           <ButtonLink href="/services/" variant="light">
-            Explore Our Services
+            Explore Services
           </ButtonLink>
-          <WhatsAppButton topic="general">Get Help on WhatsApp</WhatsAppButton>
+          <WhatsAppButton>Chat on WhatsApp</WhatsAppButton>
         </div>
 
         <p className="hero-intro mt-6 max-w-[34ch] text-[0.8125rem] text-ink-2 sm:max-w-none" style={revealDelay(240)}>
@@ -59,7 +59,7 @@ export function Hero() {
             className="mr-1.5 inline-block size-4 align-[-3px] text-accent-700"
             strokeWidth={1.75}
           />
-          Independent private service — not a government authority
+          {site.heroNote}
         </p>
       </div>
 

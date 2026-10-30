@@ -12,10 +12,10 @@ import { FaqSection } from "@/components/home/FaqSection";
 import { FinalCta } from "@/components/FinalCta";
 
 export const metadata: Metadata = pageMetadata({
-  title: `${site.name} — Consular assistance for Indians in Germany`,
+  title: `${site.name} — Indian documentation help in Germany`,
   absoluteTitle: true,
   description:
-    "Independent help for Indians in Germany with Indian consular processes: document guidance, form help, photo & signature formatting and clear next steps.",
+    "Independent help for Indians in Germany with passport, OCI, attestation, affidavit, family and student paperwork — clear guidance and real people on WhatsApp.",
   path: "/",
 });
 

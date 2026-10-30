@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { BenefitArt as BenefitArtKind } from "@/content/home";
 
-/** Decorative neumorphic compositions for the "Why Simplyes" bento (reference: Benefits). */
+/** Decorative neumorphic compositions for the "Why SimplYes" bento (reference: Benefits). */
 
 function SoftOrb({ size = 56, children, accent = false }: { size?: number; children: ReactNode; accent?: boolean }) {
   return (
@@ -117,7 +117,7 @@ export function BenefitArt({ kind }: { kind: BenefitArtKind }) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-3 px-6">
           <span className="self-start rounded-2xl rounded-bl-md bg-[#f9faf9] px-4 py-2.5 text-xs text-ink-2 shadow-[0_8px_18px_-8px_rgb(0_0_0/0.2)]">
-            Hello Simplyes, I need help…
+            Hello SimplYes, I need help…
           </span>
           <span className="flex items-center gap-2 self-end rounded-2xl rounded-br-md bg-accent-600 px-4 py-2.5 text-xs text-white shadow-[0_8px_18px_-8px_rgb(62_106_0/0.5)]">
             <MessageCircle className="size-3.5" {...iconProps} />

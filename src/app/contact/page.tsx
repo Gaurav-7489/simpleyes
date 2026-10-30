@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ListChecks, MapPin, MessageCircle, ShieldAlert } from "lucide-react";
+import { Clock, ListChecks, Mail, MapPin, MessageCircle, ShieldAlert } from "lucide-react";
+import { getService } from "@/content/services";
 import { site } from "@/content/site";
 import { whatsappHref } from "@/lib/whatsapp";
 import { breadcrumbJsonLd, contactPageJsonLd, pageMetadata } from "@/lib/seo";
@@ -7,24 +8,30 @@ import { PageHero } from "@/components/PageHero";
 import { CardFrame } from "@/components/ui/CardFrame";
 import { WhatsAppButton } from "@/components/ui/Button";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { PrivacyCard } from "@/components/PrivacyCard";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Contact Simplyes on WhatsApp",
-  description:
-    "Contact Simplyes on WhatsApp for help with Indian consular and administrative processes. We assist customers across Germany.",
+  title: `Contact ${site.name} on WhatsApp`,
+  description: `Contact ${site.name} on WhatsApp for help with Indian passport, OCI, attestation and other documentation paperwork. We assist customers across Germany.`,
   path: "/contact/",
 });
 
+/** Quick topics for the most common services (only those currently published). */
+const quickTopics = ["passport-services", "oci-services", "attestation-legalisation", "visa-documentation-support"]
+  .map(getService)
+  .filter((service) => service !== undefined);
+
 export default function ContactPage() {
+  const { email, hours, responseTime } = site.contact;
   return (
     <>
       <PageHero
         badge="Contact"
-        title="Let's talk about your next step"
-        lead="The quickest way to reach Simplyes is WhatsApp. Tell us briefly what you need help with and we'll take it from there."
+        title={`Talk to ${site.name}`}
+        lead="The quickest way to reach us is WhatsApp. Tell us briefly which service you need and what you'd like help with."
         crumbs={[{ name: "Contact", path: "/contact/" }]}
       >
-        <WhatsAppButton topic="general">Chat With Us on WhatsApp</WhatsAppButton>
+        <WhatsAppButton>Chat on WhatsApp</WhatsAppButton>
       </PageHero>
 
       <section aria-label="Contact details" className="pb-[var(--section-y)]">
@@ -39,7 +46,7 @@ export default function ContactPage() {
                 <p className="mt-2 type-body">Our primary contact channel for all enquiries.</p>
               </div>
               <a
-                href={whatsappHref("general")}
+                href={whatsappHref()}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cta="whatsapp"
@@ -49,13 +56,26 @@ export default function ContactPage() {
                 {site.whatsapp.display}
                 <span className="sr-only"> (opens WhatsApp in a new tab)</span>
               </a>
+              {email && (
+                <p className="flex items-center gap-2 type-body">
+                  <Mail aria-hidden="true" className="size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+                  <a href={`mailto:${email}`} className="inline-flex min-h-6 items-center underline underline-offset-4">
+                    {email}
+                  </a>
+                </p>
+              )}
+              {(hours || responseTime) && (
+                <p className="flex items-start gap-2 type-body">
+                  <Clock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+                  <span>{[hours, responseTime].filter(Boolean).join(" · ")}</span>
+                </p>
+              )}
               <div className="mt-auto flex flex-wrap gap-3">
-                <WhatsAppButton topic="documents" variant="light" size="sm" icon="none">
-                  Document question
-                </WhatsAppButton>
-                <WhatsAppButton topic="application" variant="light" size="sm" icon="none">
-                  Application help
-                </WhatsAppButton>
+                {quickTopics.map((service) => (
+                  <WhatsAppButton key={service.slug} service={service} variant="light" size="sm" icon="none">
+                    {service.shortTitle ?? service.title}
+                  </WhatsAppButton>
+                ))}
               </div>
             </CardFrame>
           </div>
@@ -73,8 +93,8 @@ export default function ContactPage() {
               <div>
                 <h2 className="type-card-title">What to include</h2>
                 <p className="mt-2 type-body">
-                  Which process you&apos;re dealing with and what you&apos;d like help with. Please don&apos;t send
-                  copies of passports or other sensitive documents in your first message.
+                  Which service you need and what you&apos;d like help with. Please don&apos;t send copies of passports
+                  or other sensitive documents in your first message.
                 </p>
               </div>
             </CardFrame>
@@ -85,6 +105,9 @@ export default function ContactPage() {
                 <p className="mt-2 type-body">{site.shortDisclosure}</p>
               </div>
             </CardFrame>
+          </div>
+          <div className="md:col-span-2" data-reveal>
+            <PrivacyCard />
           </div>
         </div>
       </section>

@@ -21,7 +21,7 @@ function List({ items }: { items: readonly string[] }) {
 
 /**
  * Adapted from the reference "Comparison" section: instead of "us vs others",
- * it clearly separates what Simplyes does from what the authorities do.
+ * it clearly separates what SimplYes does from what the authorities do.
  */
 export function Transparency({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
   return (
@@ -36,7 +36,7 @@ export function Transparency({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
               Independent support. <span className="text-ink-3">Clear boundaries.</span>
             </>
           }
-          lead="Simplyes is a private assistance service. Official applications, decisions, approvals, and processing are handled by the respective government authorities or designated service providers. We help customers understand requirements and prepare for their next steps."
+          lead={`${site.name} is a private documentation-assistance service. Official applications, decisions, approvals and processing are handled by the relevant authorities and their official application centres. We help you understand requirements and prepare for your next steps.`}
         />
 
         <div className="relative mx-auto mt-12 grid max-w-[920px] items-start gap-6 md:grid-cols-2 md:gap-14 lg:mt-16">
@@ -55,7 +55,7 @@ export function Transparency({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
                   <span className="text-accent-600">.</span>
                   <span className="sr-only"> helps you</span>
                 </h3>
-                <WhatsAppButton topic="general" size="sm" icon="none">
+                <WhatsAppButton size="sm" icon="none">
                   Ask Us
                 </WhatsAppButton>
               </div>
@@ -73,7 +73,7 @@ export function Transparency({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
                 <h3 className="font-display text-[1.625rem] tracking-[-0.02em] sm:text-3xl">Authorities</h3>
               </div>
               <p className="px-1 pt-5 text-xs font-medium uppercase tracking-[0.04em] text-ink-2 sm:px-3">
-                Official bodies &amp; their service providers
+                Authorities and their official centres
               </p>
               <List items={boundaries.authorities} />
             </CardFrame>

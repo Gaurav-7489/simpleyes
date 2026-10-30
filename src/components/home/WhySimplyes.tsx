@@ -1,4 +1,5 @@
 import { benefits } from "@/content/home";
+import { site } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CardFrame } from "@/components/ui/CardFrame";
 import { WhatsAppButton } from "@/components/ui/Button";
@@ -13,7 +14,7 @@ export function WhySimplyes() {
       <div className="container-site">
         <SectionHeading
           id="why-title"
-          badge="Why Simplyes"
+          badge={`Why ${site.name}`}
           title="Support that keeps things simple"
           lead="Clear, honest help for the Indian community across Germany."
         />
@@ -46,7 +47,7 @@ export function WhySimplyes() {
         <div className="mt-10 flex justify-center" data-reveal>
           <div className="cta-strip">
             <p className="text-sm text-ink-2">Ready to understand your next step?</p>
-            <WhatsAppButton topic="general">Start on WhatsApp</WhatsAppButton>
+            <WhatsAppButton>Start on WhatsApp</WhatsAppButton>
           </div>
         </div>
       </div>

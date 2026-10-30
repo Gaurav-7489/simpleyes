@@ -6,7 +6,7 @@ import { revealDelay } from "@/lib/style";
 const facts = [
   { icon: MapPin, label: "Across Germany" },
   { icon: ShieldCheck, label: "Independent private service" },
-  { icon: MessageCircle, label: "Support on WhatsApp" },
+  { icon: MessageCircle, label: "Real people on WhatsApp" },
 ];
 
 /** Reference "What we do": centered editorial statement with muted highlight words + fact pills. */
@@ -25,8 +25,12 @@ export function WhatWeDo() {
         </h2>
 
         <p className="type-intro mt-6 max-w-[38ch] !text-[clamp(1.0625rem,0.95rem+0.6vw,1.375rem)] text-ink-2" data-reveal style={revealDelay(120)}>
-          Indian consular and administrative processes can involve detailed requirements, documents, and forms.{" "}
-          <span className="text-ink">Simplyes helps you understand what is needed and prepare for the next step.</span>
+          Indian consular paperwork can involve detailed requirements, supporting documents and steps that differ by case
+          and by consular jurisdiction.{" "}
+          <span className="text-ink">
+            {site.name} explains what applies to you, helps you organise and check your paperwork, and stays with you as
+            you prepare — so you approach the official process ready.
+          </span>
         </p>
 
         <ul className="mt-10 flex flex-wrap justify-center gap-3" data-reveal style={revealDelay(180)}>
