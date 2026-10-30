@@ -1,5 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { faqs } from "../../src/content/faqs";
+import { services } from "../../src/content/services";
+import { site } from "../../src/content/site";
 import { indexableRoutes, routes } from "./routes";
 
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://simplyes.de").replace(/\/$/, "");
@@ -60,7 +63,7 @@ test.describe("SEO", () => {
       "/": ["Organization", "WebSite"],
       "/faqs/": ["FAQPage", "BreadcrumbList"],
       "/contact/": ["ContactPage"],
-      "/services/document-guidance/": ["Service", "BreadcrumbList"],
+      "/services/passport-services/": ["Service", "BreadcrumbList", "FAQPage"],
     };
     for (const [route, types] of Object.entries(expectTypes)) {
       await page.goto(route);
@@ -91,11 +94,11 @@ test.describe("SEO", () => {
   test("important content is server-rendered", async ({ request }) => {
     const html = await (await request.get("/")).text();
     for (const phrase of [
-      "Consular assistance,",
-      "We assist customers across Germany.",
+      "Indian documents,",
+      site.coverageStatement,
       "not affiliated with",
-      "Document Guidance",
-      "Is Simplyes part of the Embassy of India?",
+      ...services.map((s) => s.title.replace("&", "&amp;")),
+      faqs[0]!.question,
     ]) {
       expect(html).toContain(phrase);
     }

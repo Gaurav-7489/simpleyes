@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { faqs } from "../../src/content/faqs";
+import { site } from "../../src/content/site";
 import { routes, WHATSAPP_NUMBER } from "./routes";
 
 test.describe("pages", () => {
@@ -52,7 +54,7 @@ test.describe("links", () => {
       const href = (await link.getAttribute("href")) ?? "";
       const url = new URL(href);
       expect(url.pathname).toBe(`/${WHATSAPP_NUMBER}`);
-      expect(url.searchParams.get("text") ?? "").toMatch(/^Hello Simplyes/);
+      expect(url.searchParams.get("text") ?? "").toMatch(/^Hello SimplYes/);
       expect(href).not.toContain(" ");
       await expect(link).toHaveAttribute("target", "_blank");
       await expect(link).toHaveAttribute("rel", /noopener/);
@@ -120,7 +122,7 @@ test.describe("FAQ accordion", () => {
   test("toggles with mouse and keyboard", async ({ page }) => {
     await page.goto("/faqs/");
     const items = page.locator("details.faq-item");
-    await expect(items).toHaveCount(9);
+    await expect(page.locator('section[aria-labelledby="general-faqs"] details.faq-item')).toHaveCount(faqs.length);
     await expect(items.first()).toHaveAttribute("open", "");
     const second = items.nth(1);
     await expect(second).not.toHaveAttribute("open", "");
@@ -131,7 +133,7 @@ test.describe("FAQ accordion", () => {
     await expect(second).not.toHaveAttribute("open", "");
     // Answers are in the server HTML even when collapsed (crawlable).
     const html = await (await page.request.get("/faqs/")).text();
-    expect(html).toContain("Is Simplyes part of the Embassy of India?");
+    expect(html).toContain(`Is ${site.name} a government service?`);
   });
 });
 
@@ -140,7 +142,7 @@ test.describe("content works without JavaScript", () => {
   test("home content is visible with JS disabled", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "How we can help" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /areas where we can help/ })).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
     expect(hidden).toBe(0);
   });
