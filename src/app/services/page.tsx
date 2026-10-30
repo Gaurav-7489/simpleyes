@@ -9,9 +9,9 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { revealDelay } from "@/lib/style";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Services — Indian consular assistance in Germany",
+  title: "Services — Indian documentation assistance in Germany",
   description:
-    "Document guidance, application form assistance, photo & signature preparation, appointment guidance and process clarification for Indians living in Germany.",
+    "Passport, OCI, attestation, affidavit, family and student documentation support for Indians living in Germany. Independent private service.",
   path: "/services/",
 });
 
@@ -20,26 +20,26 @@ export default function ServicesPage() {
     <>
       <PageHero
         badge="Services"
-        title="Assistance for every step of your process"
-        lead="Simplyes helps Indians across Germany understand Indian consular and administrative requirements and prepare their documents, forms, photos and signatures. Choose a service to learn more, or ask us directly."
+        title="Documentation assistance for Indians in Germany"
+        lead="Choose the area your request belongs to. Each page explains who it's for, how we help, what to prepare and where our role ends."
         crumbs={[{ name: "Services", path: "/services/" }]}
       >
-        <WhatsAppButton topic="general">Ask Which Service Fits</WhatsAppButton>
+        <WhatsAppButton>Ask Which Service Fits</WhatsAppButton>
       </PageHero>
 
       <section aria-label="All services" className="pb-[var(--section-y)]">
         <div className="container-site">
-          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {services.map((service, i) => (
-              <li key={service.slug} data-reveal style={revealDelay((i % 3) * 90)}>
+              <li key={service.slug} data-reveal style={revealDelay((i % 4) * 90)}>
                 <ServiceCard service={service} headingLevel="h2" />
               </li>
             ))}
           </ul>
           <p className="mx-auto mt-10 max-w-[64ch] text-center text-sm text-ink-2">
-            All services are guidance and preparation support from an independent private provider. Official
-            requirements, fees, appointments and decisions remain with the respective authorities and their designated
-            service providers.
+            All services are preparation and guidance support from an independent private provider. Official
+            requirements, fees, appointments, processing and decisions remain with the relevant authorities and their
+            official application centres.
           </p>
         </div>
       </section>
