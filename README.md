@@ -19,11 +19,12 @@ Everything the owners still have to supply or approve is tracked in
 - **Playwright** + **axe-core** for e2e, responsive, accessibility and SEO tests; **Lighthouse** in CI
 
 Client JavaScript is limited to navigation (Services dropdown, mobile menu), the FAQ accordion/filter, the
-enquiry form, consent-gated analytics, one shared scroll-reveal observer and a small motion layer (scroll
-progress, subtle spring hover on buttons/cards — `src/components/MotionLayer.tsx` — and gentle drag physics
-for the hero illustration chips on desktop, `src/components/home/HeroPhysics.tsx`). Native scrolling only
-(no scroll-jacking, §16); all motion is transform-only and disabled for reduced motion / touch. All content,
-FAQs and structured data are server-rendered HTML.
+enquiry form, consent-gated analytics, the service index and audience tabs, one shared scroll-reveal observer
+and a small motion layer (scroll progress, subtle spring hover — `src/components/MotionLayer.tsx` — and a damped
+cursor parallax on the hero sphere, `src/components/home/HeroParallax.tsx`). The homepage follows the Agencee
+reference look (centered hero, glass sphere and word pill, soft framed cards, glossy orbs) with slow, staggered
+CSS motion. Native scrolling only; all motion is transform/opacity and disabled for reduced motion / touch.
+All content, FAQs and structured data are server-rendered HTML.
 
 ## Getting started
 

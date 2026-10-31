@@ -1,100 +1,78 @@
-import { CircleCheck, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { Badge } from "@/components/ui/Badge";
-import { LazyHeroPhysics } from "@/components/home/LazyHeroPhysics";
-
-/** Chip anchor positions inside the illustration panel (fractions of width/height). */
-const chipSpots: [number, number][] = [
-  [0.22, 0.12],
-  [0.74, 0.1],
-  [0.12, 0.38],
-  [0.88, 0.36],
-  [0.13, 0.64],
-  [0.87, 0.64],
-  [0.26, 0.9],
-  [0.74, 0.9],
-];
-
-const chipLabels: Record<string, string> = {
-  "visa-documentation-support": "Visa & Documents",
-  "affidavits-declarations": "Affidavits",
-  "attestation-legalisation": "Attestation",
-};
+import { HeroParallax } from "@/components/home/HeroParallax";
 
 /**
- * §07 section 1: split layout — copy left, calm illustration right (below the copy on mobile).
- * H1 and supporting copy are the confirmed wording.
+ * §07 section 1, in the client-selected Agencee style: centered hero over a slow,
+ * glassy sphere, the confirmed H1 with "Made Simpler." in a glass pill, two CTAs,
+ * the independence note and a slow marquee of the eight services.
+ * Entrance motion animates transform only (never opacity on the H1) so LCP is unaffected.
  */
 export function Hero() {
   return (
-    <section aria-labelledby="hero-title" className="relative isolate overflow-hidden pb-[clamp(48px,6vw,96px)] pt-[clamp(96px,10vw,140px)]">
-      <div aria-hidden="true" className="hero-rings -z-10 opacity-70" />
-      <div className="container-site grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
-        <div className="flex flex-col items-start">
-          <Badge className="hero-intro">{site.tagline}</Badge>
-          <h1 id="hero-title" className="type-hero hero-intro mt-5 max-w-[16ch]" style={revealDelay(60)}>
-            Your Documentation Journey, <span className="text-accent-700">Made Simpler.</span>
-          </h1>
-          <p className="type-lead hero-intro mt-5 max-w-[34rem]" style={revealDelay(120)}>
-            From passport and OCI assistance to document preparation and family documentation, SimplYes helps Indians
-            in Germany navigate complex administrative processes with clarity and confidence.
-          </p>
-          <div className="hero-intro mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row" style={revealDelay(180)}>
-            <ButtonLink href="/#services" location="hero">
-              Explore Our Services
-            </ButtonLink>
-            <ButtonLink href="/contact/" variant="light" icon="none" location="hero">
-              Get Assistance
-            </ButtonLink>
-          </div>
-          <p className="hero-intro mt-6 flex items-start gap-2 text-sm text-ink-2" style={revealDelay(240)}>
-            <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
-            Independent service — not an embassy, consulate or government authority.
-          </p>
+    <section
+      aria-labelledby="hero-title"
+      className="hero relative isolate overflow-hidden pb-[clamp(56px,7vw,104px)] pt-[clamp(120px,12vw,176px)]"
+    >
+      <div aria-hidden="true" className="hero-rings -z-10" />
+      <div aria-hidden="true" className="hero-sphere -z-10">
+        <span className="hero-sphere-core" />
+        <span className="hero-sphere-shine" />
+        <span className="hero-sphere-rim" />
+      </div>
+      <HeroParallax />
+
+      <div className="container-site flex flex-col items-center text-center">
+        <p className="hero-pill hero-intro">
+          <span aria-hidden="true" className="hero-pill-dot" />
+          {site.tagline.replace(/\.$/, "")}
+        </p>
+
+        <h1 id="hero-title" className="hero-display mt-7 max-w-[20ch]">
+          <span className="line-mask">
+            <span className="line-rise" style={revealDelay(120)}>
+              Your Documentation Journey,
+            </span>
+          </span>{" "}
+          <span className="line-mask">
+            <span className="line-rise" style={revealDelay(320)}>
+              <span className="glass-pill">Made Simpler.</span>
+            </span>
+          </span>
+        </h1>
+
+        <p className="type-lead hero-intro mt-7 max-w-[36rem] !text-[clamp(1rem,0.95rem+0.3vw,1.1875rem)]" style={revealDelay(520)}>
+          From passport and OCI assistance to document preparation and family documentation, SimplYes helps Indians in
+          Germany navigate complex administrative processes with clarity and confidence.
+        </p>
+
+        <div className="hero-intro mt-9 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4" style={revealDelay(680)}>
+          <ButtonLink href="/#services" variant="light" location="hero" className="w-full sm:w-auto">
+            Explore Our Services
+          </ButtonLink>
+          <ButtonLink href="/contact/" icon="none" location="hero" className="w-full sm:w-auto">
+            Get Assistance
+          </ButtonLink>
         </div>
 
-        {/* Illustration (decorative): the eight services around a preparation checklist. */}
-        <div
-          aria-hidden="true"
-          className="hero-panel hero-intro relative h-[clamp(300px,58vw,480px)] select-none overflow-hidden rounded-[24px] border border-accent-100 bg-gradient-to-br from-white to-accent-50"
-          style={revealDelay(140)}
-        >
-          <div className="hero-orb !top-1/2 !w-[120%] opacity-80" />
-          <div
-            data-core
-            className="absolute left-1/2 top-1/2 w-[min(230px,68%)] sm:w-[min(230px,52%)] -translate-x-1/2 -translate-y-1/2 rounded-[16px] border border-line bg-white p-4 shadow-[0_24px_48px_-28px_rgb(19_33_29/0.45)]"
-          >
-            <p className="font-display text-sm font-medium text-ink">Your checklist</p>
-            <ul className="mt-3 flex flex-col gap-2 text-[0.8125rem] text-ink-2">
-              {["Situation understood", "Requirements explained", "Documents organised", "Next steps clear"].map((item, i) => (
-                <li key={item} className="flex items-center gap-2">
-                  <CircleCheck className={`size-4 shrink-0 ${i < 3 ? "text-accent-600" : "text-ink-3"}`} strokeWidth={1.75} />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          {services.map((service, i) => {
-            const [x, y] = chipSpots[i] ?? [0.5, 0.5];
-            return (
-              <div
-                key={service.slug}
-                // Side chips (3–6) only fit from 640px; phones show the four top/bottom chips.
-                className={`absolute -translate-x-1/2 -translate-y-1/2 ${i >= 2 && i <= 5 ? "hidden sm:block" : ""}`}
-                style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
-              >
-                <div data-chip className="physics-chip" style={{ animationDelay: `${i * 70}ms` }}>
-                  <Icon name={service.icon} className="size-4 text-accent-700" />
-                  {chipLabels[service.slug] ?? service.title.replace(" Services", "").replace(" Documentation", "")}
-                </div>
-              </div>
-            );
-          })}
-          <LazyHeroPhysics />
+        <p className="hero-intro mt-6 flex items-start gap-2 text-sm text-ink-2" style={revealDelay(800)}>
+          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+          Independent service — not an embassy, consulate or government authority.
+        </p>
+      </div>
+
+      <div aria-hidden="true" className="hero-marquee hero-fade marquee mx-auto mt-[clamp(48px,6vw,80px)] max-w-[980px] overflow-hidden" style={revealDelay(900)}>
+        <div className="marquee-track gap-12 pr-12">
+          {[...services, ...services].map((service, i) => (
+            <span key={`${service.slug}-${i}`} className="flex shrink-0 items-center gap-2.5 font-display text-[1.125rem] font-medium tracking-[-0.01em] text-ink/40">
+              <Icon name={service.icon} className="size-5" />
+              {service.title}
+            </span>
+          ))}
         </div>
       </div>
     </section>
