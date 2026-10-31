@@ -2,15 +2,13 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Lenis from "lenis";
-import "lenis/dist/lenis.css";
 
 /**
- * Site-wide motion layer (no markup, one rAF budget):
- *  - Lenis inertial smooth scroll (+ hash-anchor easing, paused while the mobile menu locks scroll)
- *  - `--scroll` CSS variable (0→1) driving the top progress bar and parallax
- *  - spring physics for `[data-magnetic]` (buttons pull toward the cursor) and
- *    `[data-tilt]` (cards tilt in 3D with a moving highlight)
+ * Site-wide motion layer (no markup beyond the progress bar, one rAF budget):
+ *  - `--scroll` CSS variable (0→1) driving the top progress bar (native scrolling —
+ *    the specification rules out scroll-jacking, §16)
+ *  - spring physics for `[data-magnetic]` (buttons lean slightly toward the cursor)
+ *    and `[data-tilt]` (cards tilt subtly with a moving highlight)
  * Everything is transform-only, skipped for reduced motion, and pointer effects
  * are skipped on touch. Pure enhancement: the page is fully usable without it.
  */
@@ -29,8 +27,8 @@ type Body = {
   rect: DOMRect | null; // cached layout rect, refreshed only after scroll/resize
 };
 
-const STIFFNESS = 220;
-const DAMPING = 17;
+const STIFFNESS = 260;
+const DAMPING = 22;
 const REST = 0.002;
 
 function stepSpring(s: [number, number], target: number, dt: number) {
@@ -42,38 +40,29 @@ function stepSpring(s: [number, number], target: number, dt: number) {
 export function MotionLayer() {
   const pathname = usePathname();
 
-  // Smooth scroll + progress: once per app lifetime.
+  // Scroll progress (native scroll, rAF-throttled).
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduced.matches) return;
-
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = document.documentElement;
-    const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, anchors: { offset: -96 }, autoRaf: true });
-
-    const onScroll = ({ progress }: { progress: number }) => {
-      root.style.setProperty("--scroll", progress.toFixed(4));
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = root.scrollHeight - window.innerHeight;
+      root.style.setProperty("--scroll", (max > 0 ? Math.min(1, window.scrollY / max) : 0).toFixed(4));
     };
-    lenis.on("scroll", onScroll);
-    onScroll({ progress: lenis.progress });
-
-    // The mobile menu locks scroll via `html { overflow: hidden }` — honour it.
-    const lock = new MutationObserver(() => {
-      if (root.style.overflow === "hidden") lenis.stop();
-      else lenis.start();
-    });
-    lock.observe(root, { attributes: true, attributeFilter: ["style"] });
-
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      lock.disconnect();
-      lenis.destroy();
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       root.style.removeProperty("--scroll");
     };
   }, []);
-
-  // Route changes start at the top (Lenis owns the scroll position).
-  useEffect(() => {
-    if (!window.location.hash) window.scrollTo(0, 0);
-  }, [pathname]);
 
   // Spring physics for magnetic buttons and tilting cards.
   useEffect(() => {
@@ -155,8 +144,8 @@ export function MotionLayer() {
           const dist = Math.hypot(dx, dy);
           if (dist < reach) {
             const pull = 1 - dist / reach;
-            b.ta = dx * 0.32 * pull + dx * 0.06;
-            b.tb = dy * 0.32 * pull + dy * 0.06;
+            b.ta = dx * 0.16 * pull;
+            b.tb = dy * 0.16 * pull;
           } else {
             b.ta = 0;
             b.tb = 0;
@@ -166,8 +155,8 @@ export function MotionLayer() {
           if (inside) {
             const nx = (px - r.left) / r.width - 0.5;
             const ny = (py - r.top) / r.height - 0.5;
-            b.ta = -ny * 7; // rotateX
-            b.tb = nx * 9; // rotateY
+            b.ta = -ny * 3; // rotateX
+            b.tb = nx * 4; // rotateY
             b.tc = 1;
             b.el.style.setProperty("--gx", `${(nx + 0.5) * 100}%`);
             b.el.style.setProperty("--gy", `${(ny + 0.5) * 100}%`);
@@ -206,7 +195,7 @@ export function MotionLayer() {
           b.el.style.transform = `translate3d(${b.a[0].toFixed(2)}px, ${b.b[0].toFixed(2)}px, 0)`;
         } else {
           b.el.style.setProperty("--lift", b.c[0].toFixed(3));
-          b.el.style.transform = `perspective(1000px) rotateX(${b.a[0].toFixed(2)}deg) rotateY(${b.b[0].toFixed(2)}deg) translate3d(0, ${(-4 * b.c[0]).toFixed(2)}px, 0)`;
+          b.el.style.transform = `perspective(1000px) rotateX(${b.a[0].toFixed(2)}deg) rotateY(${b.b[0].toFixed(2)}deg) translate3d(0, ${(-3 * b.c[0]).toFixed(2)}px, 0)`;
         }
       }
 

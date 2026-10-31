@@ -14,12 +14,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/how-it-works/", priority: 0.7 },
     { path: "/about/", priority: 0.6 },
     { path: "/faqs/", priority: 0.7 },
+    { path: "/pricing/", priority: 0.6 },
     { path: "/contact/", priority: 0.7 },
   ];
 
-  // Legal pages are only listed once verified and indexable.
+  // Legal pages are only listed once reviewed and indexable. /thank-you/ is never listed (noindex).
   if (site.legal.reviewed) {
-    pages.push({ path: "/impressum/", priority: 0.2 }, { path: "/privacy/", priority: 0.2 });
+    pages.push(
+      { path: "/privacy/", priority: 0.2 },
+      { path: "/terms/", priority: 0.2 },
+      { path: "/disclaimer/", priority: 0.2 },
+      { path: "/impressum/", priority: 0.2 },
+    );
   }
 
   return pages.map(({ path, priority }) => ({

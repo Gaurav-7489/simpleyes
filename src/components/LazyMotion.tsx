@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const MotionLayer = dynamic(() => import("@/components/MotionLayer").then((m) => m.MotionLayer), { ssr: false });
 
 /**
- * Loads the motion layer (Lenis + springs) only after first paint, when the main
+ * Loads the motion layer (scroll progress + springs) only after first paint, when the main
  * thread is idle, so it never competes with LCP / hydration.
  */
 export function LazyMotion() {

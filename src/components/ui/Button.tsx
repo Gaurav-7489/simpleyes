@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRight, MessageCircle } from "lucide-react";
-import { whatsappHref, type WhatsappTopic } from "@/lib/whatsapp";
+import type { Service } from "@/content/services";
+import { whatsappHref } from "@/lib/whatsapp";
 
+/** "dark" = primary (filled green), "light" = secondary (outline). Names kept for compatibility. */
 type Variant = "dark" | "light";
 type Size = "md" | "sm";
 
@@ -12,6 +14,8 @@ type CommonProps = {
   size?: Size;
   icon?: "arrow" | "chat" | "none";
   className?: string;
+  /** Where the CTA sits on the page, for the cta_click / whatsapp_click "location" parameter. */
+  location?: string;
 };
 
 function classes(variant: Variant, size: Size, className?: string) {
@@ -38,9 +42,10 @@ export function ButtonLink({
   size = "md",
   icon = "arrow",
   className,
+  location,
 }: CommonProps & { href: string }) {
   return (
-    <Link href={href} data-magnetic className={classes(variant, size, className)}>
+    <Link href={href} data-magnetic data-cta-location={location} className={classes(variant, size, className)}>
       <Face icon={icon}>{children}</Face>
     </Link>
   );
@@ -48,21 +53,23 @@ export function ButtonLink({
 
 /** WhatsApp conversion button. Opens only on click; message is non-sensitive. */
 export function WhatsAppButton({
-  topic = "general",
+  service,
   children,
   variant = "dark",
   size = "md",
   icon = "chat",
   className,
-}: CommonProps & { topic?: WhatsappTopic }) {
+  location,
+}: CommonProps & { service?: Service }) {
   return (
     <a
-      href={whatsappHref(topic)}
+      href={whatsappHref(service)}
       target="_blank"
       rel="noopener noreferrer"
       data-magnetic
       data-cta="whatsapp"
-      data-topic={topic}
+      data-cta-location={location}
+      data-topic={service?.slug ?? "general"}
       className={classes(variant, size, className)}
     >
       <Face icon={icon}>

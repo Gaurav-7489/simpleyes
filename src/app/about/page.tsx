@@ -1,80 +1,95 @@
 import type { Metadata } from "next";
+import { ShieldCheck } from "lucide-react";
+import { about, independenceStatement } from "@/content/home";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { revealDelay } from "@/lib/style";
 import { PageHero } from "@/components/PageHero";
-import { CardFrame } from "@/components/ui/CardFrame";
-import { ButtonLink, WhatsAppButton } from "@/components/ui/Button";
-import { Transparency } from "@/components/home/Transparency";
+import { ButtonLink } from "@/components/ui/Button";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = pageMetadata({
-  title: "About Simplyes — independent consular assistance",
+  title: `About Us — Independent Documentation Assistance | ${site.name}`,
+  absoluteTitle: true,
   description:
-    "Simplyes is an independent private service helping Indians in Germany understand Indian consular processes. Not affiliated with any government authority.",
+    "Why SimplYes exists, our mission, vision and values, and how we work: independent documentation assistance for Indians living in Germany.",
   path: "/about/",
 });
 
-const facts = [
-  { term: "What Simplyes is", detail: "An independent private assistance service." },
-  { term: "Who we help", detail: "Indians and people of Indian origin living in Germany." },
-  {
-    term: "What we help with",
-    detail: "Understanding Indian consular and administrative requirements, documents, forms, photos, signatures and next steps.",
-  },
-  { term: "Where", detail: site.coverageStatement },
-  { term: "How to reach us", detail: `WhatsApp ${site.whatsapp.display}.` },
-  {
-    term: "What we don't do",
-    detail: "Issue documents, approve applications, guarantee appointments or speed up official processing.",
-  },
-];
-
+/** §10 — company intro, story, mission & vision, values, independence, approach, clarity, closing CTA. */
 export default function AboutPage() {
   return (
     <>
       <PageHero
-        badge="About"
-        title="Redefining consular services, simply"
-        lead="Simplyes exists to make Indian consular and administrative processes easier to understand for the Indian community in Germany — with clear explanations, careful preparation and honest boundaries."
-        crumbs={[{ name: "About", path: "/about/" }]}
+        badge="About us"
+        title="Making documentation easier to understand and manage"
+        lead={about.intro}
+        crumbs={[{ name: "About Us", path: "/about/" }]}
       >
-        <WhatsAppButton topic="general">Talk to Simplyes</WhatsAppButton>
-        <ButtonLink href="/services/" variant="light">
-          Our Services
+        <ButtonLink href="/contact/" location="about-hero">
+          Contact Us
         </ButtonLink>
       </PageHero>
 
-      <section aria-labelledby="about-facts" className="pb-[var(--section-y)]">
-        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-          <div className="flex flex-col gap-5" data-reveal>
-            <h2 id="about-facts" className="type-h2 max-w-[14ch]">
-              Simplyes at a glance
+      <section aria-labelledby="our-story" className="pb-[var(--section-y)]">
+        <div className="container-site grid gap-6 lg:grid-cols-[1.2fr_1fr_1fr]">
+          <div className="card lg:row-span-1" data-reveal>
+            <h2 id="our-story" className="type-card-title">
+              Our story
             </h2>
-            <p className="type-lead max-w-[46ch]">
-              Official procedures can be detailed and change over time. Many people simply want someone to explain
-              what applies to them and help them prepare properly. That&apos;s the gap Simplyes fills — as a private
-              service that is transparent about what it can and cannot do.
-            </p>
+            <p className="mt-3 font-display text-xl leading-snug text-ink">{about.story}</p>
           </div>
-          <div data-reveal>
-            <CardFrame>
-              <dl className="divide-y divide-dashed divide-black/15">
-                {facts.map((fact) => (
-                  <div key={fact.term} className="grid gap-1 py-4 first:pt-1 last:pb-1 sm:grid-cols-[180px_1fr] sm:gap-6">
-                    <dt className="text-sm font-medium text-ink">{fact.term}</dt>
-                    <dd className="text-sm leading-relaxed text-ink-2">{fact.detail}</dd>
-                  </div>
-                ))}
-              </dl>
-            </CardFrame>
+          <div className="card card-mint" data-reveal style={revealDelay(60)}>
+            <h2 className="type-card-title">Mission</h2>
+            <p className="type-body mt-3">{about.mission}</p>
+          </div>
+          <div className="card card-mint" data-reveal style={revealDelay(120)}>
+            <h2 className="type-card-title">Vision</h2>
+            <p className="type-body mt-3">{about.vision}</p>
+            <p className="mt-3 text-xs text-ink-3">Our vision describes where we are heading, not services available today.</p>
           </div>
         </div>
       </section>
 
-      <Transparency />
+      <section aria-labelledby="values" className="section bg-white">
+        <div className="container-site">
+          <h2 id="values" className="type-h2 text-center" data-reveal>
+            Our values
+          </h2>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {about.values.map((value, i) => (
+              <li key={value.title} className="card flex flex-col gap-2" data-reveal style={revealDelay((i % 4) * 60)}>
+                <h3 className="type-card-title">{value.title}</h3>
+                <p className="type-body">{value.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section aria-label="Independence and approach" className="section">
+        <div className="container-site grid gap-6 lg:grid-cols-3">
+          <div className="card card-mint flex flex-col gap-3" data-reveal>
+            <h2 className="type-card-title flex items-center gap-2">
+              <ShieldCheck aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
+              Our independence
+            </h2>
+            <p className="type-body">{independenceStatement}</p>
+          </div>
+          <div className="card flex flex-col gap-3" data-reveal style={revealDelay(60)}>
+            <h2 className="type-card-title">Customer-first approach</h2>
+            <p className="type-body">{about.customerFirst}</p>
+          </div>
+          <div className="card flex flex-col gap-3" data-reveal style={revealDelay(120)}>
+            <h2 className="type-card-title">Clarity &amp; transparency</h2>
+            <p className="type-body">{about.clarity}</p>
+          </div>
+        </div>
+      </section>
+
       <FinalCta />
-      <JsonLd data={breadcrumbJsonLd([{ name: "About", path: "/about/" }])} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "About Us", path: "/about/" }])} />
     </>
   );
 }

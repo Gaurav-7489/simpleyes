@@ -1,56 +1,44 @@
-import { Info, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { site } from "@/content/site";
 import { Badge } from "@/components/ui/Badge";
 import { revealDelay } from "@/lib/style";
 
-const facts = [
-  { icon: MapPin, label: "Across Germany" },
-  { icon: ShieldCheck, label: "Independent private service" },
-  { icon: MessageCircle, label: "Support on WhatsApp" },
-];
+const facts = ["Across Germany", "Independent service", "Form, WhatsApp or email"];
 
-/** Reference "What we do": centered editorial statement with muted highlight words + fact pills. */
+/** §07 section 2 — Introduction, as an editorial split: statement left, detail right (≤ ~80 words). */
 export function WhatWeDo() {
   return (
-    <section aria-labelledby="what-we-do-title" className="section bg-white/80">
-      <div className="container-site flex flex-col items-center text-center">
+    <section aria-labelledby="intro-title" className="section bg-white">
+      <div className="container-site grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
         <div data-reveal>
-          <Badge>What we do</Badge>
+          <Badge index="01">About SimplYes</Badge>
+          <h2 id="intro-title" className="type-h2 mt-5 max-w-[16ch]">
+            Documentation help, <span className="text-accent-700">explained clearly</span>
+          </h2>
         </div>
-
-        <h2 id="what-we-do-title" className="type-h2 mt-6" data-reveal style={revealDelay(60)}>
-          <span className="block">Less confusion.</span>
-          <span className="block text-ink-3">More clarity.</span>
-          <span className="block">Better prepared.</span>
-        </h2>
-
-        <p className="type-intro mt-6 max-w-[38ch] !text-[clamp(1.0625rem,0.95rem+0.6vw,1.375rem)] text-ink-2" data-reveal style={revealDelay(120)}>
-          Indian consular and administrative processes can involve detailed requirements, documents, and forms.{" "}
-          <span className="text-ink">Simplyes helps you understand what is needed and prepare for the next step.</span>
-        </p>
-
-        <ul className="mt-10 flex flex-wrap justify-center gap-3" data-reveal style={revealDelay(180)}>
-          {facts.map(({ icon: Icon, label }) => (
-            <li
-              key={label}
-              className="inline-flex items-center gap-3 rounded-full bg-canvas py-1.5 pl-1.5 pr-4 text-sm text-ink shadow-[0_0_0_1px_rgb(0_0_0/0.05),var(--shadow-card)]"
-            >
-              <span className="orb size-8">
-                <Icon aria-hidden="true" className="size-4" strokeWidth={1.75} />
-              </span>
-              {label}
-            </li>
-          ))}
-        </ul>
-
-        <p
-          className="mt-8 inline-flex max-w-[60ch] items-start gap-2.5 rounded-[14px] bg-canvas-alt px-4 py-3 text-left text-[0.8125rem] leading-relaxed text-ink-2"
-          data-reveal
-          style={revealDelay(220)}
-        >
-          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
-          <span>{site.shortDisclosure}</span>
-        </p>
+        <div className="lg:pt-12" data-reveal style={revealDelay(100)}>
+          <p className="font-display text-[clamp(1.125rem,1rem+0.5vw,1.375rem)] leading-snug text-ink">
+            {site.name} is an independent documentation assistance service for Indian nationals living in Germany —
+            professionals, students, families, long-term residents and employers.
+          </p>
+          <p className="type-lead mt-4">
+            Requirements are often scattered and hard to follow. We help you understand what applies, prepare and organise
+            your documents, and know your next step.
+          </p>
+          <ul className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-ink">
+            {facts.map((label, i) => (
+              <li key={label} className="flex items-center gap-4">
+                {i > 0 && <span aria-hidden="true" className="size-1 rounded-full bg-accent-300" />}
+                {label}
+              </li>
+            ))}
+          </ul>
+          <Link href="/about/" className="link-tertiary mt-5">
+            Learn about us
+            <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
+          </Link>
+        </div>
       </div>
     </section>
   );

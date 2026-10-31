@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { MessageCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { NavItem } from "@/content/site";
 
-type Props = { items: NavItem[]; whatsappHref: string };
+type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem };
 
 /**
  * Accessible disclosure-style mobile menu:
@@ -15,7 +15,7 @@ type Props = { items: NavItem[]; whatsappHref: string };
  * - focus is kept inside the menu while open, page scroll is locked
  * - closes on navigation and when the viewport reaches desktop width
  */
-export function MobileMenu({ items, whatsappHref }: Props) {
+export function MobileMenu({ items, services, cta }: Props) {
   const pathname = usePathname();
   // The menu is "open for a given path": navigating anywhere closes it without an effect.
   const [openPath, setOpenPath] = useState<string | null>(null);
@@ -30,6 +30,8 @@ export function MobileMenu({ items, whatsappHref }: Props) {
     [pathname],
   );
   const panelId = useId();
+  const servicesId = useId();
+  const [servicesOpen, setServicesOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +48,7 @@ export function MobileMenu({ items, whatsappHref }: Props) {
     const root = document.documentElement;
     const previousOverflow = root.style.overflow;
     root.style.overflow = "hidden";
+    root.dataset.menuOpen = "";
 
     const firstLink = panelRef.current?.querySelector<HTMLElement>("a");
     firstLink?.focus();
@@ -81,6 +84,7 @@ export function MobileMenu({ items, whatsappHref }: Props) {
     desktop.addEventListener("change", onDesktop);
     return () => {
       root.style.overflow = previousOverflow;
+      delete root.dataset.menuOpen;
       document.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onDesktop);
     };
@@ -132,35 +136,57 @@ export function MobileMenu({ items, whatsappHref }: Props) {
         className="mobile-panel absolute inset-x-0 top-[calc(100%+8px)] origin-top rounded-[14px] bg-white/95 p-3 shadow-[var(--shadow-frame),0_20px_40px_-16px_rgb(0_0_0/0.18)] ring-1 ring-black/5"
         // When closed the panel is visibility:hidden, so its links are not focusable.
       >
-        <nav aria-label="Mobile">
+        <nav aria-label="Mobile" className="max-h-[calc(100dvh-140px)] overflow-y-auto overscroll-contain">
           <ul className="flex flex-col">
-            {items.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => close(false)}
-                  className="flex min-h-12 items-center rounded-[10px] px-3 font-display text-lg text-ink transition-colors hover:bg-black/[0.04]"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {items.map((item) =>
+              item.href === "/services/" ? (
+                <li key={item.href}>
+                  <button
+                    type="button"
+                    aria-expanded={servicesOpen}
+                    aria-controls={servicesId}
+                    onClick={() => setServicesOpen((v) => !v)}
+                    className="flex min-h-12 w-full items-center justify-between rounded-[10px] px-3 font-display text-lg text-ink transition-colors hover:bg-black/[0.04]"
+                  >
+                    {item.label}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={`size-5 text-ink-3 transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`}
+                      strokeWidth={1.75}
+                    />
+                  </button>
+                  <ul id={servicesId} hidden={!servicesOpen} className="mb-2 ml-3 border-l border-line pl-2">
+                    {[{ label: "All services", href: "/services/" }, ...services].map((service) => (
+                      <li key={service.href}>
+                        <Link
+                          href={service.href}
+                          onClick={() => close(false)}
+                          className="flex min-h-11 items-center rounded-[10px] px-3 text-[0.9375rem] text-ink-2 transition-colors hover:bg-black/[0.04] hover:text-ink"
+                        >
+                          {service.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ) : (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => close(false)}
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    className="flex min-h-12 items-center rounded-[10px] px-3 font-display text-lg text-ink transition-colors hover:bg-black/[0.04]"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ),
+            )}
           </ul>
         </nav>
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-cta="whatsapp"
-          data-topic="general"
-          className="btn btn-dark mt-3 w-full"
-        >
-          <span className="btn-face w-full justify-center">
-            Get Help on WhatsApp
-            <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
-            <span className="sr-only"> (opens WhatsApp in a new tab)</span>
-          </span>
-        </a>
+        <Link href={cta.href} onClick={() => close(false)} data-cta-location="mobile-menu" className="btn btn-dark mt-3 w-full">
+          <span className="btn-face w-full justify-center">{cta.label}</span>
+        </Link>
       </div>
     </>
   );

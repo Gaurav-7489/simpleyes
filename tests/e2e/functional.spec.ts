@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { faqCategories } from "../../src/content/faqs";
 import { routes, WHATSAPP_NUMBER } from "./routes";
 
 test.describe("pages", () => {
@@ -46,13 +47,13 @@ test.describe("links", () => {
     await page.goto("/");
     const links = page.locator('a[href^="https://wa.me/"]');
     const count = await links.count();
-    expect(count).toBeGreaterThan(4);
+    expect(count).toBeGreaterThanOrEqual(3);
     for (let i = 0; i < count; i++) {
       const link = links.nth(i);
       const href = (await link.getAttribute("href")) ?? "";
       const url = new URL(href);
       expect(url.pathname).toBe(`/${WHATSAPP_NUMBER}`);
-      expect(url.searchParams.get("text") ?? "").toMatch(/^Hello Simplyes/);
+      expect(url.searchParams.get("text") ?? "").toMatch(/^Hello SimplYes/);
       expect(href).not.toContain(" ");
       await expect(link).toHaveAttribute("target", "_blank");
       await expect(link).toHaveAttribute("rel", /noopener/);
@@ -74,11 +75,22 @@ test.describe("navigation", () => {
     test.skip(isMobile, "desktop only");
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Primary" });
-    await nav.getByRole("link", { name: "Services" }).click();
-    await expect(page).toHaveURL(/\/services\/$/);
-    await expect(nav.getByRole("link", { name: "Services" })).toHaveAttribute("aria-current", "page");
+    const servicesButton = nav.getByRole("button", { name: "Services" });
+    await expect(servicesButton).toHaveAttribute("aria-expanded", "false");
+    await servicesButton.click();
+    await expect(servicesButton).toHaveAttribute("aria-expanded", "true");
+    await expect(nav.getByRole("link", { name: /Passport Services/ })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(servicesButton).toHaveAttribute("aria-expanded", "false");
+    await expect(servicesButton).toBeFocused();
+    await servicesButton.click();
+    await nav.getByRole("link", { name: /OCI Services/ }).click();
+    await expect(page).toHaveURL(/\/services\/oci-services\/$/);
     await nav.getByRole("link", { name: "FAQs" }).click();
     await expect(page).toHaveURL(/\/faqs\/$/);
+    await expect(nav.getByRole("link", { name: "FAQs" })).toHaveAttribute("aria-current", "page");
+    await page.getByRole("banner").getByRole("link", { name: "Get Assistance" }).click();
+    await expect(page).toHaveURL(/\/contact\/$/);
   });
 
   test("mobile menu opens, traps focus, closes with Escape and navigates", async ({ page, isMobile }) => {
@@ -100,7 +112,11 @@ test.describe("navigation", () => {
     expect(await page.evaluate(() => document.documentElement.style.overflow)).toBe("");
 
     await page.getByRole("button", { name: "Open menu" }).click();
-    await mobileNav.getByRole("link", { name: "Contact" }).click();
+    const group = mobileNav.getByRole("button", { name: "Services" });
+    await expect(group).toHaveAttribute("aria-expanded", "false");
+    await group.click();
+    await expect(mobileNav.getByRole("link", { name: "Corporate Services" })).toBeVisible();
+    await mobileNav.getByRole("link", { name: "Contact Us" }).click();
     await expect(page).toHaveURL(/\/contact\/$/);
     await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
   });
@@ -117,21 +133,33 @@ test.describe("navigation", () => {
 });
 
 test.describe("FAQ accordion", () => {
-  test("toggles with mouse and keyboard", async ({ page }) => {
+  test("button accordion toggles with mouse and keyboard, filters and deep-links", async ({ page }) => {
     await page.goto("/faqs/");
-    const items = page.locator("details.faq-item");
-    await expect(items).toHaveCount(9);
-    await expect(items.first()).toHaveAttribute("open", "");
-    const second = items.nth(1);
-    await expect(second).not.toHaveAttribute("open", "");
-    await second.locator("summary").click();
-    await expect(second).toHaveAttribute("open", "");
-    await second.locator("summary").focus();
+    const main = page.locator("main");
+    for (const c of faqCategories) await expect(main.getByRole("heading", { level: 2, name: c.label, exact: true })).toBeVisible();
+    const first = page.getByRole("button", { name: "Is SimplYes an official government service?" });
+    await expect(first).toHaveAttribute("aria-expanded", "false");
+    await first.click();
+    await expect(first).toHaveAttribute("aria-expanded", "true");
+    const panel = page.locator(`#${await first.getAttribute("aria-controls")}`);
+    await expect(panel).toBeVisible();
+    await first.focus();
     await page.keyboard.press("Enter");
-    await expect(second).not.toHaveAttribute("open", "");
+    await expect(first).toHaveAttribute("aria-expanded", "false");
+    await expect(panel).toBeHidden();
+
+    // Category chip filter.
+    await page.getByRole("button", { name: "Pricing & payments" }).click();
+    await expect(main.getByRole("heading", { level: 2, name: "General", exact: true })).toHaveCount(0);
+    await expect(main.getByRole("heading", { level: 2, name: "Pricing & payments" })).toBeVisible();
+
+    // Deep link opens the question.
+    await page.goto("/faqs/#oci");
+    await expect(page.getByRole("button", { name: "Do you assist with OCI documentation?" })).toHaveAttribute("aria-expanded", "true");
+
     // Answers are in the server HTML even when collapsed (crawlable).
     const html = await (await page.request.get("/faqs/")).text();
-    expect(html).toContain("Is Simplyes part of the Embassy of India?");
+    expect(html).toContain("No. SimplYes is an independent documentation assistance service.");
   });
 });
 
@@ -140,7 +168,9 @@ test.describe("content works without JavaScript", () => {
   test("home content is visible with JS disabled", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "How we can help" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Eight ways we can help" })).toBeVisible();
+    // FAQ answers stay readable without JavaScript.
+    await expect(page.getByText("Decisions rest with the relevant authorities.").first()).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
     expect(hidden).toBe(0);
   });

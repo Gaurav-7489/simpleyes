@@ -1,49 +1,44 @@
 import type { Metadata } from "next";
 import { services } from "@/content/services";
+import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { ServiceCard } from "@/components/ServiceCard";
-import { WhatsAppButton } from "@/components/ui/Button";
+import { ServiceIndex } from "@/components/ServiceIndex";
+import { ButtonLink } from "@/components/ui/Button";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { revealDelay } from "@/lib/style";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Services — Indian consular assistance in Germany",
+  title: `Our Services — Documentation Assistance in Germany | ${site.name}`,
+  absoluteTitle: true,
   description:
-    "Document guidance, application form assistance, photo & signature preparation, appointment guidance and process clarification for Indians living in Germany.",
+    "All eight SimplYes services: passport, OCI, attestation & legalisation, affidavits, visa documentation, family, student and corporate documentation assistance.",
   path: "/services/",
 });
 
+/** §06 — Services overview: all eight categories side by side, each linking to its page. */
 export default function ServicesPage() {
   return (
     <>
       <PageHero
         badge="Services"
-        title="Assistance for every step of your process"
-        lead="Simplyes helps Indians across Germany understand Indian consular and administrative requirements and prepare their documents, forms, photos and signatures. Choose a service to learn more, or ask us directly."
+        title="Documentation assistance, by service"
+        lead={`Eight service categories for Indians in Germany. Each page explains who it is for, how ${site.name} can help, what to prepare and what remains with the authorities.`}
         crumbs={[{ name: "Services", path: "/services/" }]}
       >
-        <WhatsAppButton topic="general">Ask Which Service Fits</WhatsAppButton>
+        <ButtonLink href="/contact/" location="services-hero">
+          Get Assistance
+        </ButtonLink>
       </PageHero>
-
       <section aria-label="All services" className="pb-[var(--section-y)]">
         <div className="container-site">
-          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {services.map((service, i) => (
-              <li key={service.slug} data-reveal style={revealDelay((i % 3) * 90)}>
-                <ServiceCard service={service} headingLevel="h2" />
-              </li>
-            ))}
-          </ul>
-          <p className="mx-auto mt-10 max-w-[64ch] text-center text-sm text-ink-2">
-            All services are guidance and preparation support from an independent private provider. Official
-            requirements, fees, appointments and decisions remain with the respective authorities and their designated
-            service providers.
+          <ServiceIndex services={services} headingLevel="h2" />
+          <p className="mx-auto mt-10 max-w-[60ch] text-center text-sm text-ink-2">
+            Not sure which service fits? Send an enquiry and describe your situation — we&apos;ll point you to the right
+            one.
           </p>
         </div>
       </section>
-
       <FinalCta />
       <JsonLd data={breadcrumbJsonLd([{ name: "Services", path: "/services/" }])} />
     </>

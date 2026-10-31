@@ -1,13 +1,28 @@
 # Deployment
 
-The site is a static export (`next build` → `out/`). No server runtime, database or secrets are required.
+The site is a static export (`next build` → `out/`). No server runtime or database is required. The enquiry
+form posts to an external, approved form service (no credentials in client code), and analytics load only
+after consent.
 
 ## Before going live (checklist)
 
 - [ ] Fill in `site.legal` in `src/content/site.ts` with verified Impressum details; set `reviewed: true`
       only after the owner / a lawyer has approved Impressum and Privacy Policy.
-- [ ] Name the hosting provider in the Privacy Policy (§3) and the WhatsApp data retention period (§4).
-- [ ] Confirm the WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`).
+- [ ] Name the hosting provider, form service and retention periods in the Privacy Policy; supply the Terms
+      (payments, cancellation/refunds, complaints, liability) and have Privacy, Terms, Disclaimer and Impressum
+      reviewed by a qualified German adviser.
+- [ ] Confirm the WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`) and set `NEXT_PUBLIC_CONTACT_EMAIL`.
+- [ ] **Enquiry form:** create the form at the approved service (e.g. Formspree: new form → notification
+      email = the business inbox; enable its spam filtering), set `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, then submit
+      a real test enquiry on production and confirm it arrives (subject: "New enquiry — <service> — <city>")
+      and that the page redirects to `/thank-you/`. If the service is not on `formspree.io`, add its host to
+      `connect-src` and `form-action` in `vercel.json`.
+- [ ] **Analytics:** create the GA4 property (EU data settings, Google signals off), set `NEXT_PUBLIC_GA_ID`,
+      have the banner text reviewed, and mark `generate_lead` as a key event in GA4. Verify events in GA4
+      DebugView after accepting the banner.
+- [ ] **Now, until cut-over:** set `NEXT_PUBLIC_SITE_ENV=staging` on the Vercel project (Production and
+      Preview). Without it, `simpleyes.vercel.app` builds as production and is indexable with a canonical
+      pointing at `simplyes.de`, which still serves the old site.
 - [ ] Production build uses `NEXT_PUBLIC_SITE_ENV=production` and `NEXT_PUBLIC_SITE_URL=https://simplyes.de`.
 - [ ] After launch: submit `https://simplyes.de/sitemap.xml` in Google Search Console / Bing Webmaster Tools
       and monitor Core Web Vitals (field data) there.
@@ -31,11 +46,17 @@ The site is a static export (`next build` → `out/`). No server runtime, databa
 3. Limitation: GitHub Pages cannot set custom response headers, so the CSP/HSTS/frame headers from
    `vercel.json` will not apply. If those are required, put a CDN (e.g. Cloudflare) in front or use Option A.
 
-## Retired URLs
+## Redirects (`vercel.json`, permanent)
 
-The old site linked to `/services`, `/clients` and `/contact`, which returned 404. With
-`trailingSlash: true`, `/services` and `/contact` now resolve (redirect to the trailing-slash URL on
-Vercel). `/clients` no longer exists; add a redirect to `/` if desired (Vercel: `redirects` in `vercel.json`).
+- The six retired service slugs (`/services/document-guidance/`, `application-form-assistance`,
+  `photo-signature-preparation`, `appointment-guidance`, `process-clarification`, `personalized-assistance`)
+  → `/services/`
+- `/clients` → `/` (old-site link)
+- `/datenschutz/` and `/privacy-policy/` → `/privacy/`
+
+The local static server and `next build` do not apply `vercel.json`; verify redirects on a Vercel preview
+deployment (`curl -sI https://<preview>/services/document-guidance/`). GitHub Pages (Option B) would need
+meta-refresh stub pages instead.
 
 ## Verifying a deployment
 

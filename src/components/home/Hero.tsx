@@ -1,76 +1,100 @@
-import { ShieldCheck } from "lucide-react";
-import { marqueeItems } from "@/content/home";
+import { CircleCheck, ShieldCheck } from "lucide-react";
+import { services } from "@/content/services";
 import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
-import { ButtonLink, WhatsAppButton } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { Badge } from "@/components/ui/Badge";
 import { LazyHeroPhysics } from "@/components/home/LazyHeroPhysics";
 
-/** Reference hero: centered pill label, oversized two-line headline with a glass word, two CTAs, marquee. */
+/** Chip anchor positions inside the illustration panel (fractions of width/height). */
+const chipSpots: [number, number][] = [
+  [0.22, 0.12],
+  [0.74, 0.1],
+  [0.12, 0.38],
+  [0.88, 0.36],
+  [0.13, 0.64],
+  [0.87, 0.64],
+  [0.26, 0.9],
+  [0.74, 0.9],
+];
+
+const chipLabels: Record<string, string> = {
+  "visa-documentation-support": "Visa & Documents",
+  "affidavits-declarations": "Affidavits",
+  "attestation-legalisation": "Attestation",
+};
+
+/**
+ * §07 section 1: split layout — copy left, calm illustration right (below the copy on mobile).
+ * H1 and supporting copy are the confirmed wording.
+ */
 export function Hero() {
   return (
-    <section
-      aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden pb-[clamp(56px,7vw,100px)] pt-[clamp(120px,11vw,160px)]"
-    >
-      <div aria-hidden="true" className="hero-rings -z-10" />
-      <div aria-hidden="true" className="hero-orb -z-10" />
-      <LazyHeroPhysics />
-
-      <div className="container-site flex flex-col items-center text-center">
-        <p className="badge hero-intro">
-          <span aria-hidden="true" className="size-1.5 rounded-full bg-ink" />
-          {site.tagline}
-        </p>
-
-        <h1 id="hero-title" className="type-hero hero-intro mt-7 max-w-[1000px]" style={revealDelay(60)}>
-          <span className="word-mask block">
-            <span className="word-in" style={revealDelay(80)}>
-              Consular assistance,
-            </span>
-          </span>
-          <span className="mt-[0.06em] inline-block">
-            <span className="glass-word word-pop" style={revealDelay(420)}>
-              made simpler.
-            </span>
-          </span>
-        </h1>
-
-        <p
-          className="type-lead hero-intro mt-6 max-w-[34rem] text-[0.9375rem] sm:text-base"
-          style={revealDelay(140)}
-        >
-          Helping Indians across Germany navigate documents, applications, and consular procedures with clarity and
-          confidence.
-        </p>
-
-        <div
-          className="hero-intro mt-9 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
-          style={revealDelay(200)}
-        >
-          <ButtonLink href="/services/" variant="light">
-            Explore Our Services
-          </ButtonLink>
-          <WhatsAppButton topic="general">Get Help on WhatsApp</WhatsAppButton>
+    <section aria-labelledby="hero-title" className="relative isolate overflow-hidden pb-[clamp(48px,6vw,96px)] pt-[clamp(96px,10vw,140px)]">
+      <div aria-hidden="true" className="hero-rings -z-10 opacity-70" />
+      <div className="container-site grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
+        <div className="flex flex-col items-start">
+          <Badge className="hero-intro">{site.tagline}</Badge>
+          <h1 id="hero-title" className="type-hero hero-intro mt-5 max-w-[16ch]" style={revealDelay(60)}>
+            Your Documentation Journey, <span className="text-accent-700">Made Simpler.</span>
+          </h1>
+          <p className="type-lead hero-intro mt-5 max-w-[34rem]" style={revealDelay(120)}>
+            From passport and OCI assistance to document preparation and family documentation, SimplYes helps Indians
+            in Germany navigate complex administrative processes with clarity and confidence.
+          </p>
+          <div className="hero-intro mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row" style={revealDelay(180)}>
+            <ButtonLink href="/#services" location="hero">
+              Explore Our Services
+            </ButtonLink>
+            <ButtonLink href="/contact/" variant="light" icon="none" location="hero">
+              Get Assistance
+            </ButtonLink>
+          </div>
+          <p className="hero-intro mt-6 flex items-start gap-2 text-sm text-ink-2" style={revealDelay(240)}>
+            <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+            Independent service — not an embassy, consulate or government authority.
+          </p>
         </div>
 
-        <p className="hero-intro mt-6 max-w-[34ch] text-[0.8125rem] text-ink-2 sm:max-w-none" style={revealDelay(240)}>
-          <ShieldCheck
-            aria-hidden="true"
-            className="mr-1.5 inline-block size-4 align-[-3px] text-accent-700"
-            strokeWidth={1.75}
-          />
-          Independent private service — not a government authority
-        </p>
-      </div>
-
-      <div className="marquee mx-auto mt-[clamp(40px,5vw,64px)] max-w-[900px] overflow-hidden" aria-hidden="true">
-        <div className="marquee-track gap-10 pr-10">
-          {[...marqueeItems, ...marqueeItems].map((item, index) => (
-            <span key={`${item}-${index}`} className="flex shrink-0 items-center gap-2.5 font-display text-lg font-medium tracking-[-0.01em] text-ink/45">
-              <span className="size-2 rounded-full bg-accent-500/70" />
-              {item}
-            </span>
-          ))}
+        {/* Illustration (decorative): the eight services around a preparation checklist. */}
+        <div
+          aria-hidden="true"
+          className="hero-panel hero-intro relative h-[clamp(300px,58vw,480px)] select-none overflow-hidden rounded-[24px] border border-accent-100 bg-gradient-to-br from-white to-accent-50"
+          style={revealDelay(140)}
+        >
+          <div className="hero-orb !top-1/2 !w-[120%] opacity-80" />
+          <div
+            data-core
+            className="absolute left-1/2 top-1/2 w-[min(230px,68%)] sm:w-[min(230px,52%)] -translate-x-1/2 -translate-y-1/2 rounded-[16px] border border-line bg-white p-4 shadow-[0_24px_48px_-28px_rgb(19_33_29/0.45)]"
+          >
+            <p className="font-display text-sm font-medium text-ink">Your checklist</p>
+            <ul className="mt-3 flex flex-col gap-2 text-[0.8125rem] text-ink-2">
+              {["Situation understood", "Requirements explained", "Documents organised", "Next steps clear"].map((item, i) => (
+                <li key={item} className="flex items-center gap-2">
+                  <CircleCheck className={`size-4 shrink-0 ${i < 3 ? "text-accent-600" : "text-ink-3"}`} strokeWidth={1.75} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {services.map((service, i) => {
+            const [x, y] = chipSpots[i] ?? [0.5, 0.5];
+            return (
+              <div
+                key={service.slug}
+                // Side chips (3–6) only fit from 640px; phones show the four top/bottom chips.
+                className={`absolute -translate-x-1/2 -translate-y-1/2 ${i >= 2 && i <= 5 ? "hidden sm:block" : ""}`}
+                style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
+              >
+                <div data-chip className="physics-chip" style={{ animationDelay: `${i * 70}ms` }}>
+                  <Icon name={service.icon} className="size-4 text-accent-700" />
+                  {chipLabels[service.slug] ?? service.title.replace(" Services", "").replace(" Documentation", "")}
+                </div>
+              </div>
+            );
+          })}
+          <LazyHeroPhysics />
         </div>
       </div>
     </section>

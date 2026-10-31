@@ -9,7 +9,7 @@ const complete = Boolean(legal.legalName && legal.representative && legal.street
 
 export const metadata: Metadata = pageMetadata({
   title: "Impressum (Legal Notice)",
-  description: "Legal notice (Impressum) for the Simplyes website.",
+  description: "Legal notice (Impressum) for the SimplYes website.",
   path: "/impressum/",
   // Not indexed until verified business details are in place.
   noindex: !complete || !legal.reviewed,
