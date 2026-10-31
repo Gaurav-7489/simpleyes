@@ -13,11 +13,10 @@ export function Process() {
     <section id="how-it-works" aria-labelledby="process-title" className="section">
       <div className="container-site">
         <SectionHeading
-          index="04"
+          index="02"
           id="process-title"
           badge="How it works"
           title="Four simple steps"
-          lead="Official decisions always stay with the authorities — we help you get there prepared."
         />
         <ol className="steps mt-12 lg:mt-16">
           <span aria-hidden="true" className="steps-line">

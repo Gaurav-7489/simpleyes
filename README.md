@@ -19,7 +19,7 @@ Everything the owners still have to supply or approve is tracked in
 - **Playwright** + **axe-core** for e2e, responsive, accessibility and SEO tests; **Lighthouse** in CI
 
 Client JavaScript is limited to navigation (Services dropdown, mobile menu), the FAQ accordion/filter, the
-enquiry form, consent-gated analytics, the service index and audience tabs, one shared scroll-reveal observer
+enquiry form, consent-gated analytics, one shared scroll-reveal observer
 and a small motion layer (scroll progress, subtle spring hover — `src/components/MotionLayer.tsx` — and a damped
 cursor parallax on the hero sphere, `src/components/home/HeroParallax.tsx`). The homepage follows the Agencee
 reference look (centered hero, glass sphere and word pill, soft framed cards, glossy orbs) with slow, staggered
@@ -62,12 +62,12 @@ src/
   app/                 routes (home, services, services/[slug], how-it-works, about, faqs, pricing, contact,
                        thank-you, privacy, terms, disclaimer, impressum) + sitemap, robots, manifest, llms.txt
   components/
-    home/              homepage sections in §07 order (Hero, WhatWeDo=Introduction, Services, WhySimplyes,
-                       Process, WhoWeHelp, Approach, TrustPanel, FaqSection) — FinalCta is shared
+    home/              short visual homepage: Hero, Services (mosaic), Process, WhySimplyes, FaqSection
+                       — FinalCta is shared; detail lives on service pages, How It Works and About
     layout/            Header, NavLinks (Services dropdown), MobileMenu, Footer, FloatingWhatsApp, BackToTop
     contact/           EnquiryForm, ThankYouTracker
     analytics/         Analytics (consent banner + GA4), TrackServiceView
-    service/           ServiceSection (titled list card for service pages)
+    ServiceMosaic.tsx  visual service tiles (homepage + /services/)
     illustrations/     original SVG art
     ui/                Button, Badge, Icon, SectionHeading, Wordmark, JsonLd
   content/             ALL copy and business data (site.ts, services.ts, faqs.ts, home.ts)

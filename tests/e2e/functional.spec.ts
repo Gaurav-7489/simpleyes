@@ -168,7 +168,7 @@ test.describe("content works without JavaScript", () => {
   test("home content is visible with JS disabled", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Eight ways we can help" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What do you need help with?" })).toBeVisible();
     // FAQ answers stay readable without JavaScript.
     await expect(page.getByText("Decisions rest with the relevant authorities.").first()).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);

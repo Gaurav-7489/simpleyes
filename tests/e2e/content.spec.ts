@@ -72,23 +72,13 @@ test.describe("content rules", () => {
     }
   });
 
-  test("homepage has the eleven sections in the confirmed order", async ({ page }) => {
+  test("homepage is short and routes visitors: hero, services, steps, why, FAQs, CTA", async ({ page }) => {
     await page.goto("/");
     const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? ""));
-    expect(ids).toEqual([
-      "hero-title",
-      "intro-title",
-      "services-title",
-      "why-title",
-      "process-title",
-      "who-title",
-      "approach-title",
-      "trust-title",
-      "faq-title",
-      "final-cta-title",
-    ]);
+    expect(ids).toEqual(["hero-title", "services-title", "process-title", "why-title", "faq-title", "final-cta-title"]);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
-    await expect(page.locator("#services .service-index > li")).toHaveCount(8);
+    await expect(page.locator("#services .service-mosaic > li")).toHaveCount(8);
+    for (const s of services) await expect(page.locator(`#services a[href="/services/${s.slug}/"]`)).toBeVisible();
     await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
   });
@@ -98,27 +88,24 @@ test.describe("content rules", () => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
       for (const heading of [
-        "About this service",
-        "Who this service is for",
-        "Common situations",
-        "What SimplYes can help with",
-        "Possible document categories",
-        "How the process works",
-        "What to have ready",
-        "What is included",
-        "What is outside the scope",
-        `${service.title} FAQs`,
+        "Sounds like you?",
+        "At a glance",
+        "We help with",
+        "Documents often involved",
+        "Have ready",
+        "How it works",
+        "What stays with the authorities",
+        "Questions",
         "Related services",
-        "Other ways to reach us",
       ]) {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
       await expect(page.getByText("subject to verification")).toBeVisible();
       const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
-      expect(await ctas.count()).toBeGreaterThanOrEqual(3);
+      expect(await ctas.count()).toBeGreaterThanOrEqual(2);
       await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
       for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
-      await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
+      await expect(page.getByText(/^Official sources \(checked /)).toBeVisible();
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");
       expect(texts.some((t) => t.includes(service.title))).toBe(true);
@@ -228,7 +215,7 @@ test.describe("floating WhatsApp button", () => {
 
   test("is hidden while the mobile menu is open", async ({ page, isMobile }) => {
     test.skip(!isMobile, "mobile only");
-    await page.goto("/services/");
+    await page.goto("/services/oci-services/");
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
     const fab = page.locator("[data-floating-wa]");
     await expect(fab).toBeVisible();
@@ -240,7 +227,7 @@ test.describe("floating WhatsApp button", () => {
 
   test("is reachable by keyboard after the main content", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard flow on desktop");
-    await page.goto("/about/");
+    await page.goto("/services/oci-services/");
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
     const fab = page.locator("[data-floating-wa]");
     await expect(fab).toBeVisible();

@@ -21,6 +21,8 @@ export type Service = {
   icon: ServiceIcon;
   /** One-sentence plain-language card summary (unique per service). */
   summary: string;
+  /** A few words for visual tiles. */
+  tagline: string;
   /** Hero one-line outcome. */
   outcome: string;
   /** "Mainly for" line from §05. */
@@ -103,6 +105,7 @@ export const services: Service[] = [
     number: "01",
     title: "Passport Services",
     icon: "passport",
+    tagline: "Renew, replace or correct your passport",
     summary: "Guidance for new, renewed, reissued, lost or damaged Indian passports and personal-detail corrections.",
     outcome: "Understand which passport situation applies to you and prepare your application with confidence.",
     mainlyFor: "Professionals, families, long-term residents",
@@ -207,6 +210,7 @@ export const services: Service[] = [
     number: "02",
     title: "OCI Services",
     icon: "oci",
+    tagline: "New OCI, updates and family applications",
     summary: "Help with new OCI applications, reissues where applicable, updates, corrections and family OCI coordination.",
     outcome: "Understand OCI in plain language and prepare a complete, ready-to-submit application.",
     mainlyFor: "Families, professionals, new arrivals",
@@ -318,6 +322,7 @@ export const services: Service[] = [
     number: "03",
     title: "Attestation & Legalisation",
     icon: "attestation",
+    tagline: "Apostille and document recognition",
     summary: "Apostille guidance and preparation of educational, personal and certificate documents for use abroad.",
     outcome: "Understand which recognition route your document needs and prepare it step by step.",
     mainlyFor: "Students, professionals, residents",
@@ -419,6 +424,7 @@ export const services: Service[] = [
     number: "04",
     title: "Affidavits & Declarations",
     icon: "affidavit",
+    tagline: "Declarations and Power of Attorney",
     summary: "Support with name-discrepancy documentation, personal declarations, affidavits and Power of Attorney guidance.",
     outcome: "Understand what a declaration is for and prepare the supporting paperwork properly.",
     mainlyFor: "Long-term residents, families",
@@ -517,6 +523,7 @@ export const services: Service[] = [
     title: "Visa & Documentation Support",
     shortTitle: "Visa & Documentation",
     icon: "visa",
+    tagline: "Checklists and completeness checks",
     summary: "Requirements guidance, application preparation, checklists and completeness checks for your documentation.",
     outcome: "Organise your documentation and check it is complete before you submit.",
     mainlyFor: "Professionals, spouses, new arrivals",
@@ -615,6 +622,7 @@ export const services: Service[] = [
     number: "06",
     title: "Family Documentation",
     icon: "family",
+    tagline: "One plan for the whole household",
     summary: "Spouse, children, birth-, marriage-related and dependant documentation, coordinated per household.",
     outcome: "One point of contact for your household's documentation, with related requirements aligned.",
     mainlyFor: "Families, spouses and dependants",
@@ -704,6 +712,7 @@ export const services: Service[] = [
     number: "07",
     title: "Student Services",
     icon: "student",
+    tagline: "Academic documents, sorted",
     summary: "Help organising educational certificates, degree documents and academic paperwork, including attestation guidance.",
     outcome: "Get your academic documents organised and ready, without the jargon.",
     mainlyFor: "Indian students in Germany",
@@ -792,6 +801,7 @@ export const services: Service[] = [
     number: "08",
     title: "Corporate Services",
     icon: "corporate",
+    tagline: "Documentation support for your team",
     summary: "Employee, relocation and onboarding documentation coordination for employers, with group case handling.",
     outcome: "Reduce the administrative burden on HR while employees get organised documentation support.",
     mainlyFor: "Employers, HR and relocation teams",

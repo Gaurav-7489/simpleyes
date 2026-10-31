@@ -2,13 +2,9 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import { site } from "@/content/site";
 import { Hero } from "@/components/home/Hero";
-import { WhatWeDo } from "@/components/home/WhatWeDo";
 import { Services } from "@/components/home/Services";
-import { WhySimplyes } from "@/components/home/WhySimplyes";
 import { Process } from "@/components/home/Process";
-import { WhoWeHelp } from "@/components/home/WhoWeHelp";
-import { Approach } from "@/components/home/Approach";
-import { TrustPanel } from "@/components/home/TrustPanel";
+import { WhySimplyes } from "@/components/home/WhySimplyes";
 import { FaqSection } from "@/components/home/FaqSection";
 import { FinalCta } from "@/components/FinalCta";
 
@@ -20,18 +16,17 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-/** §07 — eleven sections in the confirmed order (the footer is the eleventh, in the layout). */
+/**
+ * Short, visual homepage that routes visitors: hero → services → steps → why → FAQs → CTA.
+ * Detail lives on the service pages, How It Works and About — nothing is repeated here.
+ */
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <WhatWeDo />
       <Services />
-      <WhySimplyes />
       <Process />
-      <WhoWeHelp />
-      <Approach />
-      <TrustPanel />
+      <WhySimplyes />
       <FaqSection />
       <FinalCta />
     </>

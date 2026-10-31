@@ -53,15 +53,14 @@ export default function AboutPage() {
       </section>
 
       <section aria-labelledby="values" className="section bg-white">
-        <div className="container-site">
-          <h2 id="values" className="type-h2 text-center" data-reveal>
+        <div className="container-site max-w-[980px] text-center">
+          <h2 id="values" className="type-h2" data-reveal>
             Our values
           </h2>
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {about.values.map((value, i) => (
-              <li key={value.title} className="card flex flex-col gap-2" data-reveal style={revealDelay((i % 4) * 60)}>
-                <h3 className="type-card-title">{value.title}</h3>
-                <p className="type-body">{value.body}</p>
+          <ul className="mt-8 flex flex-wrap justify-center gap-3" data-reveal>
+            {about.values.map((value) => (
+              <li key={value.title} title={value.body} className="chip chip-strong !px-5 !py-3 !text-base">
+                {value.title}
               </li>
             ))}
           </ul>
@@ -70,7 +69,7 @@ export default function AboutPage() {
 
       <section aria-label="Independence and approach" className="section">
         <div className="container-site grid gap-6 lg:grid-cols-3">
-          <div className="card card-mint flex flex-col gap-3" data-reveal>
+          <div className="card card-mint soft-frame flex flex-col gap-3" data-reveal>
             <h2 className="type-card-title flex items-center gap-2">
               <ShieldCheck aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
               Our independence

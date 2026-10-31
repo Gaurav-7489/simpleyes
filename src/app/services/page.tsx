@@ -3,8 +3,7 @@ import { services } from "@/content/services";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { ServiceIndex } from "@/components/ServiceIndex";
-import { ButtonLink } from "@/components/ui/Button";
+import { ServiceMosaic } from "@/components/ServiceMosaic";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
@@ -16,27 +15,19 @@ export const metadata: Metadata = pageMetadata({
   path: "/services/",
 });
 
-/** §06 — Services overview: all eight categories side by side, each linking to its page. */
+/** Services overview: the eight categories as one visual mosaic, each linking to its page. */
 export default function ServicesPage() {
   return (
     <>
       <PageHero
         badge="Services"
-        title="Documentation assistance, by service"
-        lead={`Eight service categories for Indians in Germany. Each page explains who it is for, how ${site.name} can help, what to prepare and what remains with the authorities.`}
+        title="Choose your service"
+        lead="Eight areas of documentation assistance for Indians in Germany."
         crumbs={[{ name: "Services", path: "/services/" }]}
-      >
-        <ButtonLink href="/contact/" location="services-hero">
-          Get Assistance
-        </ButtonLink>
-      </PageHero>
+      />
       <section aria-label="All services" className="pb-[var(--section-y)]">
         <div className="container-site">
-          <ServiceIndex services={services} headingLevel="h2" />
-          <p className="mx-auto mt-10 max-w-[60ch] text-center text-sm text-ink-2">
-            Not sure which service fits? Send an enquiry and describe your situation — we&apos;ll point you to the right
-            one.
-          </p>
+          <ServiceMosaic services={services} headingLevel="h2" />
         </div>
       </section>
       <FinalCta />

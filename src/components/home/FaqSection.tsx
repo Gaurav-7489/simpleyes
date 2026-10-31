@@ -9,7 +9,7 @@ export function FaqSection() {
   return (
     <section id="faqs" aria-labelledby="faq-title" className="section bg-white">
       <div className="container-site max-w-[860px]">
-        <SectionHeading index="08"
+        <SectionHeading index="04"
           id="faq-title" badge="FAQs" title="Common questions" />
         <div className="mt-10" data-reveal>
           <FaqList items={homeFaqs} />
