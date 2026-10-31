@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CircleHelp } from "lucide-react";
 import { homeFaqs } from "@/content/faqs";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { FaqList } from "@/components/FaqList";
@@ -8,11 +8,10 @@ import { FaqList } from "@/components/FaqList";
 export function FaqSection() {
   return (
     <section id="faqs" aria-labelledby="faq-title" className="section bg-white">
-      <div className="container-site max-w-[860px]">
-        <SectionHeading index="04"
-          id="faq-title" badge="FAQs" title="Common questions" />
+      <div className="container-site max-w-[1080px]">
+        <SectionHeading id="faq-title" icon={<CircleHelp className="size-3.5" strokeWidth={2} />} badge="FAQs" title="Common questions" />
         <div className="mt-10" data-reveal>
-          <FaqList items={homeFaqs} />
+          <FaqList items={homeFaqs} columns={2} />
         </div>
         <div className="mt-8 flex justify-center">
           <Link href="/faqs/" className="link-tertiary">

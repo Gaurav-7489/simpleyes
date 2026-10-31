@@ -29,10 +29,10 @@ export const whyItems: { icon: IconKey; title: string; body: string }[] = [
 
 /** §07 section 5 — four-step summary. */
 export const homeSteps: { title: string; body: string }[] = [
-  { title: "Tell us what you need", body: "A short enquiry is enough." },
-  { title: "Understand your requirements", body: "We explain what applies." },
-  { title: "Prepare with our help", body: "Documents ready, reviewed where agreed." },
-  { title: "Know your next step", body: "Decisions stay with the authorities." },
+  { title: "Tell us what you need", body: "Send a short enquiry describing your situation — no documents needed yet." },
+  { title: "Understand the requirements", body: "We explain which process and requirements appear to apply to you." },
+  { title: "Prepare with our help", body: "Get your documents organised, with review where agreed." },
+  { title: "Know your next step", body: "Clear guidance on what to do next through the official channel." },
 ];
 
 /** §09 — the five-step journey with who acts at each step. */

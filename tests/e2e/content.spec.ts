@@ -72,13 +72,13 @@ test.describe("content rules", () => {
     }
   });
 
-  test("homepage is short and routes visitors: hero, services, steps, why, FAQs, CTA", async ({ page }) => {
+  test("homepage follows the Agencee structure: hero, what we do, services, process, benefits, FAQs, CTA", async ({ page }) => {
     await page.goto("/");
     const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? ""));
-    expect(ids).toEqual(["hero-title", "services-title", "process-title", "why-title", "faq-title", "final-cta-title"]);
+    expect(ids).toEqual(["hero-title", "intro-title", "services-title", "process-title", "why-title", "faq-title", "final-cta-title"]);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
-    await expect(page.locator("#services .service-mosaic > li")).toHaveCount(8);
-    for (const s of services) await expect(page.locator(`#services a[href="/services/${s.slug}/"]`)).toBeVisible();
+    await expect(page.locator("#services .showcase-list > li")).toHaveCount(8);
+    for (const s of services) await expect(page.locator(`#services a[href="/services/${s.slug}/"]`).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
   });

@@ -213,4 +213,4 @@ function pick(ids: string[]): Faq[] {
 }
 
 /** Homepage selection: four short answers, incl. the two required questions. */
-export const homeFaqs: Faq[] = pick(["official-service", "guarantee", "official-fees", "cities"]);
+export const homeFaqs: Faq[] = pick(["official-service", "guarantee", "which-services", "get-started", "official-fees", "cities"]);

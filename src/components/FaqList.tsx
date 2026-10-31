@@ -14,10 +14,13 @@ export function FaqList({
   items,
   openFirst = false,
   headingLevel = "h3",
+  columns = 1,
 }: {
   items: Faq[];
   openFirst?: boolean;
   headingLevel?: "h2" | "h3" | "h4";
+  /** Two columns from 768px (Agencee FAQ layout). */
+  columns?: 1 | 2;
 }) {
   const Heading = headingLevel;
   const uid = useId();
@@ -43,7 +46,7 @@ export function FaqList({
     });
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={columns === 2 ? "grid items-start gap-3 md:grid-cols-2 md:gap-4" : "flex flex-col gap-3"}>
       {items.map((faq, i) => {
         const isOpen = open.has(i);
         const buttonId = `${uid}-q${i}`;

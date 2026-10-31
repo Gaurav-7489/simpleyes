@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import { site } from "@/content/site";
 import { Hero } from "@/components/home/Hero";
+import { WhatWeDo } from "@/components/home/WhatWeDo";
 import { Services } from "@/components/home/Services";
 import { Process } from "@/components/home/Process";
 import { WhySimplyes } from "@/components/home/WhySimplyes";
@@ -17,18 +18,19 @@ export const metadata: Metadata = pageMetadata({
 });
 
 /**
- * Short, visual homepage that routes visitors: hero → services → steps → why → FAQs → CTA.
+ * Agencee-structured homepage: hero → what we do → services showcase → process → benefits → FAQs → CTA.
  * Detail lives on the service pages, How It Works and About — nothing is repeated here.
  */
 export default function HomePage() {
   return (
     <>
       <Hero />
+      <WhatWeDo />
       <Services />
       <Process />
       <WhySimplyes />
       <FaqSection />
-      <FinalCta />
+      <FinalCta variant="light" />
     </>
   );
 }

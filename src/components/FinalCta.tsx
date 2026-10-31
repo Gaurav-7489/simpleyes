@@ -14,13 +14,62 @@ export function FinalCta({
   service,
   primaryLabel = service ? "Get Assistance With This Service" : "Get Assistance",
   primaryHref,
+  variant = "dark",
 }: {
   title?: string;
   lead?: string;
   service?: Service;
   primaryLabel?: string;
   primaryHref?: string;
+  /** "light" = Agencee framed card over the glass sphere (homepage). */
+  variant?: "dark" | "light";
 }) {
+  if (variant === "light") {
+    return (
+      <section aria-labelledby="final-cta-title" className="section">
+        <div className="container-site">
+          <div className="cta-frame" data-reveal data-wa-anchor>
+            <div className="cta-well">
+              <div className="cta-card">
+                <div aria-hidden="true" className="hero-rings -z-10 opacity-80" />
+                <div aria-hidden="true" className="hero-sphere cta-sphere -z-10">
+                  <span className="hero-sphere-core" />
+                  <span className="hero-sphere-shine" />
+                  <span className="hero-sphere-rim" />
+                </div>
+                <h2 id="final-cta-title" className="hero-display !text-[clamp(2rem,1.2rem+3vw,3.75rem)] max-w-[16ch]">
+                  {title}
+                </h2>
+                <p className="type-lead mt-5 max-w-[44ch]">{lead}</p>
+                <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center">
+                  <Link href={primaryHref ?? enquiryHref(service)} data-cta-location="final-cta" className="btn btn-dark">
+                    <span className="btn-face">{primaryLabel}</span>
+                  </Link>
+                  <Link href="/contact/" data-cta-location="final-cta" className="btn btn-light">
+                    <span className="btn-face">Contact Us</span>
+                  </Link>
+                </div>
+                <a
+                  href={whatsappHref(service)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cta="whatsapp"
+                  data-cta-location="final-cta"
+                  data-topic={service?.slug ?? "general"}
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 text-[0.9375rem] text-ink-2 underline underline-offset-4 hover:text-ink"
+                >
+                  <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                  Or chat on WhatsApp ({site.whatsapp.display})
+                  <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section aria-labelledby="final-cta-title" className="section">
       <div className="container-site">
