@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { allServices, services } from "../../src/content/services";
+import { services } from "../../src/content/services";
 import { indexableRoutes, routes, WHATSAPP_NUMBER } from "./routes";
 
 const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
@@ -19,42 +19,105 @@ async function bodyText(page: import("@playwright/test").Page) {
 test.describe("content rules", () => {
   test.skip(({ isMobile }) => isMobile, "content checks run once");
 
-  test("sitemap lists published services only, no retired or unpublished slugs", async ({ request }) => {
+  test("exactly the eight approved services with the confirmed slugs (§05 scope lock)", () => {
+    expect(services.map((s) => s.slug)).toEqual([
+      "passport-services",
+      "oci-services",
+      "attestation-legalisation",
+      "affidavits-declarations",
+      "visa-documentation-support",
+      "family-documentation",
+      "student-services",
+      "corporate-services",
+    ]);
+  });
+
+  test("sitemap lists all eight services and no retired slugs", async ({ request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
     for (const s of services) expect(sitemap).toContain(`/services/${s.slug}/`);
     for (const slug of retiredSlugs) expect(sitemap).not.toContain(slug);
-    for (const s of allServices.filter((x) => !x.published)) expect(sitemap).not.toContain(s.slug);
+    expect(sitemap).toContain("/pricing/");
     expect(sitemap).not.toMatch(/\bPCC\b|police clearance/i);
   });
 
-  test("llms.txt lists exactly the published services", async ({ request }) => {
+  test("llms.txt lists exactly the eight services", async ({ request }) => {
     const txt = await (await request.get("/llms.txt")).text();
     for (const s of services) expect(txt).toContain(`/services/${s.slug}/`);
-    for (const s of allServices.filter((x) => !x.published)) expect(txt).not.toContain(s.slug);
+    expect(txt.match(/\/services\/[a-z-]+\//g)?.length).toBe(services.length);
   });
 
-  test("header navigation has the five primary items", async ({ page }) => {
+  test("header: Home · Services ▾ · How It Works · About Us · FAQs · Contact Us + Get Assistance", async ({ page }) => {
     await page.goto("/about/");
     const nav = page.getByRole("navigation", { name: "Primary" });
-    const labels = await nav.getByRole("link").allInnerTexts();
-    expect(labels.map((l) => l.trim())).toEqual(["Services", "How It Works", "About", "FAQs", "Contact"]);
-    await expect(nav.getByRole("link", { name: "About" })).toHaveAttribute("aria-current", "page");
+    const items = await nav.locator(":scope > ul > li").evaluateAll((lis) =>
+      lis.map((li) => (li.querySelector(":scope > a, :scope > div > button")?.textContent ?? "").trim()),
+    );
+    expect(items).toEqual(["Home", "Services", "How It Works", "About Us", "FAQs", "Contact Us"]);
+    await expect(nav.getByRole("link", { name: "About Us" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("banner").getByRole("link", { name: "Get Assistance" })).toHaveAttribute("href", "/contact/");
+    // Dropdown lists all eight services.
+    await nav.getByRole("button", { name: "Services" }).click();
+    for (const s of services) await expect(nav.getByRole("link", { name: new RegExp(s.title.replace(/[&]/g, "\\$&")) })).toBeVisible();
+  });
+
+  test("footer has Company, Services (all eight), Information and Contact columns", async ({ page }) => {
+    await page.goto("/");
+    const footer = page.locator("footer");
+    for (const title of ["Company", "Services", "Information", "Contact"]) {
+      await expect(footer.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    }
+    for (const s of services) await expect(footer.getByRole("link", { name: s.title, exact: true })).toBeVisible();
+    for (const label of ["FAQs", "Pricing", "Privacy Policy", "Terms & Conditions", "Disclaimer"]) {
+      await expect(footer.getByRole("link", { name: label, exact: true })).toBeVisible();
+    }
+  });
+
+  test("homepage has the eleven sections in the confirmed order", async ({ page }) => {
+    await page.goto("/");
+    const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? ""));
+    expect(ids).toEqual([
+      "hero-title",
+      "intro-title",
+      "services-title",
+      "why-title",
+      "process-title",
+      "who-title",
+      "approach-title",
+      "trust-title",
+      "faq-title",
+      "final-cta-title",
+    ]);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
+    await expect(page.locator("#services ul > li")).toHaveCount(8);
+    await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
   });
 
   for (const service of services) {
     test(`${service.slug} has every section and a service-specific WhatsApp link`, async ({ page }) => {
       await page.goto(`/services/${service.slug}/`);
+      await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
       for (const heading of [
-        "Who it's for",
-        "How SimplYes helps",
-        "What you can prepare before contacting us",
-        "Questions we often help clarify",
-        "How it works for this service",
-        "Where our role ends",
-        "FAQs",
+        "About this service",
+        "Who this service is for",
+        "Common situations",
+        "What SimplYes can help with",
+        "Possible document categories",
+        "How the process works",
+        "What to have ready",
+        "What is included",
+        "What is outside the scope",
+        `${service.title} FAQs`,
+        "Related services",
+        "Other ways to reach us",
       ]) {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
+      await expect(page.getByText("subject to verification")).toBeVisible();
+      const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
+      expect(await ctas.count()).toBeGreaterThanOrEqual(3);
+      await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
+      for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
       await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");
@@ -84,11 +147,10 @@ test.describe("content rules", () => {
     }
   });
 
-  test("no forms, roadmap UI, PCC, fabricated claims or prices on any route", async ({ page }) => {
-    const hasPricing = services.some((s) => s.pricing);
+  test("one enquiry form (contact only), no uploads, roadmap UI, PCC, fabricated claims or prices", async ({ page }) => {
     for (const route of routes) {
       await page.goto(route);
-      await expect(page.locator("form"), route).toHaveCount(0);
+      await expect(page.locator("form"), route).toHaveCount(route === "/contact/" ? 1 : 0);
       await expect(page.locator('input[type="file"], input[type="password"]'), route).toHaveCount(0);
       const text = await bodyText(page);
       expect(text, route).not.toMatch(/\bPCC\b|police clearance/i);
@@ -99,7 +161,8 @@ test.describe("content rules", () => {
       expect(text, route).not.toMatch(/\btestimonials?\b|★|\bratings?\b/i);
       expect(text, route).not.toMatch(/\blog in\b|\bsign in\b|\bupload your\b|track your case|pay now|coming soon/i);
       expect(text, route).not.toMatch(/OCI renewal/i);
-      if (!hasPricing) expect(text, route).not.toMatch(/€\s?\d|\d\s?€/);
+      expect(text, route).not.toMatch(/€\s?\d|\d\s?€/);
+      expect(text, route).not.toMatch(/\bAI\b|chatbot|artificial intelligence/i);
     }
   });
 
@@ -199,7 +262,7 @@ test.describe("floating WhatsApp button", () => {
 test.describe("reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
 
-  test("no long-running animations or transitions, and Lenis is not initialised", async ({ page }) => {
+  test("no long-running animations or transitions", async ({ page }) => {
     for (const route of ["/", "/services/", `/services/${services[0]!.slug}/`, "/how-it-works/"]) {
       await page.goto(route);
       await page.waitForTimeout(400);
@@ -215,10 +278,70 @@ test.describe("reduced motion", () => {
             const target = (a.effect as KeyframeEffect | null)?.target;
             return `${a.constructor.name} on ${target?.tagName ?? "?"}.${target?.getAttribute("class")?.slice(0, 40) ?? ""}`;
           });
-        return { slow: slow.slice(0, 5), lenis: document.documentElement.classList.contains("lenis") };
+        return { slow: slow.slice(0, 5) };
       });
       expect(result.slow, route).toEqual([]);
-      expect(result.lenis, route).toBe(false);
     }
+  });
+});
+
+test.describe("enquiry form (§13)", () => {
+  test("validates required fields inline and moves focus to the first error", async ({ page }) => {
+    await page.goto("/contact/");
+    const form = page.locator("form#enquiry");
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    const name = form.getByLabel(/Full name/);
+    await expect(name).toBeFocused();
+    await expect(name).toHaveAttribute("aria-invalid", "true");
+    await expect(form.getByText("Please enter your full name.")).toBeVisible();
+    await expect(form.getByText("Please choose a service category.")).toBeVisible();
+    await expect(form.getByText("Please confirm you have read the Privacy Policy.")).toBeVisible();
+    await form.getByLabel(/Email address/).fill("not-an-email");
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    await expect(form.getByText("Please enter a valid email address.")).toBeVisible();
+    // Consent is unticked by default; the dropdown holds exactly the eight services.
+    await expect(form.getByRole("checkbox", { name: /I have read the Privacy Policy/ })).not.toBeChecked();
+    const options = await form.getByLabel(/Service category/).locator("option").allInnerTexts();
+    expect(options.slice(1)).toEqual(services.map((s) => s.title));
+    await expect(page.locator('input[type="file"]')).toHaveCount(0);
+  });
+
+  test("service pages pre-select their service; corporate reveals company fields", async ({ page }) => {
+    await page.goto("/services/oci-services/");
+    await page.getByRole("link", { name: "Get Assistance With This Service" }).first().click();
+    await expect(page).toHaveURL(/\/contact\/\?service=oci-services/);
+    await expect(page.getByLabel(/Service category/)).toHaveValue("oci-services");
+    await page.goto("/contact/?context=corporate");
+    await expect(page.getByLabel(/Service category/)).toHaveValue("corporate-services");
+    await expect(page.getByLabel(/Company name/)).toBeVisible();
+    await expect(page.getByLabel(/Approximate number of employees/)).toBeVisible();
+  });
+
+  test("never shows success unless an endpoint accepted the enquiry", async ({ page }) => {
+    test.skip(Boolean(process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT), "only without a configured endpoint");
+    await page.goto("/contact/");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Email address/).fill("test@example.com");
+    await form.getByLabel(/Service category/).selectOption("passport-services");
+    await form.getByLabel(/Message/).fill("I would like help preparing my passport renewal.");
+    await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    await expect(form.getByRole("alert")).toContainText("could not be sent");
+    await expect(page).toHaveURL(/\/contact\//);
+    // Entered data is kept.
+    await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
+  });
+});
+
+test.describe("analytics (§18)", () => {
+  test("no analytics code or consent banner without a measurement ID", async ({ page }) => {
+    test.skip(Boolean(process.env.NEXT_PUBLIC_GA_ID), "only without GA configured");
+    const requests: string[] = [];
+    page.on("request", (r) => requests.push(r.url()));
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(requests.filter((u) => /googletagmanager|google-analytics/.test(u))).toEqual([]);
+    await expect(page.getByRole("dialog", { name: "Analytics cookies" })).toHaveCount(0);
   });
 });

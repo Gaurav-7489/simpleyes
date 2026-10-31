@@ -1,54 +1,27 @@
 import { services } from "@/content/services";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { WhatsAppButton } from "@/components/ui/Button";
 import { ServiceCard } from "@/components/ServiceCard";
 import { revealDelay } from "@/lib/style";
 
-const numberWords = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
-
-/** "Eight areas where we can help" — the count follows the published services. */
-function servicesHeading(count: number) {
-  return `${numberWords[count] ?? count} areas where we can help`;
-}
-
-/** Reference "Our services at a glance": asymmetric 2-up rows that alternate wide/narrow. */
-export function Services() {
-  const rows = Array.from({ length: Math.ceil(services.length / 2) }, (_, i) => services.slice(i * 2, i * 2 + 2));
+/** §07 section 3 — all eight services as cards: 4 × 2 on desktop, one column on phones. */
+export function Services({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
   return (
-    <section id="services" aria-labelledby="services-title" className="section bg-canvas">
+    <section id="services" aria-labelledby="services-title" className="section scroll-mt-[var(--header-h)]">
       <div className="container-site">
         <SectionHeading
+          as={headingLevel}
           id="services-title"
           badge="Services"
-          title={servicesHeading(services.length)}
-          lead="From passports and OCI to attestation, family and student paperwork — practical preparation support for Indian documentation needs in Germany."
+          title="Eight ways we can help"
+          lead="Choose the service that matches your situation. Each page explains who it's for, how we help and what stays with the authorities."
         />
-
-        <div className="mt-12 flex flex-col gap-6 lg:mt-16">
-          {rows.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              className={`grid grid-cols-1 gap-6 ${
-                rowIndex % 2 === 0
-                  ? "lg:grid-cols-[minmax(0,1.88fr)_minmax(0,1fr)]"
-                  : "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.88fr)]"
-              }`}
-            >
-              {row.map((service, i) => (
-                <div key={service.slug} className="min-w-0" data-reveal style={revealDelay(i * 90)}>
-                  <ServiceCard service={service} />
-                </div>
-              ))}
-            </div>
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-5">
+          {services.map((service, i) => (
+            <li key={service.slug} className="min-w-0" data-reveal style={revealDelay((i % 4) * 60)}>
+              <ServiceCard service={service} />
+            </li>
           ))}
-        </div>
-
-        <div className="mt-10 flex justify-center" data-reveal>
-          <div className="cta-strip">
-            <p className="text-sm text-ink-2">Not sure which service fits?</p>
-            <WhatsAppButton>Ask Us on WhatsApp</WhatsAppButton>
-          </div>
-        </div>
+        </ul>
       </div>
     </section>
   );

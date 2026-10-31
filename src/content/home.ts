@@ -1,143 +1,183 @@
-import { services } from "@/content/services";
+/**
+ * Copy for the homepage (§07), How It Works (§09) and About (§10).
+ * Benefits only — no "guaranteed approval", "fastest", statistics or testimonials.
+ */
 
-/** Home "Process": the four-step summary. */
-export const processSteps = [
+export type IconKey =
+  | "personal"
+  | "guidance"
+  | "communication"
+  | "organised"
+  | "human"
+  | "transparent"
+  | "family"
+  | "professionals"
+  | "students"
+  | "residents"
+  | "corporate";
+
+/** §07 section 4 — Why SimplYes? */
+export const whyItems: { icon: IconKey; title: string; body: string }[] = [
+  { icon: "personal", title: "Personalised assistance", body: "Guidance shaped around your situation, not a generic checklist." },
+  { icon: "guidance", title: "Clear guidance", body: "Requirements explained in plain language, without jargon." },
+  { icon: "communication", title: "Convenient communication", body: "Start through the form, WhatsApp or email — whatever suits you." },
+  { icon: "organised", title: "Organised preparation", body: "A structured way to gather and check what your process needs." },
+  { icon: "human", title: "Human support", body: "A real person helps you, from first question to next steps." },
+  { icon: "transparent", title: "Transparent scope", body: "Clear about what we do, what we don't, and what stays with the authorities." },
+  { icon: "family", title: "For individuals and families", body: "Support for one person or a whole household, coordinated together." },
+];
+
+/** §07 section 5 — four-step summary. */
+export const homeSteps: { title: string; body: string }[] = [
+  { title: "Tell us what you need", body: "Send a short enquiry describing your situation." },
+  { title: "Understand your requirements", body: "We explain which process and requirements appear to apply." },
+  { title: "Prepare with our assistance", body: "Get your documents ready with guidance and, where agreed, review." },
+  { title: "Receive guidance on next steps", body: "Know exactly what to do next. Official decisions stay with the authorities." },
+];
+
+/** §09 — the five-step journey with who acts at each step. */
+export const journeySteps: { title: string; body: string; who: string }[] = [
   {
-    number: "01",
-    title: "Choose your service",
-    body: "Pick the area your request belongs to, or ask us if you're unsure.",
-  },
-  {
-    number: "02",
     title: "Tell us what you need",
-    body: "Send a short WhatsApp message describing your situation. No documents needed yet.",
+    body: "You describe your requirement through the enquiry form, WhatsApp or email.",
+    who: "Customer",
   },
   {
-    number: "03",
-    title: "Receive guidance on preparation",
-    body: "We explain what applies to your case and what to prepare, and confirm any service fee before we begin.",
+    title: "Understand the requirements",
+    body: "SimplYes understands your situation and identifies the relevant service and next steps.",
+    who: "SimplYes",
   },
   {
-    number: "04",
-    title: "Prepare with human support",
-    body: "Get your paperwork ready with a real person on hand to answer questions and follow up.",
+    title: "Prepare the documents",
+    body: "You receive guidance on document preparation and the information required.",
+    who: "Customer + SimplYes",
+  },
+  {
+    title: "Assistance & review",
+    body: "Where agreed, SimplYes helps review and organise your documentation.",
+    who: "SimplYes",
+  },
+  {
+    title: "Understand the next steps",
+    body: "You receive guidance on agreed next steps and relevant submission preparation.",
+    who: "Customer",
   },
 ];
 
-/** How It Works: the full five-step journey. */
-export const journeySteps: { number: string; title: string; body: string }[] = [
-  {
-    number: "01",
-    title: "Choose a service",
-    body: "Find the area your request belongs to — passport, OCI, attestation and more. Not sure? Just ask.",
-  },
-  {
-    number: "02",
-    title: "Explain your requirement",
-    body: "Message us on WhatsApp with a short description. Please don't send passport copies or other sensitive documents yet.",
-  },
-  {
-    number: "03",
-    title: "Receive personalised guidance",
-    body: "We ask a few questions, explain which official process and requirements appear to apply, and tell you what we can help with. Before any paid assistance begins, we confirm the scope and our service fee with you.",
-  },
-  {
-    number: "04",
-    title: "Prepare your documents",
-    body: "With a case-specific checklist, you gather and organise your paperwork. Where needed, we check completeness and help prepare forms, photos and signatures to the stated specifications.",
-  },
-  {
-    number: "05",
-    title: "Human assistance and follow-up",
-    body: "A real person answers your questions as you go and follows up until you are ready to proceed through the official channel.",
-  },
-];
-
-export type BenefitArt = "clarity" | "documents" | "personal" | "germany" | "chat" | "independent";
-
-export const benefits: { title: string; body: string; art: BenefitArt; wide: boolean }[] = [
-  {
-    title: "Clear explanations",
-    body: "Requirements explained in plain language, for your specific case.",
-    art: "clarity",
-    wide: false,
-  },
-  {
-    title: "Organised paperwork",
-    body: "Help gathering, ordering and checking the documents your process asks for.",
-    art: "documents",
-    wide: true,
-  },
-  {
-    title: "A real person",
-    body: "Human guidance from first question to final preparation — not a chatbot or generic checklist.",
-    art: "personal",
-    wide: true,
-  },
-  {
-    title: "Across Germany",
-    body: "We assist customers across Germany, wherever you live.",
-    art: "germany",
-    wide: false,
-  },
-  {
-    title: "Simple communication",
-    body: "Start on WhatsApp and ask your questions in one familiar place.",
-    art: "chat",
-    wide: false,
-  },
-  {
-    title: "Transparent independence",
-    body: "We're upfront that we're a private service, independent of all government authorities.",
-    art: "independent",
-    wide: true,
-  },
-];
-
-export const boundaries = {
-  simplyes: [
-    "Understand published requirements for your case",
-    "Organise and check your supporting documents",
-    "Prepare forms, photos and signatures to stated specifications",
-    "Understand attestation, apostille and signing steps",
-    "Prepare for appointments and next steps",
+/** §09 — what SimplYes does / does not do. */
+export const doesDoesNot = {
+  does: [
+    "Explains processes in plain language.",
+    "Identifies the relevant service and next steps.",
+    "Guides document preparation.",
+    "Reviews and organises documentation where agreed.",
+    "Communicates clearly throughout.",
   ],
-  authorities: [
-    "Set requirements and official fees",
-    "Accept and process applications",
-    "Issue passports, visas and OCI documents",
-    "Perform official attestation and authentication",
-    "Make all decisions and set processing times",
-  ],
-} as const;
-
-/** Hero marquee: the published service names. */
-export const marqueeItems = services.map((service) => service.title);
-
-/** Question wall: the questions customers typically start with, across categories. */
-export const questions = {
-  rowA: [
-    "Which documents does my passport renewal need?",
-    "Do I need an OCI update or a re-issue?",
-    "Is my photo in the right format?",
-    "Does my degree need an apostille first?",
-    "How do I document a name difference?",
-    "What should I prepare for my appointment?",
-  ],
-  rowB: [
-    "Which papers does my child's application need?",
-    "Is my application complete?",
-    "Where do I submit this?",
-    "What do I sign, and where?",
-    "Can someone check my documents before I go?",
-    "What happens after I submit?",
+  doesNot: [
+    "Process applications or make official decisions.",
+    "Guarantee approvals, outcomes or timelines.",
+    "Represent customers before authorities.",
+    "Provide legal or immigration-law advice.",
+    "Act on behalf of any embassy or consulate.",
   ],
 };
 
-/** "Your documents and privacy": only what is true today. No security claims (vault, encryption) — roadmap only. */
-export const privacyPoints = [
-  "Please don't send passport copies or other sensitive documents in your first message.",
-  "Once the scope is agreed, share only what is actually needed for your request.",
-  "Messages are sent through WhatsApp, which is operated by Meta and processes them under its own terms.",
-  "How long we keep information and how it is deleted is described in our Privacy Policy.",
+/** §07 section 6 — Who we help. Each tile routes to the relevant service page(s) or enquiry. */
+export const audiences: { icon: IconKey; title: string; body: string; links: string[] }[] = [
+  {
+    icon: "professionals",
+    title: "Working professionals",
+    body: "Renewals or corrections arriving alongside a full-time job, with little time for research.",
+    links: ["passport-services", "oci-services"],
+  },
+  {
+    icon: "students",
+    title: "Students",
+    body: "Organising certificates, degree documents and attestations — often for the first time.",
+    links: ["student-services", "attestation-legalisation"],
+  },
+  {
+    icon: "family",
+    title: "Families",
+    body: "Several related requirements for different family members at once.",
+    links: ["family-documentation"],
+  },
+  {
+    icon: "residents",
+    title: "Long-term residents",
+    body: "Renewals, name discrepancies, declarations and attestations years after arrival.",
+    links: ["affidavits-declarations", "passport-services"],
+  },
+  {
+    icon: "corporate",
+    title: "Corporate customers",
+    body: "Coordinating documentation for several Indian employees and their families.",
+    links: ["corporate-services"],
+  },
 ];
+
+/** §07 section 7 — Our approach. "Where agreed" must remain. */
+export const approach: string[] = [
+  "Understand your situation",
+  "Explain the process",
+  "Help organise your documentation",
+  "Review preparation where agreed",
+  "Provide clear next steps",
+];
+
+/** §20 — draft independence statement (subject to owner/legal review). */
+export const independenceStatement =
+  "SimplYes is an independent documentation assistance service. We are not affiliated with any government authority, embassy or consulate. Official applications and decisions remain subject to the relevant authorities.";
+
+/** §10 — About page. */
+export const about = {
+  intro:
+    "SimplYes is an independent documentation assistance service for Indian nationals living in Germany. We help individuals, families, students and employers understand, prepare and organise documentation for administrative processes.",
+  story:
+    "Documentation processes can be confusing and time-consuming. Requirements vary by document type and authority, information is scattered, and people often do not know where to start. SimplYes exists to make them easier to understand and manage.",
+  mission: "Make complex documentation processes simpler, clearer and more accessible.",
+  vision: "Build a trusted documentation assistance ecosystem that combines personal service, structured processes and technology.",
+  values: [
+    { title: "Clarity", body: "We explain requirements in plain language and say what applies to you." },
+    { title: "Trust", body: "We are honest about who we are and never imply official status." },
+    { title: "Responsibility", body: "We handle your information carefully and only ask for what is needed." },
+    { title: "Convenience", body: "You can reach us in the way that suits you, and we keep the process simple." },
+    { title: "Transparency", body: "Clear scope, honest limits and fees explained before assistance begins." },
+    { title: "Customer-first service", body: "We start from your situation, not from a generic checklist." },
+    { title: "Continuous improvement", body: "We refine how we work based on the questions our customers bring." },
+  ],
+  customerFirst:
+    "We balance personalised human assistance with structured workflows and a responsible approach to technology in how we organise our work. Every enquiry is handled by a person.",
+  clarity:
+    "We are clear about our scope and honest about our limits. Official fees are separate from our service fees, and we never promise approvals, outcomes or timelines.",
+};
+
+/** §11 — Pricing page. No amounts until owners approve (quotation model). */
+export const pricing = {
+  feeTypes: [
+    {
+      title: "SimplYes service fees",
+      body: "What SimplYes charges for its assistance. Fees depend on the service and your situation and are explained before any paid assistance begins.",
+    },
+    {
+      title: "Government or consular fees",
+      body: "Set and collected by the relevant authority. Separate from SimplYes fees where applicable. We never quote amounts we have not verified.",
+    },
+    {
+      title: "Third-party charges",
+      body: "Professional or other external services you may need are charged by those providers.",
+    },
+    {
+      title: "Translation, notarisation & courier",
+      body: "Practical expenses that may arise depending on the service and the documents involved.",
+    },
+  ],
+  factors: [
+    "Service category",
+    "Number of people (individual or family)",
+    "Number and type of documents",
+    "Extent of review agreed",
+    "Translation, notarisation or courier needs",
+    "Corporate group size",
+  ],
+};

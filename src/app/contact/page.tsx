@@ -1,118 +1,114 @@
 import type { Metadata } from "next";
-import { Clock, ListChecks, Mail, MapPin, MessageCircle, ShieldAlert } from "lucide-react";
-import { getService } from "@/content/services";
+import Link from "next/link";
+import { Building2, LockKeyhole, Mail, MapPin, MessageCircle } from "lucide-react";
+import { enquiryHref, getService, services } from "@/content/services";
 import { site } from "@/content/site";
 import { whatsappHref } from "@/lib/whatsapp";
 import { breadcrumbJsonLd, contactPageJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { CardFrame } from "@/components/ui/CardFrame";
-import { WhatsAppButton } from "@/components/ui/Button";
+import { EnquiryForm } from "@/components/contact/EnquiryForm";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { PrivacyCard } from "@/components/PrivacyCard";
 
 export const metadata: Metadata = pageMetadata({
-  title: `Contact ${site.name} on WhatsApp`,
-  description: `Contact ${site.name} on WhatsApp for help with Indian passport, OCI, attestation and other documentation paperwork. We assist customers across Germany.`,
+  title: `Contact Us — Get Assistance | ${site.name}`,
+  absoluteTitle: true,
+  description:
+    "Contact SimplYes: send an enquiry, chat on WhatsApp, or use the corporate enquiry option. Documentation assistance for Indians across Germany.",
   path: "/contact/",
 });
 
-/** Quick topics for the most common services (only those currently published). */
-const quickTopics = ["passport-services", "oci-services", "attestation-legalisation", "visa-documentation-support"]
-  .map(getService)
-  .filter((service) => service !== undefined);
-
+/** §13 — enquiry form, WhatsApp, email (when approved) and a separate corporate enquiry route. */
 export default function ContactPage() {
   const { email, hours, responseTime } = site.contact;
   return (
     <>
       <PageHero
         badge="Contact"
-        title={`Talk to ${site.name}`}
-        lead="The quickest way to reach us is WhatsApp. Tell us briefly which service you need and what you'd like help with."
-        crumbs={[{ name: "Contact", path: "/contact/" }]}
-      >
-        <WhatsAppButton>Chat on WhatsApp</WhatsAppButton>
-      </PageHero>
+        title="Get assistance"
+        lead="Tell us what you need — a short description is enough. A real person will get back to you and explain the next step."
+        crumbs={[{ name: "Contact Us", path: "/contact/" }]}
+      />
 
-      <section aria-label="Contact details" className="pb-[var(--section-y)]">
-        <div className="container-site grid gap-6 md:grid-cols-2">
-          <div data-reveal>
-            <CardFrame className="h-full" cardClassName="flex h-full flex-col gap-5">
-              <span className="orb size-12" aria-hidden="true">
-                <MessageCircle className="size-5" strokeWidth={1.75} />
-              </span>
-              <div>
-                <h2 className="type-card-title">WhatsApp</h2>
-                <p className="mt-2 type-body">Our primary contact channel for all enquiries.</p>
-              </div>
+      <section aria-label="Contact options" className="pb-[var(--section-y)]">
+        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+          <EnquiryForm
+            services={services.map((s) => ({ slug: s.slug, title: s.title }))}
+            endpoint={site.enquiryEndpoint}
+            whatsappHref={whatsappHref()}
+            email={email}
+          />
+
+          <div className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-h)+24px)]">
+            <div className="card flex flex-col gap-3">
+              <h2 className="type-card-title flex items-center gap-2">
+                <MessageCircle aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
+                WhatsApp
+              </h2>
+              <p className="type-body">Prefer to chat? Message us with the service you need.</p>
               <a
                 href={whatsappHref()}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cta="whatsapp"
+                data-cta-location="contact-aside"
                 data-topic="general"
-                className="font-display text-2xl tracking-[-0.02em] text-ink underline decoration-black/20 underline-offset-[6px] hover:decoration-black/60 sm:text-3xl"
+                className="font-display text-xl text-ink underline decoration-line underline-offset-[6px] hover:decoration-accent-700"
               >
                 {site.whatsapp.display}
                 <span className="sr-only"> (opens WhatsApp in a new tab)</span>
               </a>
-              {email && (
-                <p className="flex items-center gap-2 type-body">
-                  <Mail aria-hidden="true" className="size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
-                  <a href={`mailto:${email}`} className="inline-flex min-h-6 items-center underline underline-offset-4">
-                    {email}
-                  </a>
-                </p>
-              )}
-              {(hours || responseTime) && (
-                <p className="flex items-start gap-2 type-body">
-                  <Clock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
-                  <span>{[hours, responseTime].filter(Boolean).join(" · ")}</span>
-                </p>
-              )}
-              <div className="mt-auto flex flex-wrap gap-3">
-                {quickTopics.map((service) => (
-                  <WhatsAppButton key={service.slug} service={service} variant="light" size="sm" icon="none">
-                    {service.shortTitle ?? service.title}
-                  </WhatsAppButton>
-                ))}
-              </div>
-            </CardFrame>
-          </div>
+              {(hours || responseTime) && <p className="text-sm text-ink-2">{[hours, responseTime].filter(Boolean).join(" · ")}</p>}
+            </div>
 
-          <div className="flex flex-col gap-6" data-reveal>
-            <CardFrame cardClassName="flex items-start gap-4">
-              <MapPin aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-accent-700" strokeWidth={1.75} />
-              <div>
-                <h2 className="type-card-title">Service coverage</h2>
-                <p className="mt-2 type-body">{site.coverageStatement} Assistance is provided remotely via WhatsApp.</p>
+            {email && (
+              <div className="card flex flex-col gap-3">
+                <h2 className="type-card-title flex items-center gap-2">
+                  <Mail aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
+                  Email
+                </h2>
+                <a href={`mailto:${email}`} data-cta="email" data-cta-location="contact-aside" className="text-[1.0625rem] text-accent-700 underline underline-offset-4">
+                  {email}
+                </a>
               </div>
-            </CardFrame>
-            <CardFrame cardClassName="flex items-start gap-4">
-              <ListChecks aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-accent-700" strokeWidth={1.75} />
-              <div>
-                <h2 className="type-card-title">What to include</h2>
-                <p className="mt-2 type-body">
-                  Which service you need and what you&apos;d like help with. Please don&apos;t send copies of passports
-                  or other sensitive documents in your first message.
-                </p>
-              </div>
-            </CardFrame>
-            <CardFrame cardClassName="flex items-start gap-4">
-              <ShieldAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-accent-700" strokeWidth={1.75} />
-              <div>
-                <h2 className="type-card-title">Independent service</h2>
-                <p className="mt-2 type-body">{site.shortDisclosure}</p>
-              </div>
-            </CardFrame>
-          </div>
-          <div className="md:col-span-2" data-reveal>
-            <PrivacyCard />
+            )}
+
+            <div className="card flex flex-col gap-3">
+              <h2 className="type-card-title flex items-center gap-2">
+                <Building2 aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
+                Corporate enquiry
+              </h2>
+              <p className="type-body">
+                For employers, HR and relocation teams. The corporate option pre-selects Corporate Services and asks for your
+                company name and approximate team size.
+              </p>
+              <Link href={enquiryHref(getService("corporate-services"), "corporate")} className="link-tertiary">
+                Start a corporate enquiry
+              </Link>
+            </div>
+
+            <div className="card card-mint flex flex-col gap-3">
+              <h2 className="type-card-title flex items-center gap-2">
+                <LockKeyhole aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
+                How we handle your details
+              </h2>
+              <p className="type-body">
+                We use the details you send only to respond to your enquiry, as explained in our{" "}
+                <Link href="/privacy/" className="text-accent-700 underline underline-offset-4">
+                  Privacy Policy
+                </Link>
+                . Please don&apos;t send identity documents or passport numbers through the form.
+              </p>
+            </div>
+
+            <p className="flex items-start gap-2 px-1 text-sm text-ink-2">
+              <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+              {site.coverageStatement}
+            </p>
           </div>
         </div>
       </section>
 
-      <JsonLd data={[contactPageJsonLd(), breadcrumbJsonLd([{ name: "Contact", path: "/contact/" }])]} />
+      <JsonLd data={[contactPageJsonLd(), breadcrumbJsonLd([{ name: "Contact Us", path: "/contact/" }])]} />
     </>
   );
 }

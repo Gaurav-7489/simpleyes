@@ -1,6 +1,7 @@
-import { faqs } from "@/content/faqs";
+import { allFaqs } from "@/content/faqs";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
+import { independenceStatement } from "@/content/home";
 import { absoluteUrl } from "@/lib/seo";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -15,10 +16,10 @@ export function GET() {
     "",
     `- Tagline: ${site.tagline}`,
     `- Coverage: ${site.coverageStatement}`,
-    `- Contact: WhatsApp ${site.whatsapp.display} (${whatsappHref().split("?")[0]})`,
+    `- Contact: enquiry form ${absoluteUrl("/contact/")} · WhatsApp ${site.whatsapp.display} (${whatsappHref().split("?")[0]})`,
     "- Language: English",
     "",
-    site.disclosure,
+    independenceStatement,
     "",
     "## Services",
     "",
@@ -30,8 +31,9 @@ export function GET() {
     `- [Services](${absoluteUrl("/services/")}): all service areas`,
     `- [How It Works](${absoluteUrl("/how-it-works/")})`,
     `- [About](${absoluteUrl("/about/")})`,
-    `- [FAQs](${absoluteUrl("/faqs/")}): ${faqs.length} general answers plus questions by service`,
-    `- [Contact](${absoluteUrl("/contact/")})`,
+    `- [FAQs](${absoluteUrl("/faqs/")}): ${allFaqs.length} answers in six categories`,
+    `- [Pricing](${absoluteUrl("/pricing/")}): how service fees work (quotation-based)`,
+    `- [Contact](${absoluteUrl("/contact/")}): enquiry form, WhatsApp and corporate enquiries`,
     "",
     "## Official source",
     "",

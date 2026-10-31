@@ -4,6 +4,7 @@ import { ArrowRight, MessageCircle } from "lucide-react";
 import type { Service } from "@/content/services";
 import { whatsappHref } from "@/lib/whatsapp";
 
+/** "dark" = primary (filled green), "light" = secondary (outline). Names kept for compatibility. */
 type Variant = "dark" | "light";
 type Size = "md" | "sm";
 
@@ -13,6 +14,8 @@ type CommonProps = {
   size?: Size;
   icon?: "arrow" | "chat" | "none";
   className?: string;
+  /** Where the CTA sits on the page, for the cta_click / whatsapp_click "location" parameter. */
+  location?: string;
 };
 
 function classes(variant: Variant, size: Size, className?: string) {
@@ -39,9 +42,10 @@ export function ButtonLink({
   size = "md",
   icon = "arrow",
   className,
+  location,
 }: CommonProps & { href: string }) {
   return (
-    <Link href={href} data-magnetic className={classes(variant, size, className)}>
+    <Link href={href} data-magnetic data-cta-location={location} className={classes(variant, size, className)}>
       <Face icon={icon}>{children}</Face>
     </Link>
   );
@@ -55,6 +59,7 @@ export function WhatsAppButton({
   size = "md",
   icon = "chat",
   className,
+  location,
 }: CommonProps & { service?: Service }) {
   return (
     <a
@@ -63,6 +68,7 @@ export function WhatsAppButton({
       rel="noopener noreferrer"
       data-magnetic
       data-cta="whatsapp"
+      data-cta-location={location}
       data-topic={service?.slug ?? "general"}
       className={classes(variant, size, className)}
     >

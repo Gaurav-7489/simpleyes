@@ -1,55 +1,40 @@
-import { benefits } from "@/content/home";
-import { site } from "@/content/site";
+import { whyItems } from "@/content/home";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { CardFrame } from "@/components/ui/CardFrame";
-import { WhatsAppButton } from "@/components/ui/Button";
-import { BenefitArt } from "@/components/illustrations/BenefitArt";
+import { ButtonLink } from "@/components/ui/Button";
+import { IconTile } from "@/components/ui/Icon";
 import { revealDelay } from "@/lib/style";
 
-/** Reference "Benefits": bento rows alternating narrow/wide, illustration on top, copy below. */
+/** §07 section 4 — Why SimplYes? Benefits only, icon + short label grid. */
 export function WhySimplyes() {
-  const rows = [benefits.slice(0, 2), benefits.slice(2, 4), benefits.slice(4, 6)];
   return (
-    <section id="why-simplyes" aria-labelledby="why-title" className="section bg-canvas">
+    <section id="why-simplyes" aria-labelledby="why-title" className="section bg-white">
       <div className="container-site">
         <SectionHeading
           id="why-title"
-          badge={`Why ${site.name}`}
+          badge="Why SimplYes"
           title="Support that keeps things simple"
-          lead="Clear, honest help for the Indian community across Germany."
+          lead="Clear, honest help with documentation — for one person or a whole household."
         />
-
-        <div className="mt-12 flex flex-col gap-6 lg:mt-16">
-          {rows.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              className={`grid grid-cols-1 gap-6 md:grid-cols-2 ${
-                row[0]?.wide
-                  ? "lg:grid-cols-[minmax(0,1.88fr)_minmax(0,1fr)]"
-                  : "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.88fr)]"
-              }`}
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4">
+          {whyItems.map((item, i) => (
+            <li
+              key={item.title}
+              className="card flex flex-col gap-3"
+              data-reveal
+              style={revealDelay((i % 4) * 60)}
             >
-              {row.map((benefit, i) => (
-                <div key={benefit.title} className="min-w-0" data-reveal style={revealDelay(i * 90)}>
-                  <CardFrame hover className="h-full" cardClassName="flex h-full flex-col gap-4">
-                    <div aria-hidden="true" className="h-[180px] overflow-hidden sm:h-[200px]">
-                      <BenefitArt kind={benefit.art} />
-                    </div>
-                    <h3 className="type-card-title">{benefit.title}</h3>
-                    <p className="type-body max-w-[48ch]">{benefit.body}</p>
-                  </CardFrame>
-                </div>
-              ))}
-            </div>
+              <IconTile name={item.icon} />
+              <h3 className="type-card-title">{item.title}</h3>
+              <p className="type-body">{item.body}</p>
+            </li>
           ))}
-        </div>
-
-        <div className="mt-10 flex justify-center" data-reveal>
-          <div className="cta-strip">
-            <p className="text-sm text-ink-2">Ready to understand your next step?</p>
-            <WhatsAppButton>Start on WhatsApp</WhatsAppButton>
-          </div>
-        </div>
+          <li className="card card-mint flex flex-col items-start justify-between gap-4" data-reveal>
+            <p className="type-card-title">Ready to start?</p>
+            <ButtonLink href="/contact/" size="sm" location="why">
+              Get Assistance
+            </ButtonLink>
+          </li>
+        </ul>
       </div>
     </section>
   );

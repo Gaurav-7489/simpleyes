@@ -1,15 +1,25 @@
 # Deployment
 
-The site is a static export (`next build` → `out/`). No server runtime, database or secrets are required.
+The site is a static export (`next build` → `out/`). No server runtime or database is required. The enquiry
+form posts to an external, approved form service (no credentials in client code), and analytics load only
+after consent.
 
 ## Before going live (checklist)
 
 - [ ] Fill in `site.legal` in `src/content/site.ts` with verified Impressum details; set `reviewed: true`
       only after the owner / a lawyer has approved Impressum and Privacy Policy.
-- [ ] Name the hosting provider in the Privacy Policy (§3) and the WhatsApp data retention period (§4).
-- [ ] Confirm the WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`).
-- [ ] Fill `site.contact` (email required for the Impressum) and confirm service scope; flip `published`
-      on Visa & Documentation Support and Corporate Services only once confirmed (B6, B11).
+- [ ] Name the hosting provider, form service and retention periods in the Privacy Policy; supply the Terms
+      (payments, cancellation/refunds, complaints, liability) and have Privacy, Terms, Disclaimer and Impressum
+      reviewed by a qualified German adviser.
+- [ ] Confirm the WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`) and set `NEXT_PUBLIC_CONTACT_EMAIL`.
+- [ ] **Enquiry form:** create the form at the approved service (e.g. Formspree: new form → notification
+      email = the business inbox; enable its spam filtering), set `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, then submit
+      a real test enquiry on production and confirm it arrives (subject: "New enquiry — <service> — <city>")
+      and that the page redirects to `/thank-you/`. If the service is not on `formspree.io`, add its host to
+      `connect-src` and `form-action` in `vercel.json`.
+- [ ] **Analytics:** create the GA4 property (EU data settings, Google signals off), set `NEXT_PUBLIC_GA_ID`,
+      have the banner text reviewed, and mark `generate_lead` as a key event in GA4. Verify events in GA4
+      DebugView after accepting the banner.
 - [ ] **Now, until cut-over:** set `NEXT_PUBLIC_SITE_ENV=staging` on the Vercel project (Production and
       Preview). Without it, `simpleyes.vercel.app` builds as production and is indexable with a canonical
       pointing at `simplyes.de`, which still serves the old site.
@@ -42,7 +52,7 @@ The site is a static export (`next build` → `out/`). No server runtime, databa
   `photo-signature-preparation`, `appointment-guidance`, `process-clarification`, `personalized-assistance`)
   → `/services/`
 - `/clients` → `/` (old-site link)
-- `/datenschutz/` → `/privacy/`
+- `/datenschutz/` and `/privacy-policy/` → `/privacy/`
 
 The local static server and `next build` do not apply `vercel.json`; verify redirects on a Vercel preview
 deployment (`curl -sI https://<preview>/services/document-guidance/`). GitHub Pages (Option B) would need

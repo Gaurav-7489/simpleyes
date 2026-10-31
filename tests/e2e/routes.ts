@@ -1,5 +1,8 @@
 import { services } from "../../src/content/services";
 
+/** Legal pages stay noindex until the owners/advisers have reviewed them (site.legal.reviewed). */
+export const legalRoutes = ["/privacy/", "/terms/", "/disclaimer/", "/impressum/"];
+
 export const routes = [
   "/",
   "/services/",
@@ -7,11 +10,12 @@ export const routes = [
   "/how-it-works/",
   "/about/",
   "/faqs/",
+  "/pricing/",
   "/contact/",
-  "/impressum/",
-  "/privacy/",
+  "/thank-you/",
+  ...legalRoutes,
 ];
 
-export const indexableRoutes = routes.filter((r) => r !== "/impressum/" && r !== "/privacy/");
+export const indexableRoutes = routes.filter((r) => !legalRoutes.includes(r) && r !== "/thank-you/");
 
 export const WHATSAPP_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4917662510556").replace(/\D/g, "");

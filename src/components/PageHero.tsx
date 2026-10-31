@@ -21,7 +21,7 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative isolate overflow-hidden pb-[clamp(48px,6vw,88px)] pt-[clamp(112px,11vw,168px)]">
+    <section className="relative isolate overflow-hidden pb-[clamp(40px,5vw,72px)] pt-[clamp(104px,10vw,148px)]">
       <div aria-hidden="true" className="hero-rings -z-10" />
       <div aria-hidden="true" className="hero-orb -z-10 !top-[38%] opacity-80" />
       <div className="container-site flex flex-col items-center text-center">
@@ -55,7 +55,7 @@ export function PageHero({
           <Badge>{badge}</Badge>
         </div>
         <h1
-          className="hero-intro mt-6 max-w-[18ch] font-display text-[clamp(2.375rem,1.3rem+4.2vw,4.5rem)] leading-[1.1] tracking-[-0.035em]"
+          className="type-hero hero-intro mt-5 max-w-[22ch]"
           style={revealDelay(60)}
         >
           {title}

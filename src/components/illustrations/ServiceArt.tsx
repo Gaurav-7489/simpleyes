@@ -7,12 +7,12 @@ import type { IllustrationKind } from "@/content/services";
  * No government crests, seals or official-looking marks are used.
  */
 
-const INK = "#1a1a1a";
+const INK = "#13211d";
 const LINE = "#d7dad8";
 const PAPER = "#fbfbfb";
-const GREEN = "#6f9a3c";
-const GREEN_DARK = "#3e6a00";
-const GREEN_TINT = "#e2ecd3";
+const GREEN = "#2e8f6c";
+const GREEN_DARK = "#1b6a4e";
+const GREEN_TINT = "#e0efe7";
 
 function Defs({ id }: { id: string }) {
   return (
@@ -22,7 +22,7 @@ function Defs({ id }: { id: string }) {
         <feDropShadow dx="0" dy="1" stdDeviation="0.8" floodColor="#000" floodOpacity="0.08" />
       </filter>
       <radialGradient id={`${id}-orb`} cx="50%" cy="35%" r="65%">
-        <stop offset="0%" stopColor="#9cc06c" />
+        <stop offset="0%" stopColor="#5fb48f" />
         <stop offset="60%" stopColor={GREEN} />
         <stop offset="100%" stopColor={GREEN_DARK} />
       </radialGradient>
@@ -113,8 +113,8 @@ function Photo({ id }: { id: string }) {
         <rect x="104" y="42" width="120" height="152" rx="10" fill={PAPER} />
       </g>
       <rect x="116" y="54" width="96" height="116" rx="6" fill={GREEN_TINT} />
-      <circle cx="164" cy="98" r="20" fill="#c4d8a6" />
-      <path d="M128 170 c4 -26 20 -38 36 -38 s32 12 36 38 z" fill="#c4d8a6" />
+      <circle cx="164" cy="98" r="20" fill="#b5dbc8" />
+      <path d="M128 170 c4 -26 20 -38 36 -38 s32 12 36 38 z" fill="#b5dbc8" />
       {/* crop marks */}
       {[
         "M112 50 h10 M112 50 v10",
@@ -238,8 +238,8 @@ function Personal({ id }: { id: string }) {
       <g filter={`url(#${id}-sh)`}>
         <circle cx="94" cy="190" r="24" fill={PAPER} />
       </g>
-      <circle cx="94" cy="184" r="7" fill="#c4d8a6" />
-      <path d="M81 200 c3 -8 8 -11 13 -11 s10 3 13 11" fill="#c4d8a6" />
+      <circle cx="94" cy="184" r="7" fill="#b5dbc8" />
+      <path d="M81 200 c3 -8 8 -11 13 -11 s10 3 13 11" fill="#b5dbc8" />
       <g transform="translate(330 104)">
         <circle r="13" fill={PAPER} filter={`url(#${id}-sh)`} />
         <circle cx="-5" r="2" fill="#9aa19c" />

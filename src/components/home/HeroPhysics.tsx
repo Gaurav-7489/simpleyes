@@ -1,24 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Camera, CalendarCheck, FileText, ClipboardList, Lightbulb, UserRound } from "lucide-react";
 
 /**
- * Decorative physics playground inside the hero (aria-hidden, xl screens only).
- * Chips drift on a gentle sine, spring back to a home position, are repelled by
- * the cursor, collide softly with each other and can be grabbed and thrown with
- * inertia. The hero orb follows the cursor with lag and parallaxes on scroll.
- * One rAF loop, transform-only, paused when off screen or the tab is hidden.
+ * Gentle physics for the hero illustration panel (desktop, pointer devices).
+ * The chips are server-rendered inside the panel; this only animates them:
+ * they drift on a slow sine, spring back home, keep clear of the central card,
+ * are nudged away by the cursor, collide softly and can be dragged and thrown.
+ * One rAF loop, transform-only, paused off screen / in hidden tabs.
  */
-
-const chips = [
-  { label: "Documents", icon: FileText, x: 0.1, y: 0.3 },
-  { label: "Photo & signature", icon: Camera, x: 0.06, y: 0.63 },
-  { label: "Appointments", icon: CalendarCheck, x: 0.18, y: 0.74 },
-  { label: "Forms", icon: ClipboardList, x: 0.9, y: 0.27 },
-  { label: "Clarity", icon: Lightbulb, x: 0.94, y: 0.6 },
-  { label: "Personal help", icon: UserRound, x: 0.82, y: 0.74 },
-] as const;
 
 type P = {
   el: HTMLElement;
@@ -28,30 +18,34 @@ type P = {
   vy: number;
   hx: number;
   hy: number;
+  hw: number;
+  hh: number;
   phase: number;
   drag: boolean;
   grabX: number;
   grabY: number;
 };
 
-const RADIUS = 58;
+const RADIUS = 44;
 
 export function HeroPhysics() {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const markerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const root = rootRef.current;
-    const hero = root?.parentElement;
-    if (!root || !hero) return;
+    const panel = markerRef.current?.parentElement;
+    if (!panel) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const wide = window.matchMedia("(min-width: 1280px)");
-    if (!wide.matches) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
-    const orb = hero.querySelector<HTMLElement>(".hero-orb");
-    const els = Array.from(root.querySelectorAll<HTMLElement>("[data-chip]"));
+    const orb = panel.querySelector<HTMLElement>(".hero-orb");
+    const core = panel.querySelector<HTMLElement>("[data-core]");
+    const els = Array.from(panel.querySelectorAll<HTMLElement>("[data-chip]"));
+    panel.dataset.physics = "";
     let w = 0;
     let h = 0;
-    let top = 0;
+    let cx = 0;
+    let cy = 0;
+    let cr = 0;
 
     const parts: P[] = els.map((el, i) => ({
       el,
@@ -61,24 +55,30 @@ export function HeroPhysics() {
       vy: 0,
       hx: 0,
       hy: 0,
-      phase: i * 1.7,
+      hw: 0,
+      hh: 0,
+      phase: i * 1.3,
       drag: false,
       grabX: 0,
       grabY: 0,
     }));
 
     const layout = () => {
-      const r = hero.getBoundingClientRect();
-      w = r.width;
-      h = r.height;
-      top = r.top;
-      parts.forEach((p, i) => {
+      w = panel.clientWidth;
+      h = panel.clientHeight;
+      if (core) {
+        cx = core.offsetLeft + core.offsetWidth / 2;
+        cy = core.offsetTop + core.offsetHeight / 2;
+        cr = Math.max(core.offsetWidth, core.offsetHeight) / 2 + 24;
+      }
+      for (const p of parts) {
+        const anchor = p.el.parentElement as HTMLElement;
         const ohx = p.hx;
         const ohy = p.hy;
-        const home = chips[i];
-        if (!home) return;
-        p.hx = home.x * w;
-        p.hy = home.y * h;
+        p.hx = anchor.offsetLeft;
+        p.hy = anchor.offsetTop;
+        p.hw = p.el.offsetWidth / 2;
+        p.hh = p.el.offsetHeight / 2;
         if (!ohx && !ohy) {
           p.x = p.hx;
           p.y = p.hy;
@@ -86,13 +86,12 @@ export function HeroPhysics() {
           p.x += p.hx - ohx;
           p.y += p.hy - ohy;
         }
-      });
+      }
     };
     layout();
     const ro = new ResizeObserver(layout);
-    ro.observe(hero);
+    ro.observe(panel);
 
-    // Pointer in hero-local coordinates (and a lagged copy for the orb).
     let mx = -9999;
     let my = -9999;
     let ox = 0;
@@ -101,8 +100,9 @@ export function HeroPhysics() {
     let ovy = 0;
 
     const onMove = (e: PointerEvent) => {
-      mx = e.clientX - hero.getBoundingClientRect().left;
-      my = e.clientY - hero.getBoundingClientRect().top;
+      const r = panel.getBoundingClientRect();
+      mx = e.clientX - r.left;
+      my = e.clientY - r.top;
       for (const p of parts) {
         if (p.drag) {
           p.x = mx - p.grabX;
@@ -114,16 +114,16 @@ export function HeroPhysics() {
       mx = -9999;
       my = -9999;
     };
-    hero.addEventListener("pointermove", onMove, { passive: true });
-    hero.addEventListener("pointerleave", onLeave);
+    panel.addEventListener("pointermove", onMove, { passive: true });
+    panel.addEventListener("pointerleave", onLeave);
 
     const releases: Array<() => void> = [];
-    parts.forEach((p) => {
+    for (const p of parts) {
       let lastX = 0;
       let lastY = 0;
       let lastT = 0;
       const down = (e: PointerEvent) => {
-        const r = hero.getBoundingClientRect();
+        const r = panel.getBoundingClientRect();
         p.drag = true;
         p.grabX = e.clientX - r.left - p.x;
         p.grabY = e.clientY - r.top - p.y;
@@ -134,24 +134,21 @@ export function HeroPhysics() {
         p.el.setPointerCapture(e.pointerId);
         p.el.dataset.grab = "true";
       };
-      const move = (e: PointerEvent) => {
+      const move = () => {
         if (!p.drag) return;
         const now = performance.now();
         const dt = Math.max((now - lastT) / 1000, 1 / 240);
-        // Smoothed throw velocity.
         p.vx = p.vx * 0.6 + ((p.x - lastX) / dt) * 0.4;
         p.vy = p.vy * 0.6 + ((p.y - lastY) / dt) * 0.4;
         lastX = p.x;
         lastY = p.y;
         lastT = now;
-        void e;
       };
       const up = () => {
         p.drag = false;
         delete p.el.dataset.grab;
-        const cap = 1800;
-        p.vx = Math.max(-cap, Math.min(cap, p.vx));
-        p.vy = Math.max(-cap, Math.min(cap, p.vy));
+        p.vx = Math.max(-1400, Math.min(1400, p.vx));
+        p.vy = Math.max(-1400, Math.min(1400, p.vy));
       };
       p.el.addEventListener("pointerdown", down);
       p.el.addEventListener("pointermove", move);
@@ -163,7 +160,7 @@ export function HeroPhysics() {
         p.el.removeEventListener("pointerup", up);
         p.el.removeEventListener("pointercancel", up);
       });
-    });
+    }
 
     let raf = 0;
     let last = 0;
@@ -176,28 +173,25 @@ export function HeroPhysics() {
 
       for (const p of parts) {
         if (p.drag) continue;
-        // Home drifts on a slow Lissajous so the cluster always feels alive.
-        const tx = p.hx + Math.sin(t * 0.7 + p.phase) * 10;
-        const ty = p.hy + Math.cos(t * 0.55 + p.phase * 1.3) * 12;
-        let ax = (tx - p.x) * 16;
-        let ay = (ty - p.y) * 16;
-        // Cursor repulsion.
+        const tx = p.hx + Math.sin(t * 0.6 + p.phase) * 6;
+        const ty = p.hy + Math.cos(t * 0.5 + p.phase * 1.3) * 8;
+        let ax = (tx - p.x) * 14;
+        let ay = (ty - p.y) * 14;
         const dx = p.x - mx;
         const dy = p.y - my;
         const d = Math.hypot(dx, dy);
-        if (d < 190 && d > 0.5) {
-          const f = ((190 - d) / 190) ** 2 * 5200;
+        if (d < 140 && d > 0.5) {
+          const f = ((140 - d) / 140) ** 2 * 3600;
           ax += (dx / d) * f;
           ay += (dy / d) * f;
         }
         p.vx += ax * dt;
         p.vy += ay * dt;
-        const damp = Math.exp(-4.2 * dt);
+        const damp = Math.exp(-4.5 * dt);
         p.vx *= damp;
         p.vy *= damp;
       }
 
-      // Soft circle collisions (also against the one being dragged).
       for (let i = 0; i < parts.length; i++) {
         for (let j = i + 1; j < parts.length; j++) {
           const a = parts[i];
@@ -221,14 +215,14 @@ export function HeroPhysics() {
             }
             const rel = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
             if (rel < 0) {
-              const j2 = -rel * 0.85;
+              const imp = -rel * 0.8;
               if (!a.drag) {
-                a.vx -= nx * j2;
-                a.vy -= ny * j2;
+                a.vx -= nx * imp;
+                a.vy -= ny * imp;
               }
               if (!b.drag) {
-                b.vx += nx * j2;
-                b.vy += ny * j2;
+                b.vx += nx * imp;
+                b.vy += ny * imp;
               }
             }
           }
@@ -239,45 +233,53 @@ export function HeroPhysics() {
         if (!p.drag) {
           p.x += p.vx * dt;
           p.y += p.vy * dt;
+          // Keep clear of the central card.
+          if (cr) {
+            const dx = p.x - cx;
+            const dy = p.y - cy;
+            const d = Math.hypot(dx, dy) || 0.001;
+            if (d < cr) {
+              p.x = cx + (dx / d) * cr;
+              p.y = cy + (dy / d) * cr;
+              const vn = p.vx * (dx / d) + p.vy * (dy / d);
+              if (vn < 0) {
+                p.vx -= 1.6 * vn * (dx / d);
+                p.vy -= 1.6 * vn * (dy / d);
+              }
+            }
+          }
         }
-        // Walls: bounce inside the hero.
-        const m = 100;
-        if (p.x < m) {
-          p.x = m;
+        if (p.x < p.hw) {
+          p.x = p.hw;
           p.vx = Math.abs(p.vx) * 0.6;
-        } else if (p.x > w - m) {
-          p.x = w - m;
+        } else if (p.x > w - p.hw) {
+          p.x = w - p.hw;
           p.vx = -Math.abs(p.vx) * 0.6;
         }
-        if (p.y < 90) {
-          p.y = 90;
+        if (p.y < p.hh) {
+          p.y = p.hh;
           p.vy = Math.abs(p.vy) * 0.6;
-        } else if (p.y > h - 150) {
-          p.y = h - 150;
+        } else if (p.y > h - p.hh) {
+          p.y = h - p.hh;
           p.vy = -Math.abs(p.vy) * 0.6;
         }
-        const speed = Math.hypot(p.vx, p.vy);
-        const tilt = Math.max(-14, Math.min(14, p.vx * 0.02));
-        const scale = p.drag ? 1.08 : 1 + Math.min(speed / 4000, 0.05);
-        p.el.style.transform = `translate3d(${(p.x - p.hx).toFixed(1)}px, ${(p.y - p.hy).toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+        const tilt = Math.max(-10, Math.min(10, p.vx * 0.015));
+        const scale = p.drag ? 1.06 : 1;
+        p.el.style.transform = `translate3d(${(p.x - p.hx).toFixed(1)}px, ${(p.y - p.hy).toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${scale})`;
       }
 
-      // Orb: damped spring toward a fraction of the cursor offset + scroll parallax.
       if (orb) {
-        const cx = mx > -9000 ? (mx - w / 2) * 0.05 : 0;
-        const cy = mx > -9000 ? (my - h / 2) * 0.05 : 0;
-        ovx += (-(ox - cx) * 40 - ovx * 9) * dt;
-        ovy += (-(oy - cy) * 40 - ovy * 9) * dt;
+        const tx = mx > -9000 ? (mx - w / 2) * 0.06 : 0;
+        const ty = mx > -9000 ? (my - h / 2) * 0.06 : 0;
+        ovx += (-(ox - tx) * 40 - ovx * 9) * dt;
+        ovy += (-(oy - ty) * 40 - ovy * 9) * dt;
         ox += ovx * dt;
         oy += ovy * dt;
-        const sy = Math.max(0, -top) * 0.18;
-        const scale = 1 + Math.min(Math.max(0, -top) / 3200, 0.18);
-        orb.style.transform = `translate3d(calc(-50% + ${ox.toFixed(2)}px), calc(-50% + ${(oy + sy).toFixed(2)}px), 0) scale(${scale.toFixed(3)})`;
+        orb.style.transform = `translate3d(calc(-50% + ${ox.toFixed(2)}px), calc(-50% + ${oy.toFixed(2)}px), 0)`;
       }
     };
 
     const loop = (now: number) => {
-      top = hero.getBoundingClientRect().top;
       tick(now);
       raf = requestAnimationFrame(loop);
     };
@@ -297,7 +299,7 @@ export function HeroPhysics() {
       if (visible) run();
       else halt();
     });
-    io.observe(hero);
+    io.observe(panel);
     const onVis = () => (document.hidden ? halt() : run());
     document.addEventListener("visibilitychange", onVis);
     run();
@@ -307,29 +309,14 @@ export function HeroPhysics() {
       io.disconnect();
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVis);
-      hero.removeEventListener("pointermove", onMove);
-      hero.removeEventListener("pointerleave", onLeave);
+      panel.removeEventListener("pointermove", onMove);
+      panel.removeEventListener("pointerleave", onLeave);
       releases.forEach((r) => r());
+      for (const p of parts) p.el.style.transform = "";
       if (orb) orb.style.transform = "";
+      delete panel.dataset.physics;
     };
   }, []);
 
-  return (
-    <div ref={rootRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 hidden xl:block">
-      {chips.map(({ label, icon: Icon, x, y }, i) => (
-        <div
-          key={label}
-          className="absolute -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
-        >
-          <div data-chip className="physics-chip pointer-events-auto" style={{ animationDelay: `${i * 80}ms` }}>
-            <span className="orb-soft size-8">
-              <Icon className="size-4" strokeWidth={1.75} />
-            </span>
-            {label}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <span ref={markerRef} hidden />;
 }

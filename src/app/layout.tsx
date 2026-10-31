@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import localFont from "next/font/local";
-import { Inter } from "next/font/google";
+import { DM_Sans, Outfit } from "next/font/google";
 import "./globals.css";
 import { isProductionBuild, site } from "@/content/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
@@ -13,20 +12,20 @@ import { whatsappHref } from "@/lib/whatsapp";
 import { RevealObserver } from "@/components/RevealObserver";
 import { LazyMotion } from "@/components/LazyMotion";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { Analytics } from "@/components/analytics/Analytics";
 
-/** Display face measured on the reference. Self-hosted (Fontshare, ITF Free Font License — see src/app/fonts/). */
-const satoshi = localFont({
-  src: [{ path: "./fonts/Satoshi-Variable.woff2", weight: "300 900", style: "normal" }],
-  variable: "--font-satoshi",
+/** Headings and buttons (§16 recommendation). Self-hosted by next/font at build time — no runtime Google requests. */
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-outfit",
   display: "swap",
-  adjustFontFallback: "Arial",
-  preload: true,
 });
 
-/** Body face measured on the reference. Downloaded at build time and self-hosted by next/font (no Google requests at runtime). */
-const inter = Inter({
+/** Body text (§16 recommendation). */
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -46,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7f7f7",
+  themeColor: "#f6f9f5",
   colorScheme: "light",
   width: "device-width",
   initialScale: 1,
@@ -55,7 +54,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`${satoshi.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${outfit.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
         {/* Enables reveal animations only when JS runs; content stays visible otherwise. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
@@ -73,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           serviceHrefs={Object.fromEntries(services.map((service) => [service.slug, whatsappHref(service)]))}
         />
         <Footer />
+        {site.gaMeasurementId && <Analytics measurementId={site.gaMeasurementId} />}
         <RevealObserver />
         <LazyMotion />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
