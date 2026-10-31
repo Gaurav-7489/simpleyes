@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { independenceStatement } from "@/content/home";
+import { Badge } from "@/components/ui/Badge";
 
 /** §07 section 8 — Trust & independence: calm mint panel, shield icon, approved statement, disclaimer link. */
 export function TrustPanel() {
@@ -15,6 +16,7 @@ export function TrustPanel() {
             <ShieldCheck aria-hidden="true" className="size-7" strokeWidth={1.6} />
           </span>
           <div className="flex flex-col gap-3">
+            <Badge index="07">Trust &amp; independence</Badge>
             <h2 id="trust-title" className="type-h2 !text-[clamp(1.5rem,1.2rem+1vw,2rem)]">
               Independent and transparent
             </h2>

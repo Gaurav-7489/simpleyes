@@ -88,7 +88,7 @@ test.describe("content rules", () => {
       "final-cta-title",
     ]);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
-    await expect(page.locator("#services ul > li")).toHaveCount(8);
+    await expect(page.locator("#services .service-index > li")).toHaveCount(8);
     await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
   });

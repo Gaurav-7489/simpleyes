@@ -8,7 +8,7 @@ export function Approach() {
     <section aria-labelledby="approach-title" className="section">
       <div className="container-site grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div data-reveal>
-          <Badge>Our approach</Badge>
+          <Badge index="06">Our approach</Badge>
           <h2 id="approach-title" className="type-h2 mt-5 max-w-[18ch]">
             Calm, structured and human
           </h2>

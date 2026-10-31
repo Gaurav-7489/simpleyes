@@ -1,11 +1,15 @@
 import type { ReactNode } from "react";
 
-/** Uppercase section label pill, as used above every reference section heading. */
-export function Badge({ children, className }: { children: ReactNode; className?: string }) {
+/**
+ * Editorial section label: optional section number, a short brand-gradient rule
+ * and sentence-case text. Replaces the generic uppercase "• LABEL" pill.
+ */
+export function Badge({ children, className, index }: { children: ReactNode; className?: string; index?: string }) {
   return (
-    <p className={`badge ${className ?? ""}`}>
-      <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-600" />
-      {children}
+    <p className={`eyebrow ${className ?? ""}`}>
+      {index && <span className="eyebrow-index">{index}</span>}
+      <span aria-hidden="true" className="eyebrow-rule" />
+      <span>{children}</span>
     </p>
   );
 }

@@ -9,6 +9,7 @@ export function Process() {
     <section id="how-it-works" aria-labelledby="process-title" className="section">
       <div className="container-site">
         <SectionHeading
+          index="04"
           id="process-title"
           badge="How it works"
           title="Four simple steps"

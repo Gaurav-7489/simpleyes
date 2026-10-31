@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
-import { revealDelay } from "@/lib/style";
 import { PageHero } from "@/components/PageHero";
-import { ServiceCard } from "@/components/ServiceCard";
+import { ServiceIndex } from "@/components/ServiceIndex";
 import { ButtonLink } from "@/components/ui/Button";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -33,13 +32,7 @@ export default function ServicesPage() {
       </PageHero>
       <section aria-label="All services" className="pb-[var(--section-y)]">
         <div className="container-site">
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-            {services.map((service, i) => (
-              <li key={service.slug} className="min-w-0" data-reveal style={revealDelay((i % 4) * 60)}>
-                <ServiceCard service={service} headingLevel="h2" />
-              </li>
-            ))}
-          </ul>
+          <ServiceIndex services={services} headingLevel="h2" />
           <p className="mx-auto mt-10 max-w-[60ch] text-center text-sm text-ink-2">
             Not sure which service fits? Send an enquiry and describe your situation — we&apos;ll point you to the right
             one.

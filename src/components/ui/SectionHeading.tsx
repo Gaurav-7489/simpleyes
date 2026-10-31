@@ -8,14 +8,16 @@ type Props = {
   align?: "center" | "left";
   id?: string;
   as?: "h1" | "h2";
+  /** Section number shown in the label, e.g. "02". */
+  index?: string;
 };
 
-/** Reference section header: label pill → large display heading → short lead. */
-export function SectionHeading({ badge, title, lead, align = "center", id, as: Tag = "h2" }: Props) {
+/** Section header: editorial label → display heading → short lead. */
+export function SectionHeading({ badge, title, lead, align = "center", id, as: Tag = "h2", index }: Props) {
   const centered = align === "center";
   return (
     <div className={`flex flex-col gap-5 ${centered ? "items-center text-center" : "items-start text-left"}`} data-reveal>
-      <Badge>{badge}</Badge>
+      <Badge index={index}>{badge}</Badge>
       <Tag id={id} className={`type-h2 ${centered ? "max-w-[18ch]" : "max-w-[16ch]"}`}>
         {title}
       </Tag>

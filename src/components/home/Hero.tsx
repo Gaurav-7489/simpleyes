@@ -4,6 +4,7 @@ import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { Badge } from "@/components/ui/Badge";
 import { LazyHeroPhysics } from "@/components/home/LazyHeroPhysics";
 
 /** Chip anchor positions inside the illustration panel (fractions of width/height). */
@@ -34,7 +35,7 @@ export function Hero() {
       <div aria-hidden="true" className="hero-rings -z-10 opacity-70" />
       <div className="container-site grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-14">
         <div className="flex flex-col items-start">
-          <p className="badge hero-intro">{site.tagline}</p>
+          <Badge className="hero-intro">{site.tagline}</Badge>
           <h1 id="hero-title" className="type-hero hero-intro mt-5 max-w-[16ch]" style={revealDelay(60)}>
             Your Documentation Journey, <span className="text-accent-700">Made Simpler.</span>
           </h1>

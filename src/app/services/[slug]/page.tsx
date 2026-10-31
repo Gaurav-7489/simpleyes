@@ -174,9 +174,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
           </p>
           <ul className="mt-10 grid gap-4 md:grid-cols-2">
             {service.situations.map((s, i) => (
-              <li key={s.situation} className="card flex flex-col gap-2" data-reveal style={revealDelay((i % 2) * 60)}>
-                <p className="font-display text-lg font-medium text-ink">{s.situation}</p>
-                <p className="type-body">
+              <li key={s.situation} className="situation" data-reveal style={revealDelay((i % 2) * 60)}>
+                <p className="situation-quote">{s.situation}</p>
+                <p className="situation-answer type-body">
                   <a href="#what-we-help-with" className="font-medium text-accent-700 underline-offset-4 hover:underline">
                     How we help:
                   </a>{" "}
