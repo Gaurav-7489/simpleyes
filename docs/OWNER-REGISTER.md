@@ -7,8 +7,8 @@ placeholder values on the live site. **●** = blocks launch.
 |---|---|---|---|---|
 | ● | Official logo asset | SVG/PNG "simplyes." wordmark with exact gradient stops; favicon and social image source | `src/components/ui/Wordmark.tsx` (currently a typographic stand-in), `src/app/icon.svg`, `public/og-image.png` | Open |
 | ● | Primary teal colour | Full hex (brief gives only "#0B7F8…") and any supporting palette | `--color-accent-*`, `--color-teal` in `src/app/globals.css` (current greens follow the spec's visual reference, not brand values) | Open |
-| ● | Business email address | Public contact address and enquiry notification inbox | `NEXT_PUBLIC_CONTACT_EMAIL`; form service notification settings | Open — email routes hidden until set |
-| ● | WhatsApp number | Approved number and pre-filled message text | `NEXT_PUBLIC_WHATSAPP_NUMBER`, `src/lib/whatsapp.ts` | Open — `+49 176 62510556` comes from the old site |
+| ● | Business email address | Public contact address and enquiry notification inbox | `NEXT_PUBLIC_CONTACT_EMAIL`; form service notification settings | Done — `Info@simplyes.de` |
+| ● | WhatsApp number | Approved number and pre-filled message text | `NEXT_PUBLIC_WHATSAPP_NUMBER`, `src/lib/whatsapp.ts` | Done — `+49 1521 6627596` |
 | ● | Pricing model | Fixed or quotation per service; amounts; family packages; payment methods; cancellation and refund terms | `src/content/home.ts` (`pricing`), `/pricing/`, `/terms/`; FAQ entries for payment and cancellation are held back | Open — quotation model live, no amounts |
 | ● | Legal pages | Privacy, Terms, Disclaimer wording reviewed by qualified German advisers; Impressum and cookie-consent requirements | `/privacy/`, `/terms/`, `/disclaimer/`, `/impressum/`; `site.legal` in `src/content/site.ts` | Open — drafts with "to be provided" markers, all noindex until `legal.reviewed = true` |
 | ● | Independence statement | Final reviewed wording | `independenceStatement` in `src/content/home.ts` (footer, homepage, service pages, About, Disclaimer) | Open — spec draft in use |

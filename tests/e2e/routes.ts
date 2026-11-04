@@ -18,4 +18,4 @@ export const routes = [
 
 export const indexableRoutes = routes.filter((r) => !legalRoutes.includes(r) && r !== "/thank-you/");
 
-export const WHATSAPP_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4917662510556").replace(/\D/g, "");
+export const WHATSAPP_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4915216627596").replace(/\D/g, "");

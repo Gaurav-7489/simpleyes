@@ -48,10 +48,10 @@ npm run dev        # http://localhost:3000
 | Variable | Default | Notes |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `https://simplyes.de` | Canonical origin for canonicals, sitemap, OG, JSON-LD |
-| `NEXT_PUBLIC_WHATSAPP_NUMBER` | `4917662510556` | Digits only. Default is the number published on the current simplyes.de |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | `4915216627596` | Digits only. Default is the business number +49 1521 6627596 |
 | `NEXT_PUBLIC_SITE_ENV` | — | `production` for the live build. Anything else → `noindex` + `Disallow: /`. On Vercel, `VERCEL_ENV` is used automatically |
 | `NEXT_PUBLIC_ENQUIRY_ENDPOINT` | — | Approved form service / secure endpoint for the enquiry form (JSON POST, 2xx = accepted), e.g. a Formspree form URL. Unset → the form says it is not connected yet and offers WhatsApp/email; it never shows success |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | — | Approved public email (footer, contact page, service pages, privacy requests). Unset → email routes are hidden |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | `Info@simplyes.de` | Approved public email (footer, contact page, service pages, privacy requests). Unset → email routes are hidden |
 | `NEXT_PUBLIC_GA_ID` | — | GA4 measurement ID. Unset → no analytics code and no consent banner. Set → consent banner; GA loads only after "Accept" |
 
 ## Project structure

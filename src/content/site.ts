@@ -10,7 +10,7 @@
 const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://simplyes.de";
 
 /** Digits only, international format. Verified: published on simplyes.de (wa.me link). */
-const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4917662510556").replace(/\D/g, "");
+const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4915216627596").replace(/\D/g, "");
 
 export const site = {
   name: "SimplYes",
@@ -38,7 +38,7 @@ export const site = {
   whatsapp: {
     number: whatsappNumber,
     /** Human-readable form of the verified number. */
-    display: "+49 176 62510556",
+    display: "+49 1521 6627596",
   },
   /**
    * Public contact details beyond WhatsApp. Rendered only when non-null —
@@ -46,8 +46,8 @@ export const site = {
    */
   contact: {
     /** Public contact + enquiry inbox (B5). Set NEXT_PUBLIC_CONTACT_EMAIL once the owners confirm it. */
-    email: (process.env.NEXT_PUBLIC_CONTACT_EMAIL || null) as string | null,
-    phone: null as string | null,
+    email: (process.env.NEXT_PUBLIC_CONTACT_EMAIL || "Info@simplyes.de") as string | null,
+    phone: "+49 1521 6627596" as string | null,
     hours: null as string | null,
     responseTime: null as string | null,
   },
@@ -61,8 +61,8 @@ export const site = {
     street: null as string | null,
     postalCodeCity: null as string | null,
     country: "Germany",
-    email: null as string | null,
-    phone: null as string | null,
+    email: "Info@simplyes.de" as string | null,
+    phone: "+49 1521 6627596" as string | null,
     vatId: null as string | null,
     register: null as string | null,
     /** Set to true once a lawyer/the owner has reviewed Impressum + privacy text. */
