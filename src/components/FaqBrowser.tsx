@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import type { FaqCategory } from "@/content/faqs";
 import { FaqList } from "@/components/FaqList";
+import { useHydrated } from "@/lib/useHydrated";
 
 /**
  * FAQ page body (§12): category filter chips, a search box and one accordion per
@@ -11,6 +12,7 @@ import { FaqList } from "@/components/FaqList";
  * /faqs/#<category> selects that category; /faqs/#<question-id> opens a question.
  */
 export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
+  const hydrated = useHydrated();
   const [active, setActive] = useState<string>("all");
   const [query, setQuery] = useState("");
 
@@ -51,6 +53,7 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
             <button
               key={c.id}
               type="button"
+              disabled={!hydrated}
               aria-pressed={active === c.id}
               onClick={() => setActive(c.id)}
               className={`min-h-11 rounded-full px-4 text-sm font-medium transition-colors ${
@@ -66,6 +69,7 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
           <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-3" strokeWidth={1.75} />
           <input
             type="search"
+            disabled={!hydrated}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search questions"

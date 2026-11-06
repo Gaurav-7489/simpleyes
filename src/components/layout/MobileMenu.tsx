@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { NavItem } from "@/content/site";
+import { useHydrated } from "@/lib/useHydrated";
 
 type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem };
 
@@ -16,6 +17,7 @@ type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem };
  * - closes on navigation and when the viewport reaches desktop width
  */
 export function MobileMenu({ items, services, cta }: Props) {
+  const hydrated = useHydrated();
   const pathname = usePathname();
   // The menu is "open for a given path": navigating anywhere closes it without an effect.
   const [openPath, setOpenPath] = useState<string | null>(null);
@@ -95,6 +97,7 @@ export function MobileMenu({ items, services, cta }: Props) {
       <button
         ref={toggleRef}
         type="button"
+        disabled={!hydrated}
         aria-expanded={open}
         aria-controls={panelId}
         aria-label={open ? "Close menu" : "Open menu"}
@@ -133,6 +136,8 @@ export function MobileMenu({ items, services, cta }: Props) {
         ref={panelRef}
         id={panelId}
         data-open={open}
+        inert={!open}
+        aria-hidden={!open}
         className="mobile-panel absolute inset-x-0 top-[calc(100%+8px)] origin-top rounded-[14px] bg-white/95 p-3 shadow-[var(--shadow-frame),0_20px_40px_-16px_rgb(0_0_0/0.18)] ring-1 ring-black/5"
         // When closed the panel is visibility:hidden, so its links are not focusable.
       >

@@ -46,6 +46,9 @@ jobs:
       - name: Lint
         run: bash scripts/ci-run.sh Lint npm run lint
 
+      - name: Enquiry configuration safety tests
+        run: npm run test:unit
+
       - name: Build (static export)
         run: bash scripts/ci-run.sh Build npm run build
 
@@ -137,3 +140,34 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A && git commit -qm "QA build of ${GITHUB_SHA}"
           git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" qa/preview-build
+
+  enquiry-and-browsers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Every submission is intercepted by Playwright. These are test-only values,
+      # never production configuration and never a real provider form.
+      NEXT_PUBLIC_ENQUIRY_ENDPOINT: https://api.formdall.de/api/v1/f/ci-mock-not-a-live-form
+      NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD: _ci_honey
+      CROSS_BROWSER: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Enquiry acceptance, failures, navigation and FAQ across browsers
+        run: npx playwright test --grep 'enquiry|navigation|FAQ accordion'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: enquiry-browser-reports
+          path: |
+            playwright-report
+            test-results
+          retention-days: 14

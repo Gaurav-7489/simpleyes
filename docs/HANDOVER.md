@@ -1,5 +1,11 @@
 # Handover
 
+## 6 November 2026 completion pass
+
+See [`LAUNCH-STATUS.md`](LAUNCH-STATUS.md) for the current release scope, validation evidence and exact
+owner handoff. That dated report supersedes the earlier production observations below. The existing
+eight-service website is being completed; AI, uploads, portals and payments remain outside this release.
+
 Specification §22 (F · Handover). Read with [`DEPLOYMENT.md`](DEPLOYMENT.md) (hosting, domain, DNS, launch
 checklist), [`OWNER-REGISTER.md`](OWNER-REGISTER.md) (open owner inputs) and [`QA-REPORT.md`](QA-REPORT.md)
 (test results and §23 status).
