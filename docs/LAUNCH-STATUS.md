@@ -1,5 +1,39 @@
 # SimplYes launch completion — 6 November 2026
 
+**Status: code complete and deployed; real enquiry integration and business/legal launch approval pending.**
+
+## Verified release evidence
+
+- PR #4 was merged as `8799cc8031f62b2398f1e114ffcc26cb55b6f69f`.
+- Application release `adecded9f38e2c82f775d13c41fe9edd43d6db66` was pushed to `main` and verified through GitHub.
+  It includes `73b289f` (enquiry safeguards) and `8c262ba` (early input and accessible mobile menu fixes).
+- Vercel production deployment `dpl_CsBjCSDaaWDfi7UDX9m6CZLMgVW2` is READY, assigned to `simplyes.de`,
+  `www.simplyes.de` and `simpleyes.vercel.app`, with the exact application release SHA above.
+- Public HTTP smoke checks: all **20 required pages** and `robots.txt`, `sitemap.xml`, `llms.txt` return
+  200. An unknown route returns 404 with noindex. `www.simplyes.de` reaches the apex. The Vercel alias
+  serves the site with the canonical pointing to `https://simplyes.de/` (it is not redirected).
+- Production canonicals, Formdall CSP, approved email/WhatsApp destinations, noindex on thank-you and
+  unreviewed legal pages, disabled-form disclosure and disabled-analytics disclosure were checked.
+- Live browser: Services opens and Escape closes it; OCI Services opens its own page; its assistance CTA
+  preselects OCI on Contact; blank submission shows inline errors and focuses Full name; selecting
+  Corporate Services reveals company fields. The live teal/lime values are #0B7F8C / #B8E05A.
+  No application console errors were observed; browser extension errors are outside the site.
+- Pre-release CI run [42249251449](https://github.com/Gaurav-7489/simpleyes/actions/runs/42249251449):
+  **171 full-site browser tests + 84 configured-enquiry/cross-browser tests passed**, zero failed or
+  flaky; seven configuration unit tests passed. There were 101 expected skips across the two jobs
+  (inapplicable device checks and mutually exclusive configured/unconfigured form scenarios).
+- Final application CI on `main`, run [42250218500](https://github.com/Gaurav-7489/simpleyes/actions/runs/42250218500),
+  also completed successfully: both `quality` and `enquiry-and-browsers` passed.
+- Lighthouse **CI lab results**, five pages on mobile and desktop: performance 99–100; accessibility,
+  best practices and SEO 100. These are static-export lab measurements, not production field metrics.
+- `npm audit --omit=dev` reported zero known production dependency vulnerabilities.
+- Vercel error/fatal log lookup found no matching entries for this deployment. This is a static site;
+  the absence of function logs is not proof of customer email delivery.
+
+The final handover commit changes documentation only; the application release above is the tested code
+snapshot. Documentation-only pushes are excluded by the CI path filter. Production email delivery has
+**not** been tested because no real form endpoint is configured.
+
 ## Authoritative starting state
 
 Connected GitHub and Vercel were inspected for this pass. `main` was

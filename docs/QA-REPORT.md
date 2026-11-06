@@ -1,5 +1,9 @@
 # QA report
 
+The current 6 November 2026 release evidence is recorded in [`LAUNCH-STATUS.md`](LAUNCH-STATUS.md),
+including the application SHA, production deployment, live smoke checks, new cross-browser coverage and
+remaining owner inputs. The earlier observations below are retained as historical context.
+
 Built against the **SimplYes Website Development Specification v1.0** (31 Oct 2026).
 Last updated 6 Nov 2026 on branch `claude/complete-spec-handover`.
 
