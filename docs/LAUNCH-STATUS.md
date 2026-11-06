@@ -14,6 +14,13 @@ activation until real inputs, approvals and an owner-confirmed inbox test are su
 The optional `policies` group accepts full owner/adviser-approved legal-page replacements as escaped
 plain text, so final policy revisions can also be published without editing page components.
 
+Owner-handover application release `9594e8355ba019b744f42cc1dc6072d053ac0060` passed both `quality` and
+`enquiry-and-browsers` in [CI run 42257126008](https://github.com/Gaurav-7489/simpleyes/actions/runs/42257126008).
+Local lint, production build, TypeScript and all 15 unit tests passed. Full-policy rendering/escaping and
+default fallback were verified. Public smoke checks confirmed all 20 required pages return 200, expected
+canonicals/noindex rules and the correct contact destinations. The owner readiness check correctly lists
+the missing owner inputs and disconnected production endpoint; it has not been marked ready.
+
 Follow [OWNER-ACTIVATION.md](OWNER-ACTIVATION.md) for the complete owner procedure. The enquiry backend
 remains the managed Formdall service; its production validation/delivery is an external activation check.
 No custom API, customer database, portal or document-upload backend has been built or claimed.
