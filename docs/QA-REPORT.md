@@ -44,6 +44,9 @@ at 320–2560 px; tap targets; reduced motion; no console errors.
   outside click and focus-out now cancel the pending timer, and a click with hover intent keeps the menu
   open. This was the one failing test (`desktop nav links navigate`); the full suite passes again.
 
+- FAQ "How can I contact SimplYes?" now lists email (`Info@simplyes.de`) alongside the form and WhatsApp,
+  as §12 requires, now that the business email is confirmed.
+
 ## Deviations and decisions
 
 - **Platform:** custom build (Option B) — the repository was already Next.js; owners to confirm (§19).

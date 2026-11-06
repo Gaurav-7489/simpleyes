@@ -51,7 +51,7 @@ export const faqCategories: FaqCategory[] = [
       {
         id: "contact",
         question: "How can I contact SimplYes?",
-        answer: "Use the enquiry form on our Contact page or message us on WhatsApp. The quickest route is shown on every page.",
+        answer: "Use the enquiry form on our Contact page, message us on WhatsApp or email us at Info@simplyes.de. All three routes are shown on every page.",
       },
     ],
   },
