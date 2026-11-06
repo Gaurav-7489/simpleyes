@@ -68,7 +68,12 @@ Content-Security-Policy and the Privacy Policy entry).
      **Check deliverability** (*Zustellbarkeit prüfen*) switched on.
      Set **Captcha** to **none**. The website does not include Formdall's captcha widget, so turning it on
      would reject every enquiry.
-3. **Field schema** tab (*Feldschema*): leave empty.
+3. **Field schema / server-side validation:** confirm the provider's current required-field and format
+   rules for name, email, service, message and consent before enabling the form. The development team has
+   not verified these settings in an owner-controlled Formdall account. Do not treat browser validation as
+   proof of backend validation, and do not mark activation complete until rejected/invalid submissions and
+   real inbox delivery have been tested. If the provider cannot enforce the required checks, keep backend
+   activation pending rather than bypassing them.
 4. **Actions** tab (*Aktionen*) → add an **Email** action:
    - Recipient: `Info@simplyes.de`
    - Subject: `{{subject}}` (the website sends a ready-made subject such as
