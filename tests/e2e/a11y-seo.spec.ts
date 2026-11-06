@@ -8,6 +8,10 @@ import { indexableRoutes, routes } from "./routes";
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://simplyes.de").replace(/\/$/, "");
 
 test.describe("accessibility (axe, WCAG 2.2 AA tags)", () => {
+  // Contrast is judged on the settled design. With motion on, axe could sample the decorative cross-fades
+  // (e.g. the aria-hidden jargon → plain-language swap) mid-fade and flake; reduced motion renders their end states.
+  test.use({ reducedMotion: "reduce" });
+
   for (const route of routes) {
     test(`${route} has no serious axe violations`, async ({ page }) => {
       await page.goto(route);

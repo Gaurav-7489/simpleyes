@@ -238,26 +238,61 @@ test.describe("floating WhatsApp button", () => {
     await expect(fab).toBeHidden();
   });
 
-  test("is reachable by keyboard after the main content", async ({ page, isMobile }) => {
+  // Real keyboard behaviour (Tab presses, not programmatic focus). The floating button is a pointer/touch
+  // shortcut: by design it hides while the final CTA or footer is on screen, which is exactly where a keyboard
+  // user arrives after the main content, so sequential navigation never lands on it. What must hold instead:
+  // no focus stop is ever invisible, and keyboard users reach a visible WhatsApp link in the page and footer.
+  test.describe("keyboard", () => {
+    // Instant scrolling, so each focus stop is measured where the user sees it (no smooth-scroll lag).
+    test.use({ reducedMotion: "reduce" });
+
+    for (const route of ["/about/", "/services/passport-services/"]) {
+      test(`never focused while hidden; WhatsApp still reachable (${route})`, async ({ page, isMobile }) => {
+        test.skip(isMobile, "keyboard flow on desktop");
+        await page.goto(route);
+        type Stop = { fab: boolean; fabVisible: boolean; wa: boolean; inMain: boolean; inFooter: boolean; onScreen: boolean };
+        const stops: Stop[] = [];
+        for (let i = 0; i < 250; i++) {
+          await page.keyboard.press("Tab");
+          const stop = await page.evaluate((): Stop | null => {
+            const a = document.activeElement as HTMLElement | null;
+            const fab = document.querySelector<HTMLElement>("[data-floating-wa]")!;
+            if (!a || a === document.body) return null;
+            const r = a.getBoundingClientRect();
+            const style = getComputedStyle(a);
+            return {
+              fab: a === fab,
+              fabVisible:
+                fab.dataset.visible === "true" && getComputedStyle(fab).visibility === "visible" && getComputedStyle(fab).opacity !== "0",
+              wa: (a.getAttribute("href") ?? "").startsWith("https://wa.me/"),
+              inMain: Boolean(a.closest("main")),
+              inFooter: Boolean(a.closest("footer")),
+              onScreen: style.visibility === "visible" && r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight,
+            };
+          });
+          if (!stop) break; // focus left the document
+          if (stops.at(-1)?.inFooter && !stop.inFooter) break; // wrapped past the end of the page
+          stops.push(stop);
+        }
+        expect(stops.some((s) => s.inFooter), "tabbed all the way into the footer").toBe(true);
+        expect(stops.filter((s) => s.fab && !s.fabVisible), "focus never lands on the hidden floating button").toEqual([]);
+        expect(stops.filter((s) => !s.onScreen).length, "every focus stop is visible on screen").toBe(0);
+        expect(stops.some((s) => s.wa && s.inMain), "a WhatsApp link in the page is keyboard-reachable").toBe(true);
+        expect(stops.some((s) => s.wa && s.inFooter), "the footer WhatsApp link is keyboard-reachable").toBe(true);
+      });
+    }
+  });
+
+  test("when visible, it is focusable with a visible focus ring", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard flow on desktop");
     await page.goto("/about/");
-    // Past the hero (> 60% of the viewport) but well clear of the final CTA, which hides the
-    // button by design; at 1.5 viewports the CTA sat ~20 px from the fold and made this flaky.
+    await page.keyboard.press("Tab"); // keyboard modality, so :focus-visible applies
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     const fab = page.locator("[data-floating-wa]");
     await expect(fab).toBeVisible();
-    const order = await page.evaluate(() => {
-      const fabEl = document.querySelector("[data-floating-wa]")!;
-      const main = document.querySelector("main")!;
-      const footer = document.querySelector("footer")!;
-      return {
-        afterMain: Boolean(main.compareDocumentPosition(fabEl) & Node.DOCUMENT_POSITION_FOLLOWING),
-        beforeFooter: Boolean(footer.compareDocumentPosition(fabEl) & Node.DOCUMENT_POSITION_PRECEDING),
-      };
-    });
-    expect(order).toEqual({ afterMain: true, beforeFooter: true });
     await fab.focus();
     await expect(fab).toBeFocused();
+    expect(await fab.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
   });
 });
 

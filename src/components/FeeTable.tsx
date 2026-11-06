@@ -12,9 +12,18 @@ const euro = new Intl.NumberFormat("en-DE", { style: "currency", currency: "EUR"
  * can be added later as content without a redesign — and never as placeholders.
  */
 export function FeeTable({ fees }: { fees: ServiceFee[] }) {
-  const rows = fees
-    .map((entry) => ({ entry, service: getService(entry.slug) }))
-    .filter((row): row is { entry: ServiceFee; service: NonNullable<ReturnType<typeof getService>> } => Boolean(row.service));
+  // Fail the build on content mistakes rather than silently hiding an approved price.
+  const seen = new Set<string>();
+  const rows = fees.map((entry) => {
+    const service = getService(entry.slug);
+    if (!service) throw new Error(`pricing.serviceFees: unknown service slug "${entry.slug}"`);
+    if (seen.has(entry.slug)) throw new Error(`pricing.serviceFees: "${entry.slug}" is listed twice`);
+    if (entry.fee.kind === "from" && !(Number.isFinite(entry.fee.amountEur) && entry.fee.amountEur > 0)) {
+      throw new Error(`pricing.serviceFees: "${entry.slug}" needs a positive amountEur`);
+    }
+    seen.add(entry.slug);
+    return { entry, service };
+  });
   if (rows.length === 0) return null;
 
   return (

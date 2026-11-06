@@ -1,3 +1,5 @@
+import { site } from "./site";
+
 export type Faq = { question: string; answer: string; id?: string };
 
 export type FaqCategory = {
@@ -51,7 +53,9 @@ export const faqCategories: FaqCategory[] = [
       {
         id: "contact",
         question: "How can I contact SimplYes?",
-        answer: "Use the enquiry form on our Contact page, message us on WhatsApp or email us at Info@simplyes.de. All three routes are shown on every page.",
+        answer: site.contact.email
+          ? `Use the enquiry form on our Contact page, message us on WhatsApp or email us at ${site.contact.email}. All three routes are shown on every page.`
+          : "Use the enquiry form on our Contact page or message us on WhatsApp. Both routes are shown on every page.",
       },
     ],
   },

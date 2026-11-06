@@ -17,7 +17,7 @@ Three levels of evidence are kept apart below:
 |---|---|
 | `npm run lint` / `npm run typecheck` | pass |
 | `npm run build` incl. placeholder guard | pass — 28 static routes |
-| Playwright, desktop 1440 px + Pixel 7 | **165 passed, 0 failed**, 59 skipped (device-specific duplicates) |
+| Playwright, desktop 1440 px + Pixel 7 | **167 passed, 0 failed**, 61 skipped (device-specific duplicates) |
 
 The suite covers: axe WCAG 2.2 AA on every route (incl. contrast with the new teal); one h1 and no skipped
 heading levels; unique titles, descriptions, canonicals and OG tags; structured data (Organization, WebSite,
@@ -74,6 +74,18 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
     their label on screens ≤ 400 px.
   - The floating-WhatsApp keyboard test scrolled to a point ~20 px from the final CTA, which hides the button
     by design, so it flaked. The test now scrolls to a point clear of both thresholds; component unchanged.
+- **Floating WhatsApp keyboard test rewritten.** The old test (and the first adjustment) only called `focus()`
+  from code, so it never proved keyboard behaviour. Probing real Tab navigation showed the button is never a Tab
+  stop: it hides by design when the final CTA or footer is on screen, which is where keyboard users arrive after
+  the main content. The tests now press Tab through `/about/` and a service page and check that focus never
+  lands on the hidden button, every focus stop is on screen, and keyboard users reach a WhatsApp link in the
+  page and in the footer. A separate test checks the visible button shows a focus ring. Verified by
+  mutation: removing the hidden state's `visibility: hidden` makes the keyboard tests fail.
+- **Axe flake removed.** CI flagged one flaky run: axe sampled the homepage's decorative (aria-hidden)
+  jargon → plain-language cross-fade mid-animation. Axe checks now run with reduced motion, so contrast is judged
+  on settled states (120/120 passes over 3 repeats).
+- **Fee table guards:** an unknown or duplicate service slug, or a non-positive "from" amount, fails the build
+  instead of silently hiding a price.
 - **FAQ "How can I contact SimplYes?" now lists email alongside the form and WhatsApp (§12).
 - **Docs:** handover document; this report; deployment guide updated to the real hosting state.
 
