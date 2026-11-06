@@ -73,7 +73,7 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
     column to 311 px (11 px past the screen edge with CI font metrics; 2 px gutter locally). Buttons now wrap
     their label on screens ≤ 400 px.
   - The floating-WhatsApp keyboard test scrolled to a point ~20 px from the final CTA, which hides the button
-    by design, so it flaked. The test now scrolls to a point clear of both thresholds; component unchanged.
+    by design, so it flaked. Superseded by the rewrite below.
 - **Floating WhatsApp keyboard test rewritten.** The old test (and the first adjustment) only called `focus()`
   from code, so it never proved keyboard behaviour. Probing real Tab navigation showed the button is never a Tab
   stop: it hides by design when the final CTA or footer is on screen, which is where keyboard users arrive after
@@ -86,7 +86,8 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
   on settled states (120/120 passes over 3 repeats).
 - **Fee table guards:** an unknown or duplicate service slug, or a non-positive "from" amount, fails the build
   instead of silently hiding a price.
-- **FAQ "How can I contact SimplYes?" now lists email alongside the form and WhatsApp (§12).
+- **FAQ "How can I contact SimplYes?"** now lists the configured email (`site.contact.email`) alongside the
+  form and WhatsApp (§12).
 - **Docs:** handover document; this report; deployment guide updated to the real hosting state.
 
 ## Deviations and decisions
