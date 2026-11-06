@@ -34,7 +34,15 @@ at 320–2560 px; tap targets; reduced motion; no console errors.
 | Mobile | Automated at 320/360/375/390/414/430/768/1024/1280+ px. **Open:** real iOS Safari / Android Chrome |
 | Browsers & a11y | Chromium automated + axe. **Open:** Safari, Firefox, Edge; screen-reader spot check |
 | SEO, speed & data | Metadata, sitemap, canonicals, structured data done. **Open:** Lighthouse on production, Search Console, GA4 events live |
-| Production readiness | **Open:** domain, SSL, production form test, notifications, analytics test, staging noindex confirmed on host, owner sign-off |
+| Production readiness | **Open:** domain, SSL, production form test, notifications, analytics test, staging noindex confirmed on host, backup/rollback test, owner sign-off |
+| Handover (§22 F) | [`HANDOVER.md`](HANDOVER.md): accounts, third-party services list, content-editing instructions, backup/recovery, assets, known limitations. [`DEPLOYMENT.md`](DEPLOYMENT.md): domain and DNS |
+
+## Fixes in this pass
+
+- Services dropdown: a pending hover-open timer could reopen the menu right after Escape, or after a click
+  that closed it, and a click straight after hovering closed the menu the pointer had just opened. Escape,
+  outside click and focus-out now cancel the pending timer, and a click with hover intent keeps the menu
+  open. This was the one failing test (`desktop nav links navigate`); the full suite passes again.
 
 ## Deviations and decisions
 

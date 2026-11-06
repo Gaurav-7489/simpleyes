@@ -92,7 +92,8 @@ Impressum/Privacy pages (which stay `noindex` until `legal.reviewed` is set to `
 
 ## Deployment
 
-See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). Nothing has been deployed by this PR.
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). Handover material (accounts, third-party services, content
+editing for the business team, backup/recovery, known limitations) is in [`docs/HANDOVER.md`](docs/HANDOVER.md).
 
 ## Outstanding business inputs
 
