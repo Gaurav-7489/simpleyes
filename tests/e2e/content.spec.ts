@@ -241,7 +241,9 @@ test.describe("floating WhatsApp button", () => {
   test("is reachable by keyboard after the main content", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard flow on desktop");
     await page.goto("/about/");
-    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
+    // Past the hero (> 60% of the viewport) but well clear of the final CTA, which hides the
+    // button by design; at 1.5 viewports the CTA sat ~20 px from the fold and made this flaky.
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     const fab = page.locator("[data-floating-wa]");
     await expect(fab).toBeVisible();
     const order = await page.evaluate(() => {

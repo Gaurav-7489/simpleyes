@@ -68,7 +68,13 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
   because the teal on `#F6F9F5` is 4.47:1, just under AA for body text.
 - **Fee table (§11 build note):** `FeeTable` renders per-service "From €X" / "On quotation" rows from
   `pricing.serviceFees`. The list is empty, so nothing is shown until prices are approved.
-- **FAQ "How can I contact SimplYes?"** now lists email alongside the form and WhatsApp (§12).
+- **CI was failing on `main`** (GitHub Actions `quality` job), with two tests passing locally but failing in CI:
+  - At 320 px, the passport page's "Get Assistance With This Service" button could not wrap, pushing the hero
+    column to 311 px (11 px past the screen edge with CI font metrics; 2 px gutter locally). Buttons now wrap
+    their label on screens ≤ 400 px.
+  - The floating-WhatsApp keyboard test scrolled to a point ~20 px from the final CTA, which hides the button
+    by design, so it flaked. The test now scrolls to a point clear of both thresholds; component unchanged.
+- **FAQ "How can I contact SimplYes?" now lists email alongside the form and WhatsApp (§12).
 - **Docs:** handover document; this report; deployment guide updated to the real hosting state.
 
 ## Deviations and decisions

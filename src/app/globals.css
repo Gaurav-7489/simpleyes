@@ -285,6 +285,20 @@
     box-shadow: inset 0 0 0 1.5px var(--color-accent-700);
   }
 
+  /* Small phones (§15: 320 px must not break): long labels such as
+     "Get Assistance With This Service" wrap instead of overflowing. */
+  @media (max-width: 400px) {
+    .btn {
+      white-space: normal;
+    }
+
+    .btn-face {
+      line-height: 1.25;
+      text-align: center;
+      padding-inline: 18px;
+    }
+  }
+
   .btn-sm .btn-face {
     min-height: 40px;
     padding: 8px 16px;
