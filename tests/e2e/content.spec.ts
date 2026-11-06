@@ -238,24 +238,61 @@ test.describe("floating WhatsApp button", () => {
     await expect(fab).toBeHidden();
   });
 
-  test("is reachable by keyboard after the main content", async ({ page, isMobile }) => {
+  // Real keyboard behaviour (Tab presses, not programmatic focus). The floating button is a pointer/touch
+  // shortcut: by design it hides while the final CTA or footer is on screen, which is exactly where a keyboard
+  // user arrives after the main content, so sequential navigation never lands on it. What must hold instead:
+  // no focus stop is ever invisible, and keyboard users reach a visible WhatsApp link in the page and footer.
+  test.describe("keyboard", () => {
+    // Instant scrolling, so each focus stop is measured where the user sees it (no smooth-scroll lag).
+    test.use({ reducedMotion: "reduce" });
+
+    for (const route of ["/about/", "/services/passport-services/"]) {
+      test(`never focused while hidden; WhatsApp still reachable (${route})`, async ({ page, isMobile }) => {
+        test.skip(isMobile, "keyboard flow on desktop");
+        await page.goto(route);
+        type Stop = { fab: boolean; fabVisible: boolean; wa: boolean; inMain: boolean; inFooter: boolean; onScreen: boolean };
+        const stops: Stop[] = [];
+        for (let i = 0; i < 250; i++) {
+          await page.keyboard.press("Tab");
+          const stop = await page.evaluate((): Stop | null => {
+            const a = document.activeElement as HTMLElement | null;
+            const fab = document.querySelector<HTMLElement>("[data-floating-wa]")!;
+            if (!a || a === document.body) return null;
+            const r = a.getBoundingClientRect();
+            const style = getComputedStyle(a);
+            return {
+              fab: a === fab,
+              fabVisible:
+                fab.dataset.visible === "true" && getComputedStyle(fab).visibility === "visible" && getComputedStyle(fab).opacity !== "0",
+              wa: (a.getAttribute("href") ?? "").startsWith("https://wa.me/"),
+              inMain: Boolean(a.closest("main")),
+              inFooter: Boolean(a.closest("footer")),
+              onScreen: style.visibility === "visible" && r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight,
+            };
+          });
+          if (!stop) break; // focus left the document
+          if (stops.at(-1)?.inFooter && !stop.inFooter) break; // wrapped past the end of the page
+          stops.push(stop);
+        }
+        expect(stops.some((s) => s.inFooter), "tabbed all the way into the footer").toBe(true);
+        expect(stops.filter((s) => s.fab && !s.fabVisible), "focus never lands on the hidden floating button").toEqual([]);
+        expect(stops.filter((s) => !s.onScreen).length, "every focus stop is visible on screen").toBe(0);
+        expect(stops.some((s) => s.wa && s.inMain), "a WhatsApp link in the page is keyboard-reachable").toBe(true);
+        expect(stops.some((s) => s.wa && s.inFooter), "the footer WhatsApp link is keyboard-reachable").toBe(true);
+      });
+    }
+  });
+
+  test("when visible, it is focusable with a visible focus ring", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard flow on desktop");
     await page.goto("/about/");
-    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
+    await page.keyboard.press("Tab"); // keyboard modality, so :focus-visible applies
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     const fab = page.locator("[data-floating-wa]");
     await expect(fab).toBeVisible();
-    const order = await page.evaluate(() => {
-      const fabEl = document.querySelector("[data-floating-wa]")!;
-      const main = document.querySelector("main")!;
-      const footer = document.querySelector("footer")!;
-      return {
-        afterMain: Boolean(main.compareDocumentPosition(fabEl) & Node.DOCUMENT_POSITION_FOLLOWING),
-        beforeFooter: Boolean(footer.compareDocumentPosition(fabEl) & Node.DOCUMENT_POSITION_PRECEDING),
-      };
-    });
-    expect(order).toEqual({ afterMain: true, beforeFooter: true });
     await fab.focus();
     await expect(fab).toBeFocused();
+    expect(await fab.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
   });
 });
 
@@ -332,6 +369,59 @@ test.describe("enquiry form (§13)", () => {
     // Entered data is kept.
     await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
   });
+});
+
+test.describe("enquiry delivery with a configured endpoint (§13)", () => {
+  // Runs only against a build with NEXT_PUBLIC_ENQUIRY_ENDPOINT set. The request is intercepted, so nothing
+  // reaches the real form service; the real end-to-end check (email arrives in the inbox) is manual.
+  const endpoint = process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT;
+  const honeypot = process.env.NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD || "_gotcha";
+  test.skip(!endpoint, "needs a build with NEXT_PUBLIC_ENQUIRY_ENDPOINT");
+
+  async function fillAndSend(page: import("@playwright/test").Page) {
+    await page.goto("/contact/?service=oci-services");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Email address/).fill("test@example.com");
+    await form.getByLabel(/City in Germany/).fill("Frankfurt");
+    await form.getByLabel(/Message/).fill("I would like help preparing an OCI application for my family.");
+    await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    return form;
+  }
+
+  test("sends JSON with the honeypot and subject, then shows /thank-you/ only when accepted", async ({ page }) => {
+    let body: Record<string, string> = {};
+    let headers: Record<string, string> = {};
+    await page.route(endpoint!, async (route) => {
+      body = route.request().postDataJSON();
+      headers = route.request().headers();
+      await route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true,"message":"Submission received."}' });
+    });
+    await fillAndSend(page);
+    await expect(page).toHaveURL(/\/thank-you\/$/);
+    expect(headers["accept"]).toContain("application/json");
+    expect(headers["content-type"]).toContain("application/json");
+    expect(body[honeypot]).toBe("");
+    expect(body.subject).toBe("New enquiry — OCI Services — Frankfurt");
+    expect(body.service).toBe("OCI Services");
+    expect(body.email).toBe("test@example.com");
+    expect(Object.keys(body)).not.toContain("passport_number");
+  });
+
+  for (const [status, reply] of [
+    [422, '{"success":false,"error":"undeliverable_email"}'],
+    [429, '{"message":"Too Many Attempts."}'],
+    [200, '{"success":false,"error":"rejected"}'],
+  ] as const) {
+    test(`keeps the visitor on the form with their data when the service answers ${status} ${reply}`, async ({ page }) => {
+      await page.route(endpoint!, (route) => route.fulfill({ status, contentType: "application/json", body: reply }));
+      const form = await fillAndSend(page);
+      await expect(form.getByRole("alert")).toContainText("could not be sent");
+      await expect(page).toHaveURL(/\/contact\//);
+      await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
+    });
+  }
 });
 
 test.describe("analytics (§18)", () => {

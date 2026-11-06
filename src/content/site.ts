@@ -72,10 +72,16 @@ export const site = {
   /**
    * Enquiry form endpoint (§13): an approved form service or secure endpoint that
    * accepts a JSON POST and returns 2xx only when the enquiry is accepted
-   * (e.g. a Formspree form URL). Unset → the form explains that it is not yet
+   * (recommended: Formdall, see docs/ENQUIRY-SETUP.md). Unset → the form explains that it is not yet
    * connected and offers WhatsApp/email instead; it never fakes success.
    */
   enquiryEndpoint: (process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT || null) as string | null,
+  /**
+   * Name of the form service's hidden anti-spam (honeypot) field. Formdall does not publish it: copy it from
+   * the hidden input in the form's "Embed" snippet in the Formdall dashboard. A JSON submission without this
+   * field is rejected, so it must match the configured service.
+   */
+  enquiryHoneypotField: (process.env.NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD || "_gotcha") as string,
   /** GA4 measurement ID (§18). Unset → no analytics code and no consent banner. */
   gaMeasurementId: (process.env.NEXT_PUBLIC_GA_ID || null) as string | null,
   official: {
@@ -85,6 +91,30 @@ export const site = {
     },
   },
 } as const;
+
+/**
+ * Form services the Privacy Policy can describe automatically, keyed by the endpoint's host. Facts are
+ * taken from each provider's own Impressum / privacy policy (checked 6 Nov 2026). An endpoint on any other
+ * host leaves the Privacy Policy's "form service" entry marked as outstanding.
+ */
+export const knownFormServices: Record<string, { name: string; provider: string; location: string; url: string }> = {
+  "api.formdall.de": {
+    name: "Formdall",
+    provider: "Daniel Proschko, Bahnhofstr. 8, 82216 Maisach, Germany",
+    location: "servers in Germany",
+    url: "https://formdall.de/datenschutz",
+  },
+};
+
+/** The configured enquiry form service, if it is one the Privacy Policy can name. */
+export const enquiryService = (() => {
+  if (!site.enquiryEndpoint) return null;
+  try {
+    return knownFormServices[new URL(site.enquiryEndpoint).hostname] ?? null;
+  } catch {
+    return null;
+  }
+})();
 
 export type NavItem = { label: string; href: string };
 

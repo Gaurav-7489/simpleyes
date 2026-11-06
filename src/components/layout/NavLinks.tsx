@@ -31,20 +31,38 @@ function ServicesMenu({ active }: { active: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** When the panel was last opened by hover, so a click straight after doesn't immediately close it. */
+  const hoverOpenedAt = useRef(0);
+
+  const clearHover = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+  };
+  const close = () => {
+    clearHover();
+    setOpenPath(null);
+  };
+
+  useEffect(() => clearHover, []);
 
   useEffect(() => {
     if (!open) return;
+    const dismiss = () => {
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+      setOpenPath(null);
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpenPath(null);
+        dismiss();
         buttonRef.current?.focus();
       }
     };
     const onPointer = (e: PointerEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpenPath(null);
+      if (!wrapRef.current?.contains(e.target as Node)) dismiss();
     };
     const onFocus = (e: FocusEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpenPath(null);
+      if (!wrapRef.current?.contains(e.target as Node)) dismiss();
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -58,8 +76,20 @@ function ServicesMenu({ active }: { active: boolean }) {
 
   const hover = (value: boolean) => {
     if (!window.matchMedia("(hover: hover)").matches) return;
-    if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setOpenPath(value ? pathname : null), value ? 60 : 160);
+    clearHover();
+    hoverTimer.current = setTimeout(() => {
+      hoverTimer.current = null;
+      if (value) hoverOpenedAt.current = Date.now();
+      setOpenPath(value ? pathname : null);
+    }, value ? 60 : 160);
+  };
+
+  const onClick = () => {
+    // A pending hover-open, or one that just happened, means the pointer user wants it open.
+    const hoverIntent = hoverTimer.current !== null || Date.now() - hoverOpenedAt.current < 500;
+    clearHover();
+    hoverOpenedAt.current = 0;
+    setOpenPath(open && !hoverIntent ? null : pathname);
   };
 
   return (
@@ -69,7 +99,7 @@ function ServicesMenu({ active }: { active: boolean }) {
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpenPath(open ? null : pathname)}
+        onClick={onClick}
         className={linkClass(active)}
       >
         Services
@@ -94,7 +124,7 @@ function ServicesMenu({ active }: { active: boolean }) {
                 <Link
                   href={href}
                   aria-current={current ? "page" : undefined}
-                  onClick={() => setOpenPath(null)}
+                  onClick={close}
                   className={`flex items-center gap-3 rounded-[12px] p-2.5 transition-colors hover:bg-accent-50 ${current ? "bg-accent-50" : ""}`}
                 >
                   <IconTile name={service.icon} size="sm" />
@@ -109,7 +139,7 @@ function ServicesMenu({ active }: { active: boolean }) {
         </ul>
         <Link
           href="/services/"
-          onClick={() => setOpenPath(null)}
+          onClick={close}
           className="mt-2 flex min-h-11 items-center justify-between rounded-[12px] bg-canvas-alt px-4 text-sm font-medium text-accent-700 hover:bg-accent-50"
         >
           View all services

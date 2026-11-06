@@ -4,47 +4,63 @@ The site is a static export (`next build` → `out/`). No server runtime or data
 form posts to an external, approved form service (no credentials in client code), and analytics load only
 after consent.
 
-## Before going live (checklist)
+## Current state (checked 6 Nov 2026)
 
-- [ ] Fill in `site.legal` in `src/content/site.ts` with verified Impressum details; set `reviewed: true`
-      only after the owner / a lawyer has approved Impressum and Privacy Policy.
+- **Host:** Vercel, Git-connected to this repository. Pushing to `main` deploys production; other branches get
+  preview deployments (automatically `noindex` + `Disallow: /` via `VERCEL_ENV`).
+- **Domain:** `simplyes.de` is already served by Vercel with SSL; `www.simplyes.de` redirects to the apex.
+  The site is live and indexable.
+- **Vercel alias:** `simpleyes.vercel.app` serves the same production build (canonical points to
+  `simplyes.de`). Recommended: in Project → Domains, redirect it to `simplyes.de`.
+- **Not configured yet:** `NEXT_PUBLIC_ENQUIRY_ENDPOINT` (form shows "being connected"), `NEXT_PUBLIC_GA_ID`.
+- **Owner:** the project `simpleyes` (`prj_KkwE0rGCxj686jynFiYLcQ7KEg6W`) lives in the Vercel team
+  `gaurav-7489s-projects`, the default team of the developer's personal Vercel account, not a SimplYes-owned
+  account. (From the Vercel GitHub integration's comment on the PR.)
+- **Plan:** not visible from GitHub. To check: sign in at vercel.com with the account that owns
+  `gaurav-7489s-projects` → the team switcher (top left) shows the plan next to the team name → **Settings →
+  Billing** shows the plan and charges; **Settings → Members** shows who owns the team. Vercel's Hobby plan is
+  for personal, non-commercial use only; a business site should run on Pro (about $20 per deploying seat per
+  month; check Vercel's pricing page).
+- **Ownership (not done; owner decision):** for SimplYes to own hosting, create a Vercel account/team with
+  `Info@simplyes.de`, choose its plan, then move the project there (Project → Settings → **Transfer project**)
+  and re-check the domain and environment variables afterwards. Nothing has been changed or purchased.
+
+## Remaining launch steps
+
+- [ ] **Impressum (urgent: it is live with placeholders):** fill in `site.legal` in `src/content/site.ts`
+      with verified details; set `reviewed: true` only after the owners / a lawyer have approved Impressum and
+      Privacy Policy.
 - [ ] Name the hosting provider, form service and retention periods in the Privacy Policy; supply the Terms
       (payments, cancellation/refunds, complaints, liability) and have Privacy, Terms, Disclaimer and Impressum
       reviewed by a qualified German adviser.
-- [ ] Confirm the WhatsApp number (`NEXT_PUBLIC_WHATSAPP_NUMBER`) and set `NEXT_PUBLIC_CONTACT_EMAIL`.
-- [ ] **Enquiry form:** create the form at the approved service (e.g. Formspree: new form → notification
-      email = the business inbox; enable its spam filtering), set `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, then submit
-      a real test enquiry on production and confirm it arrives (subject: "New enquiry — <service> — <city>")
-      and that the page redirects to `/thank-you/`. If the service is not on `formspree.io`, add its host to
-      `connect-src` and `form-action` in `vercel.json`.
-- [ ] **Analytics:** create the GA4 property (EU data settings, Google signals off), set `NEXT_PUBLIC_GA_ID`,
+- [ ] **Enquiry form:** follow [`ENQUIRY-SETUP.md`](ENQUIRY-SETUP.md) (Formdall, EU/Germany): create the
+      account under `Info@simplyes.de`, create the form with an email action to `Info@simplyes.de`, set
+      `NEXT_PUBLIC_ENQUIRY_ENDPOINT` and `NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD` in Vercel, redeploy, then send a
+      real test enquiry and confirm the email arrives. `vercel.json` already allows `api.formdall.de`; any
+      other service needs its host added to `connect-src` and `form-action`.
+- [ ] **Analytics (kept disabled until the owners decide):** if wanted, create the GA4 property (EU data settings, Google signals off), set `NEXT_PUBLIC_GA_ID`,
       have the banner text reviewed, and mark `generate_lead` as a key event in GA4. Verify events in GA4
       DebugView after accepting the banner.
-- [ ] **Now, until cut-over:** set `NEXT_PUBLIC_SITE_ENV=staging` on the Vercel project (Production and
-      Preview). Without it, `simpleyes.vercel.app` builds as production and is indexable with a canonical
-      pointing at `simplyes.de`, which still serves the old site.
-- [ ] Production build uses `NEXT_PUBLIC_SITE_ENV=production` and `NEXT_PUBLIC_SITE_URL=https://simplyes.de`.
-- [ ] After launch: submit `https://simplyes.de/sitemap.xml` in Google Search Console / Bing Webmaster Tools
-      and monitor Core Web Vitals (field data) there.
+- [ ] Production env vars: `NEXT_PUBLIC_SITE_ENV=production`, `NEXT_PUBLIC_SITE_URL=https://simplyes.de`
+      (current behaviour matches this).
+- [ ] Submit `https://simplyes.de/sitemap.xml` in Google Search Console / Bing Webmaster Tools and monitor
+      Core Web Vitals (field data) there.
+- [ ] Test a rollback once (Deployments → previous deployment → Instant Rollback), then roll forward.
 
-## Option A — Vercel (recommended)
+## Environment variables in Vercel
 
-1. Import the GitHub repository in Vercel (framework auto-detected: Next.js).
-2. Environment variables (Production): `NEXT_PUBLIC_SITE_ENV=production`, `NEXT_PUBLIC_SITE_URL=https://simplyes.de`.
-   Preview deployments automatically get `noindex` + `Disallow: /` (via `VERCEL_ENV`).
-3. Add the domain `simplyes.de` (and `www.simplyes.de` → redirect to apex) in Project → Domains, then
-   update DNS at the registrar as Vercel instructs. The domain currently points at GitHub Pages, so DNS
-   must be switched at cut-over time.
-4. `vercel.json` applies security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy)
-   and long-term caching for hashed assets.
+`NEXT_PUBLIC_*` values are compiled into the static files, so after changing any of them, **redeploy**
+(Deployments → ⋯ → Redeploy) for the change to take effect. See README.md for the full list.
 
-## Option B — GitHub Pages (current host of simplyes.de)
+## Alternative host: Cloudflare Pages or GitHub Pages
 
-1. Build with `NEXT_PUBLIC_SITE_ENV=production npm run build`.
-2. Publish `out/` (e.g. with `actions/upload-pages-artifact` + `actions/deploy-pages`), add a `CNAME` file
-   containing `simplyes.de` to `out/`, and add an empty `.nojekyll` so `_next/` is served.
-3. Limitation: GitHub Pages cannot set custom response headers, so the CSP/HSTS/frame headers from
-   `vercel.json` will not apply. If those are required, put a CDN (e.g. Cloudflare) in front or use Option A.
+Because the build is a plain static export, it can move without code changes:
+
+1. Build command `npm run build`, output directory `out`, Node 22, same environment variables.
+2. Redirects and security headers from `vercel.json` must be re-created in the new host's format
+   (Cloudflare Pages: `_redirects` and `_headers` files in `public/`). GitHub Pages cannot set headers or
+   server redirects at all.
+3. Point the `simplyes.de` DNS records at the new host and remove the domain from Vercel.
 
 ## Redirects (`vercel.json`, permanent)
 
@@ -54,13 +70,12 @@ after consent.
 - `/clients` → `/` (old-site link)
 - `/datenschutz/` and `/privacy-policy/` → `/privacy/`
 
-The local static server and `next build` do not apply `vercel.json`; verify redirects on a Vercel preview
-deployment (`curl -sI https://<preview>/services/document-guidance/`). GitHub Pages (Option B) would need
-meta-refresh stub pages instead.
+Verified on production on 6 Nov 2026 (308 responses). The local static server does not apply `vercel.json`.
 
 ## Verifying a deployment
 
 ```bash
 npm run build && npm run preview          # local static server on :4173
 npx playwright test                       # full suite against the export
+BASE=https://simplyes.de CHROME_PATH=/path/to/chrome node scripts/lighthouse.mjs   # Lighthouse on live
 ```

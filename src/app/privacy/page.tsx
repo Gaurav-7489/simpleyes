@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { site } from "@/content/site";
+import { enquiryService, site } from "@/content/site";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
 import { Missing, PendingReview } from "@/components/LegalNotice";
@@ -74,11 +74,23 @@ export default function PrivacyPage() {
               and, if you decide to proceed, to prepare our assistance. Legal basis: Art. 6(1)(b) GDPR (pre-contractual
               measures at your request) and Art. 6(1)(f) GDPR (responding to enquiries).
             </p>
-            <p>
-              Form submissions are transmitted to and stored by <Missing label="Form service provider name and address" />,
-              which forwards them to our business inbox. Only the authorised SimplYes team can access enquiries.
-              Retention period for enquiry data: <Missing label="Retention period" />.
-            </p>
+            {enquiryService ? (
+              <p>
+                Form submissions are transmitted to {enquiryService.name} ({enquiryService.provider}), which checks them
+                for spam on {enquiryService.location} and forwards them by email to our business inbox. {enquiryService.name}{" "}
+                acts as our processor under a data processing agreement (Art. 28 GDPR); its sub-processors are listed in{" "}
+                <a href={enquiryService.url}>its privacy policy</a>. Our business inbox is provided by{" "}
+                <Missing label="Email (mailbox) provider name and address" />. Only the authorised SimplYes team can
+                access enquiries. Retention period for enquiry data: <Missing label="Retention period" />.
+              </p>
+            ) : (
+              <p>
+                Form submissions are transmitted to <Missing label="Form service provider name and address" />, which
+                forwards them to our business inbox, provided by <Missing label="Email (mailbox) provider name and address" />.
+                Only the authorised SimplYes team can access enquiries. Retention period for enquiry data:{" "}
+                <Missing label="Retention period" />.
+              </p>
+            )}
             <p>Please do not include passport numbers, identity numbers or other sensitive information in your message.</p>
 
             <h2>5. Analytics (only with your consent)</h2>

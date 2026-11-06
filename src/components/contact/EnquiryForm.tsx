@@ -11,6 +11,8 @@ type ServiceOption = { slug: string; title: string };
 type Props = {
   services: ServiceOption[];
   endpoint: string | null;
+  /** Name of the form service's hidden anti-spam field (see site.enquiryHoneypotField). */
+  honeypotField: string;
   whatsappHref: string;
   email: string | null;
 };
@@ -66,7 +68,7 @@ const order: Field[] = ["name", "email", "phone", "service", "company", "message
  * "Sending…" state to block repeat submits, redirect to /thank-you/ only after
  * the endpoint accepts. No document uploads, ever.
  */
-export function EnquiryForm({ services, endpoint, whatsappHref, email }: Props) {
+export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, email }: Props) {
   const router = useRouter();
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
@@ -136,7 +138,7 @@ export function EnquiryForm({ services, endpoint, whatsappHref, email }: Props) 
       return;
     }
     // Honeypot: real visitors never fill this hidden field.
-    const honeypot = (form.elements.namedItem("_gotcha") as HTMLInputElement | null)?.value;
+    const honeypot = (form.elements.namedItem(honeypotField) as HTMLInputElement | null)?.value;
     if (honeypot) {
       router.push("/thank-you/");
       return;
@@ -150,7 +152,9 @@ export function EnquiryForm({ services, endpoint, whatsappHref, email }: Props) 
     setStatus("sending");
     const params = new URLSearchParams(window.location.search);
     const service = services.find((s) => s.slug === values.service);
+    // Field order matters: the form service lists fields in the notification email in this order.
     const payload = {
+      subject: `New enquiry — ${service?.title ?? "General"}${values.city.trim() ? ` — ${values.city.trim()}` : ""}`,
       name: values.name.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
@@ -169,8 +173,8 @@ export function EnquiryForm({ services, endpoint, whatsappHref, email }: Props) 
       utm_source: params.get("utm_source") ?? "",
       utm_medium: params.get("utm_medium") ?? "",
       utm_campaign: params.get("utm_campaign") ?? "",
-      _subject: `New enquiry — ${service?.title ?? "General"}${values.city.trim() ? ` — ${values.city.trim()}` : ""}`,
-      _gotcha: "",
+      // The service's honeypot must be present (and empty) or a JSON submission is rejected.
+      [honeypotField]: "",
     };
 
     try {
@@ -180,6 +184,9 @@ export function EnquiryForm({ services, endpoint, whatsappHref, email }: Props) 
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // Accepted only on 2xx without an explicit `success: false` (form services answer with JSON).
+      const body: unknown = await res.json().catch(() => null);
+      if (body && typeof body === "object" && (body as { success?: unknown }).success === false) throw new Error("rejected");
       try {
         window.sessionStorage.setItem(LEAD_FLAG, JSON.stringify({ service: service?.title ?? "", preferred_contact: values.contactMethod }));
       } catch {
@@ -469,7 +476,7 @@ export function EnquiryForm({ services, endpoint, whatsappHref, email }: Props) 
         {/* Honeypot (spam protection): hidden from people and assistive tech. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
           <label htmlFor={id("gotcha")}>Leave this field empty</label>
-          <input id={id("gotcha")} name="_gotcha" type="text" tabIndex={-1} autoComplete="off" />
+          <input id={id("gotcha")} name={honeypotField} type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
         <div className="sm:col-span-2">

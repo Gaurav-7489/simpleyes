@@ -34,6 +34,7 @@ export default function ContactPage() {
           <EnquiryForm
             services={services.map((s) => ({ slug: s.slug, title: s.title }))}
             endpoint={site.enquiryEndpoint}
+            honeypotField={site.enquiryHoneypotField}
             whatsappHref={whatsappHref()}
             email={email}
           />
