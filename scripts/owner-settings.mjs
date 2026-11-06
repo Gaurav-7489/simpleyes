@@ -2,20 +2,21 @@ const textGroups = {
   legal: ["legalName", "businessType", "representative", "street", "postalCodeCity", "country", "email", "phone", "vatId", "register", "lastUpdated"],
   privacy: ["mailboxProvider", "enquiryRetention", "conversationRetention"],
   terms: ["paymentMethodsAndTiming", "cancellationAndRefunds", "liability", "complaintsProcedure"],
+  policies: ["privacyPolicy", "termsAndConditions", "disclaimer", "impressum"],
   launch: ["deliveryVerifiedAt"],
 };
 const booleanGroups = {
   legal: ["reviewed"],
   launch: ["brandingApproved", "hostingApproved", "serviceContentApproved", "independenceStatementApproved", "quotationModelApproved", "enquiryDeliveryConfirmed"],
 };
-const optional = new Set(["legal.vatId", "legal.register", "launch.deliveryVerifiedAt"]);
+const optional = new Set(["legal.vatId", "legal.register", "launch.deliveryVerifiedAt", ...textGroups.policies.map((key) => `policies.${key}`)]);
 const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const isDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 
 export function missingOwnerText(settings) {
   return Object.entries(textGroups).flatMap(([group, keys]) => keys
     .map((key) => `${group}.${key}`)
-    .filter((path) => !optional.has(path) && !settings[group]?.[path.split(".")[1]]?.trim()));
+    .filter((path) => !optional.has(path) && !(group === "terms" && settings.policies?.termsAndConditions?.trim()) && !settings[group]?.[path.split(".")[1]]?.trim()));
 }
 
 /** Reject typos, placeholder values and false review/delivery declarations before publishing. */

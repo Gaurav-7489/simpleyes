@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { Missing, PendingReview } from "@/components/LegalNotice";
+import { Missing, OwnerPolicy, PendingReview } from "@/components/LegalNotice";
 
 const legal = site.legal;
 const complete = Boolean(legal.legalName && legal.representative && legal.street && legal.postalCodeCity && legal.email);
@@ -31,6 +31,7 @@ export default function ImpressumPage() {
               be completed with the correct registered details and reviewed before the website goes live.
             </PendingReview>
           )}
+          <OwnerPolicy value={site.policies.impressum} lastUpdated={site.legal.lastUpdated}>
           <div className="prose-simple mt-8">
             <h2>Service provider</h2>
             <p>
@@ -82,6 +83,7 @@ export default function ImpressumPage() {
               influence on their content, and the respective provider is responsible for it.
             </p>
           </div>
+          </OwnerPolicy>
         </div>
       </section>
     </>

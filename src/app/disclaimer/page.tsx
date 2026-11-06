@@ -4,7 +4,7 @@ import { site } from "@/content/site";
 import { independenceStatement } from "@/content/home";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { PendingReview } from "@/components/LegalNotice";
+import { OwnerPolicy, PendingReview } from "@/components/LegalNotice";
 
 export const metadata: Metadata = pageMetadata({
   title: "Disclaimer & Service Limitations",
@@ -23,6 +23,7 @@ export default function DisclaimerPage() {
           {!site.legal.reviewed && (
             <PendingReview>Draft wording based on the approved specification, subject to owner and legal review.</PendingReview>
           )}
+          <OwnerPolicy value={site.policies.disclaimer} lastUpdated={site.legal.lastUpdated}>
           <div className="prose-simple mt-8">
             <p className="text-sm">Last updated: {site.legal.lastUpdated}</p>
 
@@ -67,6 +68,7 @@ export default function DisclaimerPage() {
               See also our <Link href="/terms/">Terms &amp; Conditions</Link> and <Link href="/privacy/">Privacy Policy</Link>.
             </p>
           </div>
+          </OwnerPolicy>
         </div>
       </section>
     </>

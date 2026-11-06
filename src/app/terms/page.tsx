@@ -4,7 +4,7 @@ import { site } from "@/content/site";
 import { independenceStatement } from "@/content/home";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { OwnerCopy, PendingReview } from "@/components/LegalNotice";
+import { OwnerCopy, OwnerPolicy, PendingReview } from "@/components/LegalNotice";
 
 export const metadata: Metadata = pageMetadata({
   title: "Terms & Conditions",
@@ -30,6 +30,7 @@ export default function TermsPage() {
               adviser before launch. Sections marked “to be provided” are owner decisions.
             </PendingReview>
           )}
+          <OwnerPolicy value={site.policies.termsAndConditions} lastUpdated={site.legal.lastUpdated}>
           <div className="prose-simple mt-8">
             <p className="text-sm">Last updated: {site.legal.lastUpdated}</p>
 
@@ -91,6 +92,7 @@ export default function TermsPage() {
               .
             </p>
           </div>
+          </OwnerPolicy>
         </div>
       </section>
     </>

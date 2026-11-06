@@ -51,3 +51,9 @@ test("a login/error page or disconnected form cannot pass live activation checks
   assert.ok(contactActivationProblems(200, '<form id="enquiry">The online form is being connected</form>').length);
   assert.deepEqual(contactActivationProblems(200, '<form id="enquiry"><button>Send Enquiry</button></form>'), []);
 });
+
+test("full approved Terms text replaces the unused clause fields in the readiness check", () => {
+  const s = copy(); s.policies.termsAndConditions = "Synthetic full policy text for this test only.";
+  assert.equal(launchProblems(s).some((item) => item.startsWith("terms.")), false);
+  assert.equal(launchProblems(s).includes("legal.reviewed (owner/adviser approval)"), true);
+});

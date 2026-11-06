@@ -10,6 +10,7 @@ export type OwnerSettings = {
   };
   privacy: { mailboxProvider: Text; enquiryRetention: Text; conversationRetention: Text };
   terms: { paymentMethodsAndTiming: Text; cancellationAndRefunds: Text; liability: Text; complaintsProcedure: Text };
+  policies: { privacyPolicy: Text; termsAndConditions: Text; disclaimer: Text; impressum: Text };
   launch: {
     brandingApproved: boolean; hostingApproved: boolean; serviceContentApproved: boolean;
     independenceStatementApproved: boolean; quotationModelApproved: boolean;

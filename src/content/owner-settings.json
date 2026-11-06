@@ -24,6 +24,12 @@
     "liability": null,
     "complaintsProcedure": null
   },
+  "policies": {
+    "privacyPolicy": null,
+    "termsAndConditions": null,
+    "disclaimer": null,
+    "impressum": null
+  },
   "launch": {
     "brandingApproved": false,
     "hostingApproved": false,

@@ -23,3 +23,14 @@ export function Missing({ label }: { label: string }) {
 export function OwnerCopy({ value, label }: { value: string | null; label: string }) {
   return value?.trim() ? <span className="whitespace-pre-line">{value}</span> : <Missing label={label} />;
 }
+
+/** Optional complete plain-text policy supplied by the owner/adviser, with no executable HTML. */
+export function OwnerPolicy({ value, lastUpdated, children }: { value: string | null; lastUpdated: string; children: ReactNode }) {
+  if (!value?.trim()) return <>{children}</>;
+  return (
+    <div className="prose-simple mt-8">
+      <p className="text-sm">Last updated: {lastUpdated}</p>
+      {value.split(/\n\s*\n/).map((paragraph, index) => <p key={index} className="whitespace-pre-line">{paragraph}</p>)}
+    </div>
+  );
+}

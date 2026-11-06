@@ -60,6 +60,7 @@ export const site = {
   legal: ownerSettings.legal,
   privacy: ownerSettings.privacy,
   terms: ownerSettings.terms,
+  policies: ownerSettings.policies,
   /**
    * Enquiry form endpoint (§13): an approved form service or secure endpoint that
    * accepts a JSON POST and returns 2xx only when the enquiry is accepted

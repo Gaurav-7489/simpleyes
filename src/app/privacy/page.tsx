@@ -3,7 +3,7 @@ import Link from "next/link";
 import { enquiryService, site } from "@/content/site";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { Missing, OwnerCopy, PendingReview } from "@/components/LegalNotice";
+import { Missing, OwnerCopy, OwnerPolicy, PendingReview } from "@/components/LegalNotice";
 
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
@@ -33,6 +33,7 @@ export default function PrivacyPage() {
               and retention periods must be confirmed before launch.
             </PendingReview>
           )}
+          <OwnerPolicy value={site.policies.privacyPolicy} lastUpdated={site.legal.lastUpdated}>
           <div className="prose-simple mt-8">
             <p className="text-sm">Last updated: {site.legal.lastUpdated}</p>
 
@@ -168,6 +169,7 @@ export default function PrivacyPage() {
               new services or tools.
             </p>
           </div>
+          </OwnerPolicy>
         </div>
       </section>
     </>

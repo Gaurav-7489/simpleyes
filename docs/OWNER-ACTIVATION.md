@@ -34,6 +34,7 @@ Open [owner-settings.json](../src/content/owner-settings.json) on GitHub, choose
 | `legal` | Populates Impressum; `lastUpdated` is the date of the approved legal text |
 | `privacy` | Populates mailbox provider and retention entries in the Privacy Policy |
 | `terms` | Populates the payment, cancellation/refund, liability and complaints entries |
+| `policies` | Optional complete approved plain-text replacements for Privacy, Terms, Disclaimer and Impressum |
 | `launch` | Records owner approvals for the readiness check; does not invent or publish new policy wording |
 
 Replace an unknown `null` only with approved plain text, enclosed in double quotes. The renderer escapes
@@ -44,6 +45,12 @@ Set `legal.reviewed` to true only after the owner/adviser has reviewed the actua
 four legal pages. The build rejects this flag if required business/policy inputs are still missing.
 Final reviewed wording in other sections of those pages must also be checked; the flag cannot certify
 legal compliance. Commit the file, wait for CI and Vercel to pass, and inspect the published pages.
+
+If an adviser supplies complete replacement wording, put it in the matching `policies` field. Blank lines
+separate paragraphs; use `\n` for line breaks in JSON. It replaces that page's draft body while the review
+notice and indexing safeguard remain controlled by `legal.reviewed`. With full Terms supplied, the four
+unused `terms` clause fields can remain null. Business identity and privacy records still need to be
+completed. No page component needs to be edited for a full policy replacement.
 
 ## 3. Activate Formdall and connect Vercel
 
