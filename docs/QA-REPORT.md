@@ -88,7 +88,15 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
   instead of silently hiding a price.
 - **FAQ "How can I contact SimplYes?"** now lists the configured email (`site.contact.email`) alongside the
   form and WhatsApp (§12).
-- **Docs:** handover document; this report; deployment guide updated to the real hosting state.
+- **Enquiry delivery prepared for Formdall** (EU, servers in Germany; nothing set up or purchased): the form
+  sends a provider-neutral `subject` and the service's honeypot field (name configurable via
+  `NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD`), treats a JSON `success: false` as a failure, and the CSP allows
+  `api.formdall.de` instead of `formspree.io`. Verified on a separate build with a dummy Formdall endpoint
+  and intercepted requests (no real submissions): payload, headers and subject correct; 200 → `/thank-you/`;
+  422, 429 and `success:false` keep the visitor on the form with their data. The Privacy Policy names Formdall
+  automatically when its endpoint is configured; mailbox provider and retention stay marked outstanding.
+- **Docs:** handover document; this report; deployment guide updated to the real hosting state;
+  [`ENQUIRY-SETUP.md`](ENQUIRY-SETUP.md) (Formdall costs, account setup, test, mailbox identification).
 
 ## Deviations and decisions
 
@@ -101,7 +109,7 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
 
 ## Unverified — must be tested before sign-off
 
-1. A real enquiry submitted on production reaches `Info@simplyes.de` with the subject
+1. A real enquiry (through Formdall, once set up) submitted on production reaches `Info@simplyes.de` with the subject
    "New enquiry — <service> — <city>", and the page then shows `/thank-you/`.
 2. Spam filtering and duplicate handling at the chosen form service; acknowledgement email (if enabled).
 3. GA4: consent banner shown, events (`view_service`, `cta_click`, `whatsapp_click`, `email_click`,

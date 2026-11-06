@@ -371,6 +371,59 @@ test.describe("enquiry form (§13)", () => {
   });
 });
 
+test.describe("enquiry delivery with a configured endpoint (§13)", () => {
+  // Runs only against a build with NEXT_PUBLIC_ENQUIRY_ENDPOINT set. The request is intercepted, so nothing
+  // reaches the real form service; the real end-to-end check (email arrives in the inbox) is manual.
+  const endpoint = process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT;
+  const honeypot = process.env.NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD || "_gotcha";
+  test.skip(!endpoint, "needs a build with NEXT_PUBLIC_ENQUIRY_ENDPOINT");
+
+  async function fillAndSend(page: import("@playwright/test").Page) {
+    await page.goto("/contact/?service=oci-services");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Email address/).fill("test@example.com");
+    await form.getByLabel(/City in Germany/).fill("Frankfurt");
+    await form.getByLabel(/Message/).fill("I would like help preparing an OCI application for my family.");
+    await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    return form;
+  }
+
+  test("sends JSON with the honeypot and subject, then shows /thank-you/ only when accepted", async ({ page }) => {
+    let body: Record<string, string> = {};
+    let headers: Record<string, string> = {};
+    await page.route(endpoint!, async (route) => {
+      body = route.request().postDataJSON();
+      headers = route.request().headers();
+      await route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true,"message":"Submission received."}' });
+    });
+    await fillAndSend(page);
+    await expect(page).toHaveURL(/\/thank-you\/$/);
+    expect(headers["accept"]).toContain("application/json");
+    expect(headers["content-type"]).toContain("application/json");
+    expect(body[honeypot]).toBe("");
+    expect(body.subject).toBe("New enquiry — OCI Services — Frankfurt");
+    expect(body.service).toBe("OCI Services");
+    expect(body.email).toBe("test@example.com");
+    expect(Object.keys(body)).not.toContain("passport_number");
+  });
+
+  for (const [status, reply] of [
+    [422, '{"success":false,"error":"undeliverable_email"}'],
+    [429, '{"message":"Too Many Attempts."}'],
+    [200, '{"success":false,"error":"rejected"}'],
+  ] as const) {
+    test(`keeps the visitor on the form with their data when the service answers ${status} ${reply}`, async ({ page }) => {
+      await page.route(endpoint!, (route) => route.fulfill({ status, contentType: "application/json", body: reply }));
+      const form = await fillAndSend(page);
+      await expect(form.getByRole("alert")).toContainText("could not be sent");
+      await expect(page).toHaveURL(/\/contact\//);
+      await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
+    });
+  }
+});
+
 test.describe("analytics (§18)", () => {
   test("no analytics code or consent banner without a measurement ID", async ({ page }) => {
     test.skip(Boolean(process.env.NEXT_PUBLIC_GA_ID), "only without GA configured");

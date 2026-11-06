@@ -14,7 +14,7 @@ never as the only owner.
 | GitHub repository `simpleyes` | Source code, history, CI | Exists |
 | Hosting: Vercel (`gaurav-7489s-projects/simpleyes`) | Production (simplyes.de) + preview deployments | Live. Confirm the account owner and the plan (Hobby is non-commercial) |
 | Domain registrar for `simplyes.de` | DNS, SSL via host | Existing, owner-held |
-| Form service (e.g. Formspree) | Receives enquiries, emails the business inbox, spam filtering | To be chosen by owners |
+| Form service: Formdall (recommended) | Receives enquiries, filters spam, emails `Info@simplyes.de` | To be created by SimplYes under `Info@simplyes.de` (see ENQUIRY-SETUP.md) |
 | Business inbox `Info@simplyes.de` | Enquiry notifications, public contact | Exists |
 | Google Analytics 4 | Traffic and conversion measurement | To be created by owners |
 | Google Search Console | Indexing, sitemap, search queries | To be verified after launch |
@@ -24,7 +24,7 @@ never as the only owner.
 | Service | Used for | Personal data? | Cost | Required? |
 |---|---|---|---|---|
 | Hosting (Vercel) | Serving the static site | Server logs (IP) | Hobby is free but for non-commercial use only; Pro is billed per team member per month (check current pricing). Cloudflare Pages' free tier allows commercial use | Yes |
-| Form service (e.g. Formspree) | Enquiry delivery to the inbox | Yes: enquiry fields | Free tier has a monthly submission cap; acknowledgement emails may need a paid plan | Yes, before launch |
+| Form service: Formdall (recommended) | Enquiry spam check and delivery to the inbox | Yes: enquiry fields; not stored if "store submissions" stays off; servers in Germany; AVV included | Free: 100 submissions/month; Hobby €4.99/month incl. VAT for 1,000 | Yes, before enquiries can arrive |
 | Email provider for `Info@simplyes.de` | Receiving enquiries | Yes | Existing | Yes |
 | Google Analytics 4 | Analytics, only after consent | Pseudonymous IDs | Free | Optional |
 | Google Search Console | SEO monitoring | No | Free | Recommended |

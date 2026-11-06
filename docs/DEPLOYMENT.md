@@ -13,9 +13,17 @@ after consent.
 - **Vercel alias:** `simpleyes.vercel.app` serves the same production build (canonical points to
   `simplyes.de`). Recommended: in Project → Domains, redirect it to `simplyes.de`.
 - **Not configured yet:** `NEXT_PUBLIC_ENQUIRY_ENDPOINT` (form shows "being connected"), `NEXT_PUBLIC_GA_ID`.
-- **Plan:** check which Vercel plan the project is on. Vercel's Hobby plan is for personal, non-commercial
-  use; a business site should be on Pro, or moved to a host whose free tier allows commercial use (see
-  HANDOVER.md §2).
+- **Owner:** the project `simpleyes` (`prj_KkwE0rGCxj686jynFiYLcQ7KEg6W`) lives in the Vercel team
+  `gaurav-7489s-projects`, the default team of the developer's personal Vercel account, not a SimplYes-owned
+  account. (From the Vercel GitHub integration's comment on the PR.)
+- **Plan:** not visible from GitHub. To check: sign in at vercel.com with the account that owns
+  `gaurav-7489s-projects` → the team switcher (top left) shows the plan next to the team name → **Settings →
+  Billing** shows the plan and charges; **Settings → Members** shows who owns the team. Vercel's Hobby plan is
+  for personal, non-commercial use only; a business site should run on Pro (about $20 per deploying seat per
+  month; check Vercel's pricing page).
+- **Ownership (not done; owner decision):** for SimplYes to own hosting, create a Vercel account/team with
+  `Info@simplyes.de`, choose its plan, then move the project there (Project → Settings → **Transfer project**)
+  and re-check the domain and environment variables afterwards. Nothing has been changed or purchased.
 
 ## Remaining launch steps
 
@@ -25,13 +33,12 @@ after consent.
 - [ ] Name the hosting provider, form service and retention periods in the Privacy Policy; supply the Terms
       (payments, cancellation/refunds, complaints, liability) and have Privacy, Terms, Disclaimer and Impressum
       reviewed by a qualified German adviser.
-- [ ] **Enquiry form:** create the form at the approved service (e.g. Formspree: new form → notification
-      email = `Info@simplyes.de`; enable its spam filtering), add `NEXT_PUBLIC_ENQUIRY_ENDPOINT` in Vercel →
-      Settings → Environment Variables (Production + Preview), redeploy, then submit a real test enquiry on
-      production and confirm it arrives (subject: "New enquiry — <service> — <city>") and that the page
-      shows `/thank-you/`. If the service is not on `formspree.io`, add its host to `connect-src` and
-      `form-action` in `vercel.json`.
-- [ ] **Analytics:** create the GA4 property (EU data settings, Google signals off), set `NEXT_PUBLIC_GA_ID`,
+- [ ] **Enquiry form:** follow [`ENQUIRY-SETUP.md`](ENQUIRY-SETUP.md) (Formdall, EU/Germany): create the
+      account under `Info@simplyes.de`, create the form with an email action to `Info@simplyes.de`, set
+      `NEXT_PUBLIC_ENQUIRY_ENDPOINT` and `NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD` in Vercel, redeploy, then send a
+      real test enquiry and confirm the email arrives. `vercel.json` already allows `api.formdall.de`; any
+      other service needs its host added to `connect-src` and `form-action`.
+- [ ] **Analytics (kept disabled until the owners decide):** if wanted, create the GA4 property (EU data settings, Google signals off), set `NEXT_PUBLIC_GA_ID`,
       have the banner text reviewed, and mark `generate_lead` as a key event in GA4. Verify events in GA4
       DebugView after accepting the banner.
 - [ ] Production env vars: `NEXT_PUBLIC_SITE_ENV=production`, `NEXT_PUBLIC_SITE_URL=https://simplyes.de`
