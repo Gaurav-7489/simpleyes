@@ -40,7 +40,9 @@ npm run dev        # http://localhost:3000
 | `npm run build` | Production static export to `out/` |
 | `npm run preview` | Serve `out/` on http://localhost:4173 (mirrors static hosting) |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
+| `npm run test:unit` | Enquiry endpoint, CSP and honeypot configuration safety checks |
 | `npm run test:e2e` | Playwright suite (requires `npm run build` and `npx playwright install chromium`) |
+| `CROSS_BROWSER=1 npm run test:e2e` | Also run Firefox and iPhone/WebKit (install those browsers first) |
 | `npm run check` | All of the above |
 
 ## Environment variables
@@ -50,7 +52,7 @@ npm run dev        # http://localhost:3000
 | `NEXT_PUBLIC_SITE_URL` | `https://simplyes.de` | Canonical origin for canonicals, sitemap, OG, JSON-LD |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | `4915216627596` | Digits only. Default is the business number +49 1521 6627596 |
 | `NEXT_PUBLIC_SITE_ENV` | — | `production` for the live build. Anything else → `noindex` + `Disallow: /`. On Vercel, `VERCEL_ENV` is used automatically |
-| `NEXT_PUBLIC_ENQUIRY_ENDPOINT` | — | Form service endpoint for the enquiry form (JSON POST, 2xx without `success: false` = accepted). Recommended: Formdall (EU, servers in Germany), see [`docs/ENQUIRY-SETUP.md`](docs/ENQUIRY-SETUP.md). Unset → the form says it is not connected yet and offers WhatsApp/email; it never shows success |
+| `NEXT_PUBLIC_ENQUIRY_ENDPOINT` | — | Approved HTTPS form service (JSON POST; 2xx plus `success:true` / `ok:true`, or 204). Origin must be in both CSP directives. Recommended Formdall; see [`docs/ENQUIRY-SETUP.md`](docs/ENQUIRY-SETUP.md). Unset → WhatsApp/email fallback; no false success |
 | `NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD` | `_gotcha` | Name of the form service's hidden anti-spam field (from Formdall's embed snippet). Must match the service or submissions are rejected |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | `Info@simplyes.de` | Approved public email (footer, contact page, service pages, privacy requests). Unset → email routes are hidden |
 | `NEXT_PUBLIC_GA_ID` | — | GA4 measurement ID. **Keep unset until the owners decide on analytics.** Unset → no analytics code and no consent banner. Set → consent banner; GA loads only after "Accept" |

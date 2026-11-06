@@ -4,7 +4,7 @@ import type { ServiceFee } from "@/content/home";
 import { enquiryHref, getService } from "@/content/services";
 import { IconTile } from "@/components/ui/Icon";
 
-const euro = new Intl.NumberFormat("en-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const euro = new Intl.NumberFormat("en-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
 
 /**
  * §11 build note: fee table with "From / Quote" states, driven entirely by

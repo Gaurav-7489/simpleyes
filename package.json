@@ -8,13 +8,14 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/check-content.mjs",
+    "prebuild": "node scripts/check-enquiry-config.mjs && node scripts/check-content.mjs",
     "build": "next build",
     "preview": "node scripts/serve-static.mjs out 4173",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "check": "npm run typecheck && npm run lint && npm run build && npm run test:e2e",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "check": "npm run test:unit && npm run lint && npm run build && npm run typecheck && npm run test:e2e",
     "check:content": "node scripts/check-content.mjs"
   },
   "dependencies": {

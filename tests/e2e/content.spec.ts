@@ -354,6 +354,13 @@ test.describe("enquiry form (§13)", () => {
     await expect(page.getByLabel(/Approximate number of employees/)).toBeVisible();
   });
 
+  test("choosing Corporate Services in the form reveals the company fields", async ({ page }) => {
+    await page.goto("/contact/");
+    await page.getByLabel(/Service category/).selectOption("corporate-services");
+    await expect(page.getByLabel(/Company name/)).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: /This is a corporate enquiry/ })).toBeChecked();
+  });
+
   test("never shows success unless an endpoint accepted the enquiry", async ({ page }) => {
     test.skip(Boolean(process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT), "only without a configured endpoint");
     await page.goto("/contact/");
@@ -413,6 +420,12 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     [422, '{"success":false,"error":"undeliverable_email"}'],
     [429, '{"message":"Too Many Attempts."}'],
     [200, '{"success":false,"error":"rejected"}'],
+    [200, '{"ok":false}'],
+    [200, '{}'],
+    [200, 'null'],
+    [200, '[]'],
+    [200, '<html>Sign in required</html>'],
+    [200, '{"success":true,"error":"delivery_failed"}'],
   ] as const) {
     test(`keeps the visitor on the form with their data when the service answers ${status} ${reply}`, async ({ page }) => {
       await page.route(endpoint!, (route) => route.fulfill({ status, contentType: "application/json", body: reply }));
@@ -422,6 +435,71 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
       await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
     });
   }
+
+  test("keeps entered details after a network failure and allows a successful retry", async ({ page }) => {
+    let requests = 0;
+    await page.route(endpoint!, async (route) => {
+      requests++;
+      if (requests === 1) await route.abort("failed");
+      else await route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true}' });
+    });
+    const form = await fillAndSend(page);
+    await expect(form.getByRole("alert")).toContainText("could not be sent");
+    await expect(form.getByLabel(/Message/)).toHaveValue("I would like help preparing an OCI application for my family.");
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    await expect(page).toHaveURL(/\/thank-you\/$/);
+    expect(requests).toBe(2);
+  });
+
+  test("blocks duplicate submissions while the provider is processing", async ({ page }) => {
+    let requests = 0;
+    let release!: () => void;
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    await page.route(endpoint!, async (route) => {
+      requests++;
+      await pending;
+      await route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true}' });
+    });
+    try {
+      const form = await fillAndSend(page);
+      await expect(form.getByRole("button", { name: "Sending" })).toBeDisabled();
+      await form.evaluate((el) => {
+        (el as HTMLFormElement).requestSubmit();
+        (el as HTMLFormElement).requestSubmit();
+      });
+      expect(requests).toBe(1);
+      release();
+      await expect(page).toHaveURL(/\/thank-you\/$/);
+    } finally {
+      release();
+    }
+  });
+
+  test("a stalled request stops sending and preserves the visitor's details", async ({ page }) => {
+    await page.clock.install();
+    await page.route(endpoint!, () => {});
+    const form = await fillAndSend(page);
+    await expect(form.getByRole("button", { name: "Sending" })).toBeDisabled();
+    await page.clock.fastForward(20_100);
+    await expect(form.getByRole("alert")).toContainText("could not be sent");
+    await expect(form.getByRole("button", { name: "Send Enquiry" })).toBeEnabled();
+    await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
+  });
+
+  test("a filled spam field never produces a false thank-you confirmation", async ({ page }) => {
+    let requests = 0;
+    await page.route(endpoint!, async (route) => { requests++; await route.abort(); });
+    await page.addInitScript((field) => {
+      document.addEventListener("submit", () => {
+        const input = document.getElementsByName(field)[0] as HTMLInputElement | undefined;
+        if (input) input.value = "bot-filled";
+      }, true);
+    }, honeypot);
+    const form = await fillAndSend(page);
+    await expect(form.getByRole("alert")).toContainText("could not be sent");
+    await expect(page).toHaveURL(/\/contact\//);
+    expect(requests).toBe(0);
+  });
 });
 
 test.describe("analytics (§18)", () => {

@@ -73,6 +73,8 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const started = useRef(false);
+  const submitting = useRef(false);
+  const requestRef = useRef<AbortController | null>(null);
   const [raw, setValues] = useState<Values>({
     name: "",
     email: "",
@@ -87,7 +89,10 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     consent: false,
   });
   const [errors, setErrors] = useState<Errors>({});
-  useEffect(() => () => document.documentElement.removeAttribute("data-form-focus"), []);
+  useEffect(() => () => {
+    document.documentElement.removeAttribute("data-form-focus");
+    requestRef.current?.abort();
+  }, []);
   const [status, setStatus] = useState<"idle" | "sending" | "failed">("idle");
 
   // Pre-selection from service pages: /contact/?service=<slug>&context=pricing|corporate (read from the URL, not state).
@@ -104,7 +109,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
   const values: Resolved = {
     ...raw,
     service: raw.service ?? preService,
-    corporate: raw.corporate ?? (context === "corporate" || preService === "corporate-services"),
+    corporate: raw.corporate ?? (context === "corporate" || (raw.service ?? preService) === "corporate-services"),
   };
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) => {
@@ -127,7 +132,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (status === "sending") return;
+    if (submitting.current) return;
     const form = event.currentTarget;
     const found = validate(values);
     setErrors(found);
@@ -140,7 +145,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     // Honeypot: real visitors never fill this hidden field.
     const honeypot = (form.elements.namedItem(honeypotField) as HTMLInputElement | null)?.value;
     if (honeypot) {
-      router.push("/thank-you/");
+      setStatus("failed");
       return;
     }
     if (!endpoint) {
@@ -149,6 +154,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       return;
     }
 
+    submitting.current = true;
     setStatus("sending");
     const params = new URLSearchParams(window.location.search);
     const service = services.find((s) => s.slug === values.service);
@@ -177,16 +183,27 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       [honeypotField]: "",
     };
 
+    const controller = new AbortController();
+    requestRef.current = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 20_000);
     try {
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
+        redirect: "error",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // Accepted only on 2xx without an explicit `success: false` (form services answer with JSON).
-      const body: unknown = await res.json().catch(() => null);
-      if (body && typeof body === "object" && (body as { success?: unknown }).success === false) throw new Error("rejected");
+      // A login/error page or malformed JSON with HTTP 200 is not proof of acceptance.
+      // Formdall uses success:true; a compatible provider may use ok:true or HTTP 204.
+      if (res.status !== 204) {
+        const body: unknown = await res.json();
+        if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("invalid_response");
+        const reply = body as { success?: unknown; ok?: unknown; error?: unknown; errors?: unknown };
+        if (reply.success === false || reply.ok === false || reply.error || reply.errors ||
+            (reply.success !== true && reply.ok !== true)) throw new Error("rejected");
+      }
       try {
         window.sessionStorage.setItem(LEAD_FLAG, JSON.stringify({ service: service?.title ?? "", preferred_contact: values.contactMethod }));
       } catch {
@@ -194,8 +211,12 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       }
       router.push("/thank-you/");
     } catch {
+      submitting.current = false;
       setStatus("failed");
       track("form_error", { field: "form", error_type: "submission_failed" });
+    } finally {
+      window.clearTimeout(timeout);
+      requestRef.current = null;
     }
   }
 
@@ -222,6 +243,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       }}
       className="card scroll-mt-[calc(var(--header-h)+24px)] !p-6 sm:!p-8"
       aria-labelledby={id("title")}
+      aria-busy={sending}
     >
       <h2 id={id("title")} className="type-card-title !text-[1.5rem]">
         {context === "pricing" ? "Request a service quote" : context === "corporate" ? "Corporate enquiry" : "Get Assistance"}
