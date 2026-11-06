@@ -659,8 +659,7 @@
 .mobile-panel {
   transition:
     opacity 0.3s var(--ease-out-soft),
-    transform 0.3s var(--ease-out-soft),
-    visibility 0.3s;
+    transform 0.3s var(--ease-out-soft);
 }
 
 .mobile-panel[data-open="false"] {

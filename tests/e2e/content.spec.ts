@@ -323,6 +323,28 @@ test.describe("reduced motion", () => {
 });
 
 test.describe("enquiry form (§13)", () => {
+  test("keeps controls disabled until handlers are ready, then preserves the first input", async ({ page }) => {
+    let release!: () => void;
+    const scriptsReady = new Promise<void>((resolve) => { release = resolve; });
+    await page.route("**/_next/static/chunks/*.js", async (route) => {
+      await scriptsReady;
+      await route.continue();
+    });
+    try {
+      await page.goto("/contact/", { waitUntil: "domcontentloaded" });
+      const name = page.getByLabel(/Full name/);
+      await expect(name).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Send Enquiry" })).toBeDisabled();
+      release();
+      await expect(name).toBeEnabled();
+      await name.fill("First Typed Name");
+      await page.getByLabel(/Email address/).fill("test@example.com");
+      await expect(name).toHaveValue("First Typed Name");
+    } finally {
+      release();
+    }
+  });
+
   test("validates required fields inline and moves focus to the first error", async ({ page }) => {
     await page.goto("/contact/");
     const form = page.locator("form#enquiry");
@@ -463,6 +485,7 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     try {
       const form = await fillAndSend(page);
       await expect(form.getByRole("button", { name: "Sending" })).toBeDisabled();
+      await expect.poll(() => requests).toBe(1);
       await form.evaluate((el) => {
         (el as HTMLFormElement).requestSubmit();
         (el as HTMLFormElement).requestSubmit();
@@ -470,6 +493,7 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
       expect(requests).toBe(1);
       release();
       await expect(page).toHaveURL(/\/thank-you\/$/);
+      expect(requests).toBe(1);
     } finally {
       release();
     }

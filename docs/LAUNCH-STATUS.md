@@ -14,6 +14,8 @@ No existing code or business contact changes were reverted.
 | Eight service pages, other required pages, service CTA preselection, FAQ search/filter, WhatsApp/email | Already on production | Preserve; revalidate |
 | PR #4: navigation, teal, small-phone button wrap, fee table, configurable Formdall honeypot, QA docs | Tested but unmerged | Integrate reviewed changes |
 | Corporate fields | Revealed from a service link, not when Corporate Services was selected directly | Reveal from either route |
+| Loading on slower browsers | iPhone/WebKit traces showed the first form entry being reset before React was ready | Keep form, navigation and FAQ controls disabled until handlers attach; add a delayed-script regression check |
+| Closed mobile menu | WebKit could keep the closing panel in the accessibility tree during its visibility transition | Remove the visibility transition; make closed content inert and aria-hidden immediately |
 | Submission result | Any parseable or malformed 2xx could be treated as acceptance | Require positive JSON acceptance or HTTP 204; reject explicit errors and redirects |
 | Network stalls, duplicate submissions | No request timeout; state-only duplicate guard | 20-second timeout, synchronous lock, abort on unmount; preserve input on failure |
 | Form configuration | No checks for endpoint/CSP mismatches or a honeypot overwriting real fields | Fail prebuild on unsafe or unusable configuration; seven unit checks |

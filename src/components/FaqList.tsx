@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { Plus } from "lucide-react";
 import type { Faq } from "@/content/faqs";
+import { useHydrated } from "@/lib/useHydrated";
 
 /**
  * Accessible FAQ accordion (§12/§14): <button aria-expanded aria-controls>,
@@ -19,6 +20,7 @@ export function FaqList({
   openFirst?: boolean;
   headingLevel?: "h2" | "h3" | "h4";
 }) {
+  const hydrated = useHydrated();
   const Heading = headingLevel;
   const uid = useId();
   const [open, setOpen] = useState<Set<number>>(() => new Set(openFirst && items.length ? [0] : []));
@@ -53,6 +55,7 @@ export function FaqList({
             <Heading className="m-0">
               <button
                 type="button"
+                disabled={!hydrated}
                 id={buttonId}
                 aria-expanded={isOpen}
                 aria-controls={panelId}

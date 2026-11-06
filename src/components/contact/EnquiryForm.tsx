@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { CircleAlert, Loader2, MessageCircle, TriangleAlert } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { useHydrated } from "@/lib/useHydrated";
 
 type ServiceOption = { slug: string; title: string };
 
@@ -69,6 +70,7 @@ const order: Field[] = ["name", "email", "phone", "service", "company", "message
  * the endpoint accepts. No document uploads, ever.
  */
 export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, email }: Props) {
+  const hydrated = useHydrated();
   const router = useRouter();
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
@@ -292,7 +294,11 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
         </div>
       )}
 
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
+      <noscript>
+        <p className="mt-4 text-sm text-ink-2">To send an online enquiry, enable JavaScript or contact us by email or WhatsApp.</p>
+      </noscript>
+      <fieldset disabled={!hydrated} className="mt-6 grid min-w-0 gap-5 sm:grid-cols-2">
+        <legend className="sr-only">Your enquiry details</legend>
         <div>
           <label htmlFor={id("name")} className="field-label">
             Full name <span aria-hidden="true">*</span>
@@ -522,9 +528,9 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
           </label>
           {err("consent")}
         </div>
-      </div>
+      </fieldset>
 
-      <button type="submit" disabled={sending} aria-disabled={sending} className="btn btn-dark mt-7 w-full">
+      <button type="submit" disabled={!hydrated || sending} aria-disabled={!hydrated || sending} className="btn btn-dark mt-7 w-full">
         <span className="btn-face w-full">
           {sending ? (
             <>

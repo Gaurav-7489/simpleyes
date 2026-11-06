@@ -7,6 +7,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import type { NavItem } from "@/content/site";
 import { services } from "@/content/services";
 import { IconTile } from "@/components/ui/Icon";
+import { useHydrated } from "@/lib/useHydrated";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -24,6 +25,7 @@ const linkClass = (active: boolean) =>
  * the eight service links. Opens on hover for mouse users too.
  */
 function ServicesMenu({ active }: { active: boolean }) {
+  const hydrated = useHydrated();
   const pathname = usePathname();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const open = openPath === pathname;
@@ -97,6 +99,7 @@ function ServicesMenu({ active }: { active: boolean }) {
       <button
         ref={buttonRef}
         type="button"
+        disabled={!hydrated}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onClick}
