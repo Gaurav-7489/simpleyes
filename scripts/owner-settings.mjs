@@ -54,3 +54,10 @@ export function launchProblems(settings) {
     ...booleanGroups.launch.filter((key) => !settings.launch[key]).map((key) => `launch.${key}`),
   ];
 }
+
+export function contactActivationProblems(status, html) {
+  if (status < 200 || status >= 300) return [`production Contact page returned HTTP ${status}`];
+  if (!/<form\b[^>]*\bid=["']enquiry["']/i.test(html)) return ["production Contact page does not contain the enquiry form"];
+  if (html.includes("The online form is being connected")) return ["production enquiry endpoint is not configured"];
+  return [];
+}

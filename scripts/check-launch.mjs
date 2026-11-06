@@ -1,17 +1,13 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
-import { launchProblems } from "./owner-settings.mjs";
+import { contactActivationProblems, launchProblems } from "./owner-settings.mjs";
 
 try {
   const settings = JSON.parse(readFileSync(new URL("../src/content/owner-settings.json", import.meta.url), "utf8"));
   const pending = launchProblems(settings);
   if (process.argv.includes("--live")) {
     const response = await fetch("https://simplyes.de/contact/", { signal: AbortSignal.timeout(20_000), redirect: "error" });
-    if (!response.ok) pending.push(`production Contact page returned HTTP ${response.status}`);
-    else {
-      const html = await response.text();
-      if (html.includes("The online form is being connected")) pending.push("production enquiry endpoint is not configured");
-    }
+    pending.push(...contactActivationProblems(response.status, await response.text()));
   }
   if (pending.length) {
     console.log(`Owner activation is pending (${pending.length} items):\n${pending.map((item) => `- ${item}`).join("\n")}`);

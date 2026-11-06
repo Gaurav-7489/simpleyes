@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { validateOwnerSettings, launchProblems } from "../../scripts/owner-settings.mjs";
+import { validateOwnerSettings, launchProblems, contactActivationProblems } from "../../scripts/owner-settings.mjs";
 
 const baseline = JSON.parse(readFileSync(new URL("../../src/content/owner-settings.json", import.meta.url), "utf8"));
 const copy = () => structuredClone(baseline);
@@ -43,4 +43,11 @@ test("complete recorded owner inputs can pass the content check without invented
     s[group] = values;
   }
   assert.deepEqual(launchProblems(s), []);
+});
+
+test("a login/error page or disconnected form cannot pass live activation checks", () => {
+  assert.ok(contactActivationProblems(401, "Sign in").length);
+  assert.ok(contactActivationProblems(200, "<html>Sign in</html>").length);
+  assert.ok(contactActivationProblems(200, '<form id="enquiry">The online form is being connected</form>').length);
+  assert.deepEqual(contactActivationProblems(200, '<form id="enquiry"><button>Send Enquiry</button></form>'), []);
 });

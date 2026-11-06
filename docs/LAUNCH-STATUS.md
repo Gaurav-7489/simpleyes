@@ -6,7 +6,7 @@
 
 The handover now includes `src/content/owner-settings.json` for legal identity, mailbox/retention text,
 commercial policy text and owner approval records. Prebuild validation rejects malformed settings and
-prevents legal review from being marked complete while required fields are missing. Thirteen unit tests
+prevents legal review from being marked complete while required fields are missing. Fourteen unit tests
 cover enquiry configuration and the owner settings safeguards. The manual **Owner launch readiness**
 GitHub workflow checks the recorded inputs and public Contact page; it intentionally reports pending
 activation until real inputs, approvals and an owner-confirmed inbox test are supplied.
