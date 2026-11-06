@@ -18,3 +18,8 @@ export function PendingReview({ children }: { children: ReactNode }) {
 export function Missing({ label }: { label: string }) {
   return <span className="rounded bg-[#fbf6ea] px-1.5 py-0.5 text-[#5c4510]">[{label} — to be provided]</span>;
 }
+
+/** Approved plain text entered by the owner; escaped by React, with line breaks preserved. */
+export function OwnerCopy({ value, label }: { value: string | null; label: string }) {
+  return value?.trim() ? <span className="whitespace-pre-line">{value}</span> : <Missing label={label} />;
+}

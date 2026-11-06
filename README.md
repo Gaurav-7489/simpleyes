@@ -41,6 +41,7 @@ npm run dev        # http://localhost:3000
 | `npm run preview` | Serve `out/` on http://localhost:4173 (mirrors static hosting) |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm run test:unit` | Enquiry endpoint, CSP and honeypot configuration safety checks |
+| `npm run check:launch` | Owner inputs/approvals and live Contact activation check; expected to fail until owner setup is complete |
 | `npm run test:e2e` | Playwright suite (requires `npm run build` and `npx playwright install chromium`) |
 | `CROSS_BROWSER=1 npm run test:e2e` | Also run Firefox and iPhone/WebKit (install those browsers first) |
 | `npm run check` | All of the above |
@@ -81,7 +82,8 @@ docs/                  owner register, deployment guide, QA report, earlier refe
 
 ### Editing content
 
-All text lives in `src/content/`. Business/legal details are in `src/content/site.ts`; values that are
+All text lives in `src/content/`. Owner business facts and policy text are in `src/content/owner-settings.json`,
+consumed by `src/content/site.ts`. Follow [`docs/OWNER-ACTIVATION.md`](docs/OWNER-ACTIVATION.md); values that are
 `null` are **not yet provided** and are rendered as visible "to be provided" placeholders on the
 Impressum/Privacy pages (which stay `noindex` until `legal.reviewed` is set to `true`).
 

@@ -2,6 +2,19 @@
 
 **Status: code complete and deployed; real enquiry integration and business/legal launch approval pending.**
 
+## Owner self-service completion
+
+The handover now includes `src/content/owner-settings.json` for legal identity, mailbox/retention text,
+commercial policy text and owner approval records. Prebuild validation rejects malformed settings and
+prevents legal review from being marked complete while required fields are missing. Thirteen unit tests
+cover enquiry configuration and the owner settings safeguards. The manual **Owner launch readiness**
+GitHub workflow checks the recorded inputs and public Contact page; it intentionally reports pending
+activation until real inputs, approvals and an owner-confirmed inbox test are supplied.
+
+Follow [OWNER-ACTIVATION.md](OWNER-ACTIVATION.md) for the complete owner procedure. The enquiry backend
+remains the managed Formdall service; its production validation/delivery is an external activation check.
+No custom API, customer database, portal or document-upload backend has been built or claimed.
+
 ## Verified release evidence
 
 - PR #4 was merged as `8799cc8031f62b2398f1e114ffcc26cb55b6f69f`.

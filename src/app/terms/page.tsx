@@ -4,7 +4,7 @@ import { site } from "@/content/site";
 import { independenceStatement } from "@/content/home";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { Missing, PendingReview } from "@/components/LegalNotice";
+import { OwnerCopy, PendingReview } from "@/components/LegalNotice";
 
 export const metadata: Metadata = pageMetadata({
   title: "Terms & Conditions",
@@ -52,12 +52,12 @@ export default function TermsPage() {
             <h2>3. Fees and payments</h2>
             <p>
               Service fees are explained before any paid assistance begins (see <Link href="/pricing/">Pricing</Link>).
-              Payment methods and timing: <Missing label="Payment methods and timing" />.
+              Payment methods and timing: <OwnerCopy value={site.terms.paymentMethodsAndTiming} label="Payment methods and timing" />.
             </p>
 
             <h2>4. Cancellations and refunds</h2>
             <p>
-              <Missing label="Cancellation and refund terms" />
+              <OwnerCopy value={site.terms.cancellationAndRefunds} label="Cancellation and refund terms" />
             </p>
 
             <h2>5. Third-party charges</h2>
@@ -76,12 +76,12 @@ export default function TermsPage() {
               <li>Official requirements may change; the current official instruction always applies.</li>
             </ul>
             <p>
-              Limitation of liability: <Missing label="Liability wording (legal review)" />.
+              Limitation of liability: <OwnerCopy value={site.terms.liability} label="Liability wording (legal review)" />.
             </p>
 
             <h2>7. Complaints and contact</h2>
             <p>
-              Complaints procedure: <Missing label="Complaints procedure" />. You can reach us via the{" "}
+              Complaints procedure: <OwnerCopy value={site.terms.complaintsProcedure} label="Complaints procedure" />. You can reach us via the{" "}
               <Link href="/contact/">Contact page</Link>
               {site.contact.email ? (
                 <>

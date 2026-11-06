@@ -36,6 +36,7 @@ export default function ImpressumPage() {
             <p>
               <Value value={legal.legalName} label="Full legal name / company name" />
               <br />
+              {legal.businessType && <>{legal.businessType}<br /></>}
               <Value value={legal.street} label="Street and number" />
               <br />
               <Value value={legal.postalCodeCity} label="Postal code and city" />

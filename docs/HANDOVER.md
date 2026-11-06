@@ -6,6 +6,10 @@ See [`LAUNCH-STATUS.md`](LAUNCH-STATUS.md) for the current release scope, valida
 owner handoff. That dated report supersedes the earlier production observations below. The existing
 eight-service website is being completed; AI, uploads, portals and payments remain outside this release.
 
+Owner self-service instructions are in [`OWNER-ACTIVATION.md`](OWNER-ACTIVATION.md). Business facts,
+policy text and approval records are editable in `src/content/owner-settings.json`; page components do
+not need to be rewritten. The manual GitHub **Owner launch readiness** workflow lists pending inputs.
+
 Specification §22 (F · Handover). Read with [`DEPLOYMENT.md`](DEPLOYMENT.md) (hosting, domain, DNS, launch
 checklist), [`OWNER-REGISTER.md`](OWNER-REGISTER.md) (open owner inputs) and [`QA-REPORT.md`](QA-REPORT.md)
 (test results and §23 status).
@@ -50,7 +54,7 @@ connected, a new deployment.
 | To change… | Edit | Notes |
 |---|---|---|
 | Phone, WhatsApp, email, response time, opening hours | `src/content/site.ts` → `site.whatsapp`, `site.contact` | Leave a value `null` to hide it; never guess |
-| Impressum / legal details | `src/content/site.ts` → `site.legal` | Set `reviewed: true` only after legal review; this makes the legal pages indexable |
+| Impressum / legal details and policies | `src/content/owner-settings.json` → `legal`, `privacy`, `terms` | Set `legal.reviewed: true` only after actual review; incomplete required text then fails the build |
 | Service pages (all eight) | `src/content/services.ts` | One entry per service; the slug (URL) must not change without a redirect |
 | FAQs | `src/content/faqs.ts` | Single source for the FAQ page, homepage and service pages |
 | Homepage, About, How It Works, Pricing text | `src/content/home.ts` | |

@@ -7,6 +7,8 @@
  * especially legal/Impressum details.
  */
 
+import { ownerSettings } from "./owner";
+
 const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://simplyes.de";
 
 /** Digits only, international format. Verified: published on simplyes.de (wa.me link). */
@@ -55,20 +57,9 @@ export const site = {
    * Legal / Impressum details. All MUST be supplied and verified by the
    * business owner before launch. Rendered as "to be provided" until then.
    */
-  legal: {
-    legalName: null as string | null,
-    representative: null as string | null,
-    street: null as string | null,
-    postalCodeCity: null as string | null,
-    country: "Germany",
-    email: "Info@simplyes.de" as string | null,
-    phone: "+49 1521 6627596" as string | null,
-    vatId: null as string | null,
-    register: null as string | null,
-    /** Set to true once a lawyer/the owner has reviewed Impressum + privacy text. */
-    reviewed: false,
-    lastUpdated: "2026-10-28",
-  },
+  legal: ownerSettings.legal,
+  privacy: ownerSettings.privacy,
+  terms: ownerSettings.terms,
   /**
    * Enquiry form endpoint (§13): an approved form service or secure endpoint that
    * accepts a JSON POST and returns 2xx only when the enquiry is accepted

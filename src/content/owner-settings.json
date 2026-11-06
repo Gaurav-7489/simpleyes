@@ -1,0 +1,36 @@
+{
+  "legal": {
+    "legalName": null,
+    "businessType": null,
+    "representative": null,
+    "street": null,
+    "postalCodeCity": null,
+    "country": "Germany",
+    "email": "Info@simplyes.de",
+    "phone": "+49 1521 6627596",
+    "vatId": null,
+    "register": null,
+    "reviewed": false,
+    "lastUpdated": "2026-10-28"
+  },
+  "privacy": {
+    "mailboxProvider": null,
+    "enquiryRetention": null,
+    "conversationRetention": null
+  },
+  "terms": {
+    "paymentMethodsAndTiming": null,
+    "cancellationAndRefunds": null,
+    "liability": null,
+    "complaintsProcedure": null
+  },
+  "launch": {
+    "brandingApproved": false,
+    "hostingApproved": false,
+    "serviceContentApproved": false,
+    "independenceStatementApproved": false,
+    "quotationModelApproved": false,
+    "enquiryDeliveryConfirmed": false,
+    "deliveryVerifiedAt": null
+  }
+}

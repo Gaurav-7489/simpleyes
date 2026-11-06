@@ -3,7 +3,7 @@ import Link from "next/link";
 import { enquiryService, site } from "@/content/site";
 import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { Missing, PendingReview } from "@/components/LegalNotice";
+import { Missing, OwnerCopy, PendingReview } from "@/components/LegalNotice";
 
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
@@ -92,15 +92,15 @@ export default function PrivacyPage() {
                 for spam on {enquiryService.location} and forwards them by email to our business inbox. {enquiryService.name}{" "}
                 describes its processing and sub-processors in <a href={enquiryService.url}>its privacy policy</a>.
                 Our business inbox is provided by{" "}
-                <Missing label="Email (mailbox) provider name and address" />. Only the authorised SimplYes team can
-                access enquiries. Retention period for enquiry data: <Missing label="Retention period" />.
+                <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />. Only the authorised SimplYes team can
+                access enquiries. Retention period for enquiry data: <OwnerCopy value={site.privacy.enquiryRetention} label="Retention period" />.
               </p>
             ) : (
               <p>
                 Form submissions are transmitted to <Missing label="Form service provider name and address" />, which
-                forwards them to our business inbox, provided by <Missing label="Email (mailbox) provider name and address" />.
+                forwards them to our business inbox, provided by <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />.
                 Only the authorised SimplYes team can access enquiries. Retention period for enquiry data:{" "}
-                <Missing label="Retention period" />.
+                <OwnerCopy value={site.privacy.enquiryRetention} label="Retention period" />.
               </p>
             )}
               </>
@@ -137,12 +137,11 @@ export default function PrivacyPage() {
             <p>
               Please do not send copies of identity documents or other sensitive information until we have agreed what
               is actually needed for your request. Retention period for conversation data:{" "}
-              <Missing label="Retention period" />.
+              <OwnerCopy value={site.privacy.conversationRetention} label="Retention period" />.
             </p>
             <p>
               Email enquiries are received at {site.contact.email}. Mailbox provider:{" "}
-              <Missing label="Email (mailbox) provider name and address" />. The provider and retention period must be
-              confirmed as part of the review of this notice.
+              <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />.
             </p>
 
             <h2>7. External links</h2>
