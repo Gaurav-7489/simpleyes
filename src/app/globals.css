@@ -2,10 +2,11 @@
 
 /*
  * SimplYes design tokens (Website Development Specification §16).
- * Confirmed: background #F6F9F5, primary text #13211D. The primary teal is still
- * owner-supplied (brief gives only "#0B7F8…"), so the supporting greens/mint
- * below follow the specification's visual reference and are NOT brand values —
- * swap the accent scale once the full teal is confirmed.
+ * Confirmed: background #F6F9F5, primary text #13211D, primary teal #0B7F8C.
+ * The accent scale is derived from the teal: --color-accent-500 / --color-teal
+ * IS the brand teal (filled buttons, logo gradient, illustrations). Text links
+ * and outlines use the darker 600/700 steps because #0B7F8C on #F6F9F5 is
+ * 4.47:1, just under WCAG AA for body text (white on #0B7F8C is 4.74:1).
  */
 @theme {
   --font-display: var(--font-outfit), "Outfit", ui-sans-serif, system-ui, sans-serif;
@@ -19,16 +20,16 @@
   --color-ink-3: #56655f;
   --color-line: #dbe5df;
 
-  --color-accent-50: #f0f7f3;
-  --color-accent-100: #e0efe7;
-  --color-accent-200: #c4e2d3;
-  --color-accent-300: #93c9b0;
-  --color-accent-500: #2e8f6c;
-  --color-accent-600: #237a5b;
-  --color-accent-700: #1b6a4e;
-  --color-accent-900: #0f3f2e;
+  --color-accent-50: #f0f8f9;
+  --color-accent-100: #def0f2;
+  --color-accent-200: #bce2e6;
+  --color-accent-300: #81c7cf;
+  --color-accent-500: #0b7f8c;
+  --color-accent-600: #096d78;
+  --color-accent-700: #085e68;
+  --color-accent-900: #05393f;
   --color-lime: #9bc53d;
-  --color-teal: #14928a;
+  --color-teal: #0b7f8c;
 
   --radius-card: 14px;
   --radius-frame-inner: 16px;
@@ -273,8 +274,8 @@
   /* Primary (filled green). Class name kept for compatibility. */
   .btn-dark {
     color: #fff;
-    background: var(--color-accent-700);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 8px 20px -10px rgb(27 106 78 / 0.6);
+    background: var(--color-teal);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 8px 20px -10px rgb(8 94 104 / 0.6);
   }
 
   /* Secondary (outline). */
@@ -299,7 +300,7 @@
 
   @media (hover: hover) {
     .btn-dark:hover {
-      background: var(--color-accent-900);
+      background: var(--color-accent-700);
     }
 
     .btn-light:hover {
@@ -396,7 +397,7 @@
     box-shadow:
       0 0 0 5px rgb(255 255 255 / 0.8),
       0 0 0 6px var(--color-accent-100),
-      0 10px 22px -8px rgb(27 106 78 / 0.55);
+      0 10px 22px -8px rgb(8 94 104 / 0.55);
   }
 
   .orb-soft {
@@ -424,7 +425,7 @@
       inset 0 1px 1px rgb(255 255 255 / 0.65),
       inset 0 -0.08em 0.16em rgb(0 0 0 / 0.12),
       0 0 0 0.05em rgb(255 255 255 / 0.7),
-      0 0.15em 0.4em -0.1em rgb(27 106 78 / 0.35);
+      0 0.15em 0.4em -0.1em rgb(8 94 104 / 0.35);
     text-shadow: 0 1px 0 rgb(0 0 0 / 0.08);
   }
 
@@ -591,7 +592,7 @@
   pointer-events: none;
   background:
     radial-gradient(circle at 50% 30%, rgb(155 197 61 / 0.22) 0%, rgb(155 197 61 / 0) 26%),
-    radial-gradient(circle at 50% 62%, rgb(20 146 138 / 0.22) 0%, rgb(20 146 138 / 0) 40%),
+    radial-gradient(circle at 50% 62%, rgb(11 127 140 / 0.22) 0%, rgb(11 127 140 / 0) 40%),
     radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0) 52%, rgb(255 255 255 / 0.85) 60%, rgb(196 226 211 / 0.4) 64%, rgb(255 255 255 / 0) 71%);
 }
 
@@ -752,7 +753,7 @@
 
 .physics-chip[data-grab="true"] {
   cursor: grabbing;
-  box-shadow: 0 18px 36px -12px rgb(27 106 78 / 0.35);
+  box-shadow: 0 18px 36px -12px rgb(8 94 104 / 0.35);
 }
 
 @media (max-width: 479px) {
@@ -1027,7 +1028,7 @@ html[data-form-focus] .fab-wa {
 .cta-band {
   background:
     radial-gradient(120% 120% at 100% 0%, rgb(155 197 61 / 0.18) 0%, transparent 45%),
-    radial-gradient(90% 120% at 0% 100%, rgb(20 146 138 / 0.25) 0%, transparent 50%),
+    radial-gradient(90% 120% at 0% 100%, rgb(11 127 140 / 0.25) 0%, transparent 50%),
     var(--color-accent-900);
 }
 
@@ -1148,7 +1149,7 @@ html[data-form-focus] .fab-wa {
 .field:focus {
   outline: none;
   border-color: var(--color-accent-700);
-  box-shadow: 0 0 0 3px rgb(27 106 78 / 0.2);
+  box-shadow: 0 0 0 3px rgb(8 94 104 / 0.2);
 }
 
 .field[aria-invalid="true"] {
@@ -1379,7 +1380,7 @@ select.field {
   border-color: transparent;
   background:
     radial-gradient(90% 70% at 100% 0%, rgb(155 197 61 / 0.18), transparent 60%),
-    radial-gradient(80% 80% at 0% 100%, rgb(20 146 138 / 0.28), transparent 60%),
+    radial-gradient(80% 80% at 0% 100%, rgb(11 127 140 / 0.28), transparent 60%),
     var(--color-accent-900);
 }
 
@@ -1863,7 +1864,7 @@ select.field {
   color: #fff;
   background:
     radial-gradient(70% 90% at 100% 0%, rgb(155 197 61 / 0.2), transparent 60%),
-    radial-gradient(80% 80% at 0% 100%, rgb(20 146 138 / 0.3), transparent 60%),
+    radial-gradient(80% 80% at 0% 100%, rgb(11 127 140 / 0.3), transparent 60%),
     var(--color-accent-900);
 }
 

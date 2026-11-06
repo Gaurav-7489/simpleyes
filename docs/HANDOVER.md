@@ -12,7 +12,7 @@ never as the only owner.
 | Account | Purpose | Status |
 |---|---|---|
 | GitHub repository `simpleyes` | Source code, history, CI | Exists |
-| Hosting: Vercel (recommended) or GitHub Pages | Production + staging deployments | To be set up by owners (see DEPLOYMENT.md) |
+| Hosting: Vercel (`gaurav-7489s-projects/simpleyes`) | Production (simplyes.de) + preview deployments | Live. Confirm the account owner and the plan (Hobby is non-commercial) |
 | Domain registrar for `simplyes.de` | DNS, SSL via host | Existing, owner-held |
 | Form service (e.g. Formspree) | Receives enquiries, emails the business inbox, spam filtering | To be chosen by owners |
 | Business inbox `Info@simplyes.de` | Enquiry notifications, public contact | Exists |
@@ -23,7 +23,7 @@ never as the only owner.
 
 | Service | Used for | Personal data? | Cost | Required? |
 |---|---|---|---|---|
-| Hosting (Vercel / GitHub Pages) | Serving the static site | Server logs (IP) | Free tier is sufficient at launch | Yes |
+| Hosting (Vercel) | Serving the static site | Server logs (IP) | Hobby is free but for non-commercial use only; Pro is billed per team member per month (check current pricing). Cloudflare Pages' free tier allows commercial use | Yes |
 | Form service (e.g. Formspree) | Enquiry delivery to the inbox | Yes: enquiry fields | Free tier has a monthly submission cap; acknowledgement emails may need a paid plan | Yes, before launch |
 | Email provider for `Info@simplyes.de` | Receiving enquiries | Yes | Existing | Yes |
 | Google Analytics 4 | Analytics, only after consent | Pseudonymous IDs | Free | Optional |
@@ -48,7 +48,7 @@ connected, a new deployment.
 | Service pages (all eight) | `src/content/services.ts` | One entry per service; the slug (URL) must not change without a redirect |
 | FAQs | `src/content/faqs.ts` | Single source for the FAQ page, homepage and service pages |
 | Homepage, About, How It Works, Pricing text | `src/content/home.ts` | |
-| Pricing amounts (when approved) | `src/content/home.ts` → `pricing` | The page is built so a fee table can be added without a redesign |
+| Pricing amounts (when approved) | `src/content/home.ts` → `pricing.serviceFees` | One line per service: `{ slug, fee: { kind: "from", amountEur } }` or `{ kind: "quote" }`. Empty = table hidden |
 
 Rules that the build enforces or the team must keep:
 
@@ -81,7 +81,7 @@ needs to edit frequently without GitHub.
 | Favicon / app icons | `src/app/icon.svg`, `src/app/apple-icon.png`, `public/icon-192.png`, `public/icon-512.png` | Derive from the official logo when supplied |
 | Social sharing image | `public/og-image.png` (1200×630) | Derive from the official logo when supplied |
 | Illustrations | `src/components/illustrations/ServiceArt.tsx` and homepage SVG | Original SVG, no licensed or stock imagery |
-| Colours, type, spacing tokens | `src/app/globals.css` | Teal is a placeholder until the full hex is supplied |
+| Colours, type, spacing tokens | `src/app/globals.css` | Teal `#0B7F8C` applied; logo gradient stops still approximate |
 
 ## 6. Technical documentation
 
@@ -97,7 +97,7 @@ needs to edit frequently without GitHub.
 
 Launch-blocking items are owner inputs, tracked in OWNER-REGISTER.md. The technical limitations are:
 
-1. **Enquiry delivery is not connected yet.** The form is fully built and validated. Until
+1. **Enquiry delivery is not connected yet (verified on production 6 Nov 2026).** The form is fully built and validated. Until
    `NEXT_PUBLIC_ENQUIRY_ENDPOINT` is set, it explains that it is not connected and offers WhatsApp/email; it
    never shows false success. Server-side re-validation, spam filtering, notification email and the
    optional acknowledgement email are provided by the chosen form service. Duplicate submits are blocked
@@ -105,11 +105,13 @@ Launch-blocking items are owner inputs, tracked in OWNER-REGISTER.md. The techni
 2. **Static hosting.** There is no server of our own, so rate limiting and duplicate detection beyond the
    browser rely on the form service. Security headers apply on Vercel (`vercel.json`), not on GitHub
    Pages.
-3. **Legal pages** are structured drafts and stay `noindex` until reviewed (`site.legal.reviewed`).
-4. **Brand assets.** The wordmark and teal are stand-ins until the official files and colour are supplied.
+3. **Legal pages** are structured drafts and stay `noindex` until reviewed (`site.legal.reviewed`). The
+   Impressum is publicly reachable with placeholder fields; fill it in first.
+4. **Brand assets.** The wordmark, favicon and social image are stand-ins until the official logo file is
+   supplied. The teal is final (`#0B7F8C`).
 5. **Not yet verified on real devices or browsers:** iOS Safari, Android Chrome, desktop Safari, Firefox and
    Edge, plus a screen-reader spot check (§23). Automated testing covers Chromium only.
-6. **Production-only checks** (domain, SSL, real enquiry reaching the inbox, notifications, GA4 events,
-   Search Console, Lighthouse on the live URL) can only be completed after deployment.
+6. **Production checks still open:** real enquiry reaching the inbox, notifications, GA4 events, Search
+   Console, rollback test. Domain, SSL, redirects, links and Lighthouse were checked on production.
 7. **Held-back FAQs:** "How can I pay?", "What happens if I cancel a service?", "Can I receive help
    remotely?" and "How will I receive updates?" wait for owner answers.

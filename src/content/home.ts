@@ -153,7 +153,25 @@ export const about = {
 };
 
 /** §11 — Pricing page. No amounts until owners approve (quotation model). */
+/**
+ * §11 fee table entry. `from` = fixed starting price in EUR (SimplYes service
+ * fee only, never official or third-party costs); `quote` = priced per quotation.
+ */
+export type ServiceFee = {
+  /** One of the eight service slugs in services.ts. */
+  slug: string;
+  fee: { kind: "from"; amountEur: number; note?: string } | { kind: "quote"; note?: string };
+};
+
 export const pricing = {
+  /**
+   * Per-service fee table on /pricing/. EMPTY until the owners approve prices:
+   * an empty list renders nothing, so no placeholder or estimated prices can
+   * ever appear (§11). Add one entry per service once approved, e.g.
+   *   { slug: "passport-services", fee: { kind: "from", amountEur: 49 } }
+   *   { slug: "corporate-services", fee: { kind: "quote" } }
+   */
+  serviceFees: [] as ServiceFee[],
   feeTypes: [
     {
       title: "SimplYes service fees",

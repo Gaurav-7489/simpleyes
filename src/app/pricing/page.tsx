@@ -9,6 +9,7 @@ import { revealDelay } from "@/lib/style";
 import { PageHero } from "@/components/PageHero";
 import { ButtonLink } from "@/components/ui/Button";
 import { FinalCta } from "@/components/FinalCta";
+import { FeeTable } from "@/components/FeeTable";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = pageMetadata({
@@ -21,7 +22,8 @@ export const metadata: Metadata = pageMetadata({
 
 /**
  * §11 — explains how SimplYes charges. No amounts until the owners approve them
- * (quotation model). Structured so a fee table can be added later without redesign.
+ * (quotation model). Approved prices go into `pricing.serviceFees` and appear in
+ * <FeeTable> ("From €X" / "On quotation") without a redesign.
  */
 export default function PricingPage() {
   const quoteHref = enquiryHref(undefined, "pricing");
@@ -68,6 +70,8 @@ export default function PricingPage() {
           </ol>
         </div>
       </section>
+
+      <FeeTable fees={pricing.serviceFees} />
 
       <section aria-labelledby="quote-factors" className="section bg-white">
         <div className="container-site grid gap-6 lg:grid-cols-2">
