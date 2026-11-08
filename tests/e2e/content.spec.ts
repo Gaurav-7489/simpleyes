@@ -46,14 +46,14 @@ test.describe("content rules", () => {
     expect(txt.match(/\/services\/[a-z-]+\//g)?.length).toBe(services.length);
   });
 
-  test("header: Home · Services ▾ · How It Works · About Us · FAQs · Contact Us + Get Assistance", async ({ page }) => {
+  test("header: Home · Services ▾ · How It Works · About · FAQs + Get Assistance", async ({ page }) => {
     await page.goto("/about/");
     const nav = page.getByRole("navigation", { name: "Primary" });
     const items = await nav.locator(":scope > ul > li").evaluateAll((lis) =>
       lis.map((li) => (li.querySelector(":scope > a, :scope > div > button")?.textContent ?? "").trim()),
     );
-    expect(items).toEqual(["Home", "Services", "How It Works", "About Us", "FAQs", "Contact Us"]);
-    await expect(nav.getByRole("link", { name: "About Us" })).toHaveAttribute("aria-current", "page");
+    expect(items).toEqual(["Home", "Services", "How It Works", "About", "FAQs"]);
+    await expect(nav.getByRole("link", { name: "About", exact: true })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("banner").getByRole("link", { name: "Get Assistance" })).toHaveAttribute("href", "/contact/");
     // Dropdown lists all eight services.
     await nav.getByRole("button", { name: "Services" }).click();
@@ -72,23 +72,13 @@ test.describe("content rules", () => {
     }
   });
 
-  test("homepage has the eleven sections in the confirmed order", async ({ page }) => {
+  test("homepage has the V2 sections in order (Concept 2)", async ({ page }) => {
     await page.goto("/");
     const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? ""));
-    expect(ids).toEqual([
-      "hero-title",
-      "intro-title",
-      "services-title",
-      "why-title",
-      "process-title",
-      "who-title",
-      "approach-title",
-      "trust-title",
-      "faq-title",
-      "final-cta-title",
-    ]);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
-    await expect(page.locator("#services .service-index > li")).toHaveCount(8);
+    expect(ids).toEqual(["hero-title", "services-title", "process-title", "why-title", "faq-title", "final-cta-title"]);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Documentation Support for Indians in Germany.");
+    await expect(page.locator("#services li")).toHaveCount(8);
+    for (const s of services) await expect(page.locator(`#services a[href="/services/${s.slug}/"]`)).toHaveAccessibleName(s.title);
     await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
   });

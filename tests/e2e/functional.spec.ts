@@ -116,7 +116,7 @@ test.describe("navigation", () => {
     await expect(group).toHaveAttribute("aria-expanded", "false");
     await group.click();
     await expect(mobileNav.getByRole("link", { name: "Corporate Services" })).toBeVisible();
-    await mobileNav.getByRole("link", { name: "Contact Us" }).click();
+    await mobileNav.getByRole("link", { name: "Contact", exact: true }).click();
     await expect(page).toHaveURL(/\/contact\/$/);
     await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
   });
@@ -168,7 +168,7 @@ test.describe("content works without JavaScript", () => {
   test("home content is visible with JS disabled", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Eight ways we can help" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How can we help?" })).toBeVisible();
     // FAQ answers stay readable without JavaScript.
     await expect(page.getByText("Decisions rest with the relevant authorities.").first()).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
