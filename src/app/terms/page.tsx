@@ -21,9 +21,9 @@ export const metadata: Metadata = pageMetadata({
 export default function TermsPage() {
   return (
     <>
-      <PageHero badge="Legal" title="Terms & Conditions" crumbs={[{ name: "Terms & Conditions", path: "/terms/" }]} />
-      <section className="pb-[var(--section-y)]">
-        <div className="container-site max-w-[760px]">
+      <PageHero narrow badge="Legal" title="Terms & Conditions" crumbs={[{ name: "Terms & Conditions", path: "/terms/" }]} />
+      <section className="pb-[var(--section-y)] pt-10">
+        <div className="container-site"><div className="max-w-[760px]">
           {!site.legal.reviewed && (
             <PendingReview>
               Draft structure. The final terms must be supplied or reviewed by the business owners and a qualified German
@@ -93,7 +93,7 @@ export default function TermsPage() {
             </p>
           </div>
           </OwnerPolicy>
-        </div>
+        </div></div>
       </section>
     </>
   );

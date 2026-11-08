@@ -18,14 +18,14 @@ export const metadata: Metadata = pageMetadata({
 export default function ThankYouPage() {
   const { responseTime, email } = site.contact;
   return (
-    <section className="relative isolate overflow-hidden pb-[var(--section-y)] pt-[clamp(112px,12vw,160px)]">
-      <div aria-hidden="true" className="hero-rings -z-10 opacity-70" />
+    <section className="relative isolate overflow-hidden pb-[var(--section-y)] pt-[calc(var(--header-h)+56px)]">
+      <div aria-hidden="true" className="page-hero-bg" />
       <ThankYouTracker />
       <div className="container-site flex max-w-[720px] flex-col items-center text-center">
         <span className="grid size-16 place-items-center rounded-full bg-accent-50 text-accent-700 ring-1 ring-accent-100">
           <CircleCheck aria-hidden="true" className="size-8" strokeWidth={1.6} />
         </span>
-        <h1 className="type-hero mt-6">Thank you — we&apos;ve received your enquiry</h1>
+        <h1 className="type-page mt-6">Thank you — we&apos;ve received your enquiry</h1>
         <p className="type-lead mt-4 max-w-[52ch]">
           A member of the {site.name} team will review your message and get back to you
           {responseTime ? ` ${responseTime}` : ""} using the contact details you provided.
@@ -37,7 +37,7 @@ export default function ThankYouPage() {
             "If you'd like to proceed, we explain our assistance and any service fee first.",
           ].map((step, i) => (
             <li key={step} className="flex items-start gap-3 border-b border-dashed border-line py-3 last:border-0">
-              <span className="stepper-num !size-8 shrink-0 !text-sm" aria-hidden="true">
+              <span className="step-num !size-8 shrink-0 !text-sm" aria-hidden="true">
                 {i + 1}
               </span>
               <span className="self-center text-[0.9375rem] text-ink-2">{step}</span>

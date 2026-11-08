@@ -243,7 +243,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) document.documentElement.removeAttribute("data-form-focus");
       }}
-      className="card scroll-mt-[calc(var(--header-h)+24px)] !p-6 sm:!p-8"
+      className="card scroll-mt-[calc(var(--header-h)+24px)] !p-6 shadow-[var(--shadow-md)] sm:!p-9"
       aria-labelledby={id("title")}
       aria-busy={sending}
     >

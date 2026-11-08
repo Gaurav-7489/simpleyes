@@ -45,7 +45,7 @@ export function FaqList({
     });
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       {items.map((faq, i) => {
         const isOpen = open.has(i);
         const buttonId = `${uid}-q${i}`;
@@ -69,7 +69,9 @@ export function FaqList({
               </button>
             </Heading>
             <div id={panelId} role="region" aria-labelledby={buttonId} className="faq-panel" data-open={isOpen}>
-              <p className="faq-answer">{faq.answer}</p>
+              <div className="faq-panel-inner">
+                <p className="faq-answer">{faq.answer}</p>
+              </div>
             </div>
           </div>
         );

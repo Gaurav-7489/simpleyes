@@ -14,10 +14,6 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-const linkClass = (active: boolean) =>
-  `relative inline-flex min-h-11 items-center gap-1 rounded-[10px] px-3 py-2 text-[0.9375rem] transition-colors duration-200 hover:text-ink ${
-    active ? "font-medium text-ink" : "text-ink-2"
-  }`;
 
 /**
  * Services dropdown (§14): a disclosure button with aria-expanded/aria-controls.
@@ -103,7 +99,8 @@ function ServicesMenu({ active }: { active: boolean }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onClick}
-        className={linkClass(active)}
+        data-active={active}
+        className="nav-link"
       >
         Services
         <ChevronDown
@@ -111,12 +108,11 @@ function ServicesMenu({ active }: { active: boolean }) {
           className={`size-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           strokeWidth={1.75}
         />
-        {active && <span aria-hidden="true" className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent-700" />}
       </button>
       <div
         id={panelId}
         data-open={open}
-        className="nav-panel absolute left-1/2 top-[calc(100%+12px)] w-[min(680px,90vw)] -translate-x-1/2 rounded-[16px] border border-line bg-white p-3 shadow-[0_24px_48px_-24px_rgb(19_33_29/0.35)]"
+        className="nav-panel absolute left-1/2 top-[calc(100%+14px)] w-[min(700px,90vw)] rounded-[20px] border border-line bg-white p-3 shadow-[var(--shadow-lg)]"
       >
         <ul className="grid grid-cols-2 gap-1">
           {services.map((service) => {
@@ -128,7 +124,7 @@ function ServicesMenu({ active }: { active: boolean }) {
                   href={href}
                   aria-current={current ? "page" : undefined}
                   onClick={close}
-                  className={`flex items-center gap-3 rounded-[12px] p-2.5 transition-colors hover:bg-accent-50 ${current ? "bg-accent-50" : ""}`}
+                  className={`flex items-center gap-3 rounded-[14px] p-2.5 transition-colors duration-200 hover:bg-canvas-alt ${current ? "bg-accent-50" : ""}`}
                 >
                   <IconTile name={service.icon} size="sm" />
                   <span className="flex flex-col">
@@ -143,7 +139,7 @@ function ServicesMenu({ active }: { active: boolean }) {
         <Link
           href="/services/"
           onClick={close}
-          className="mt-2 flex min-h-11 items-center justify-between rounded-[12px] bg-canvas-alt px-4 text-sm font-medium text-accent-700 hover:bg-accent-50"
+          className="mt-2 flex min-h-11 items-center justify-between rounded-[14px] bg-canvas-alt px-4 text-sm font-medium text-accent-700 transition-colors duration-200 hover:bg-accent-100"
         >
           View all services
           <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
@@ -157,7 +153,7 @@ function ServicesMenu({ active }: { active: boolean }) {
 export function NavLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname() ?? "/";
   return (
-    <ul className="flex items-center gap-0.5">
+    <ul className="flex items-center gap-1 rounded-full border border-line bg-white/70 p-1">
       {items.map((item) => {
         const active = isActive(pathname, item.href);
         if (item.href === "/services/") {
@@ -169,9 +165,8 @@ export function NavLinks({ items }: { items: NavItem[] }) {
         }
         return (
           <li key={item.href}>
-            <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass(active)}>
+            <Link href={item.href} aria-current={active ? "page" : undefined} className="nav-link">
               {item.label}
-              {active && <span aria-hidden="true" className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent-700" />}
             </Link>
           </li>
         );

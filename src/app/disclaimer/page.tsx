@@ -17,9 +17,9 @@ export const metadata: Metadata = pageMetadata({
 export default function DisclaimerPage() {
   return (
     <>
-      <PageHero badge="Legal" title="Disclaimer & service limitations" crumbs={[{ name: "Disclaimer", path: "/disclaimer/" }]} />
-      <section className="pb-[var(--section-y)]">
-        <div className="container-site max-w-[760px]">
+      <PageHero narrow badge="Legal" title="Disclaimer & service limitations" crumbs={[{ name: "Disclaimer", path: "/disclaimer/" }]} />
+      <section className="pb-[var(--section-y)] pt-10">
+        <div className="container-site"><div className="max-w-[760px]">
           {!site.legal.reviewed && (
             <PendingReview>Draft wording based on the approved specification, subject to owner and legal review.</PendingReview>
           )}
@@ -69,7 +69,7 @@ export default function DisclaimerPage() {
             </p>
           </div>
           </OwnerPolicy>
-        </div>
+        </div></div>
       </section>
     </>
   );

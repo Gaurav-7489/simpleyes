@@ -1,73 +1,62 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 import { revealDelay } from "@/lib/style";
 
-type Crumb = { name: string; path: string };
-
-/** Sub-page hero: breadcrumb, label pill, display heading, lead — same orb backdrop as the home hero. */
+/**
+ * Inner-page hero: breadcrumb, small label, H1, lead and actions on the left; an optional `aside`
+ * (icon, contact card…) on the right from 1024px. Calm gradient backdrop and a soft brand wave.
+ */
 export function PageHero({
   badge,
   title,
   lead,
   crumbs,
   children,
+  aside,
+  narrow = false,
 }: {
-  badge: string;
+  badge?: string;
   title: ReactNode;
   lead?: ReactNode;
   crumbs: Crumb[];
   children?: ReactNode;
+  aside?: ReactNode;
+  /** Narrower measure for legal / reading pages. */
+  narrow?: boolean;
 }) {
   return (
-    <section className="relative isolate overflow-hidden pb-[clamp(40px,5vw,72px)] pt-[clamp(104px,10vw,148px)]">
-      <div aria-hidden="true" className="hero-rings -z-10" />
-      <div aria-hidden="true" className="hero-orb -z-10 !top-[38%] opacity-80" />
-      <div className="container-site flex flex-col items-center text-center">
-        <nav aria-label="Breadcrumb" className="hero-intro mb-6">
-          <ol className="flex flex-wrap items-center justify-center gap-1 text-[0.8125rem] text-ink-2">
-            <li>
-              <Link href="/" className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
-                Home
-              </Link>
-            </li>
-            {crumbs.map((crumb, i) => {
-              const last = i === crumbs.length - 1;
-              return (
-                <li key={crumb.path} className="flex items-center gap-1">
-                  <ChevronRight aria-hidden="true" className="size-3.5 text-ink-3" />
-                  {last ? (
-                    <span aria-current="page" className="px-1 text-ink">
-                      {crumb.name}
-                    </span>
-                  ) : (
-                    <Link href={crumb.path} className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
-                      {crumb.name}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
-        <div className="hero-intro">
-          <Badge>{badge}</Badge>
+    <section className="relative isolate overflow-hidden border-b border-line pb-[clamp(40px,5vw,72px)] pt-[calc(var(--header-h)+28px)] lg:pt-[calc(var(--header-h)+44px)]">
+      <div aria-hidden="true" className="page-hero-bg" />
+      <svg aria-hidden="true" viewBox="0 0 900 220" className="page-hero-wave" preserveAspectRatio="none">
+        <path d="M0 170c170-60 330-50 470-14s290 36 430-46v110H0Z" fill="#e4f3eb" opacity="0.7" />
+        <path d="M120 190c160-40 300-28 420-2s230 22 360-28" fill="none" stroke="#b8e05a" strokeWidth="2" opacity="0.6" />
+      </svg>
+      <div className={`container-site grid items-center gap-10 ${aside ? "lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]" : ""}`}>
+        <div className={`flex flex-col items-start ${narrow ? "max-w-[760px]" : "max-w-[820px]"}`}>
+          <Breadcrumbs crumbs={crumbs} className="hero-in mb-6" />
+          {badge && (
+            <div className="hero-in" style={revealDelay(30)}>
+              <Badge>{badge}</Badge>
+            </div>
+          )}
+          <h1 className="type-page hero-rise mt-4" style={revealDelay(50)}>
+            {title}
+          </h1>
+          {lead && (
+            <p className="type-lead hero-in mt-5 max-w-[46rem]" style={revealDelay(120)}>
+              {lead}
+            </p>
+          )}
+          {children && (
+            <div className="hero-in mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap" style={revealDelay(180)}>
+              {children}
+            </div>
+          )}
         </div>
-        <h1
-          className="type-hero hero-intro mt-5 max-w-[22ch]"
-          style={revealDelay(60)}
-        >
-          {title}
-        </h1>
-        {lead && (
-          <p className="type-lead hero-intro mt-6 max-w-[44rem] sm:text-[1.0625rem]" style={revealDelay(120)}>
-            {lead}
-          </p>
-        )}
-        {children && (
-          <div className="hero-intro mt-8 flex flex-wrap items-center justify-center gap-3" style={revealDelay(180)}>
-            {children}
+        {aside && (
+          <div className="hero-visual-in hidden lg:block" style={revealDelay(120)}>
+            {aside}
           </div>
         )}
       </div>

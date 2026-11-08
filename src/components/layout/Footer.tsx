@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle, ShieldCheck } from "lucide-react";
 import { companyNav, informationNav, site } from "@/content/site";
 import { services } from "@/content/services";
 import { independenceStatement } from "@/content/home";
@@ -15,8 +15,8 @@ const linkClass =
 function Column({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h2 className="font-display text-sm font-semibold uppercase tracking-[0.06em] text-ink">{title}</h2>
-      <ul className="mt-3 flex flex-col">{children}</ul>
+      <h2 className="font-display text-[0.9375rem] font-medium text-ink">{title}</h2>
+      <ul className="mt-3 flex flex-col gap-0.5">{children}</ul>
     </div>
   );
 }
@@ -25,12 +25,12 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-line bg-white" aria-label="Site footer">
-      <div className="container-site py-12 pb-[max(3rem,env(safe-area-inset-bottom))] lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
-          <div className="sm:max-w-sm">
+    <footer className="mt-4 border-t border-line bg-white" aria-label="Site footer">
+      <div className="container-site pb-[max(6rem,calc(env(safe-area-inset-bottom)+5rem))] pt-14 lg:pb-12 lg:pt-20">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
+          <div className="col-span-2 sm:max-w-sm lg:col-span-1">
             <Wordmark />
-            <p className="mt-3 text-sm leading-relaxed text-ink-2">
+            <p className="mt-4 max-w-[34ch] text-[0.9375rem] leading-relaxed text-ink-2">
               Independent documentation assistance for Indians in Germany. {site.coverageStatement}
             </p>
           </div>
@@ -102,11 +102,14 @@ export function Footer() {
           </Column>
         </div>
 
-        <p className="mt-10 rounded-[14px] border border-accent-100 bg-accent-50 px-5 py-4 text-sm leading-relaxed text-ink-2">
-          <strong className="font-medium text-ink">Independent service:</strong> {independenceStatement}
+        <p className="note mt-12 !text-sm">
+          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+          <span>
+            <strong className="font-medium text-ink">Independent service.</strong> {independenceStatement}
+          </span>
         </p>
 
-        <div className="mt-6 flex items-center justify-between gap-4 text-sm text-ink-2">
+        <div className="mt-6 flex items-center justify-between gap-4 border-t border-line pt-6 text-sm text-ink-2">
           <p>
             © {year} {site.name}. {site.tagline}
           </p>

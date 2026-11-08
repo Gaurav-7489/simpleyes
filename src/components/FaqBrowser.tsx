@@ -56,15 +56,15 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
               disabled={!hydrated}
               aria-pressed={active === c.id}
               onClick={() => setActive(c.id)}
-              className={`min-h-11 rounded-full px-4 text-sm font-medium transition-colors ${
-                active === c.id ? "bg-accent-700 text-white" : "border border-line bg-white text-ink-2 hover:border-accent-300 hover:text-ink"
+              className={`min-h-11 rounded-full px-4 text-sm font-medium transition-colors duration-200 ${
+                active === c.id ? "bg-cta text-white shadow-[var(--shadow-sm)]" : "border border-line bg-white text-ink-2 hover:border-accent-300 hover:text-ink"
               }`}
             >
               {c.label}
             </button>
           ))}
         </div>
-        <label className="relative block md:w-72">
+        <label className="relative block md:w-72 md:shrink-0">
           <span className="sr-only">Search questions</span>
           <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-3" strokeWidth={1.75} />
           <input
@@ -83,14 +83,14 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
       </p>
 
       {visible.length === 0 ? (
-        <p className="mt-10 rounded-[14px] border border-dashed border-line bg-white px-5 py-8 text-center text-ink-2">
+        <p className="mt-10 rounded-[var(--radius-md)] border border-dashed border-line-strong bg-white px-5 py-8 text-center text-ink-2">
           No questions match “{query}”. Try another word, or contact us with your question.
         </p>
       ) : (
         <div className="mt-10 flex flex-col gap-12">
           {visible.map((category) => (
             <section key={category.id} id={category.id} aria-labelledby={`${category.id}-title`} className="scroll-mt-[calc(var(--header-h)+24px)]">
-              <h2 id={`${category.id}-title`} className="type-card-title mb-4 !text-[1.375rem]">
+              <h2 id={`${category.id}-title`} className="type-h3 mb-4">
                 {category.label}
               </h2>
               <FaqList items={category.items} />
