@@ -1,24 +1,31 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { homeSteps } from "@/content/home";
+import { revealDelay } from "@/lib/style";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-/** §07 section 5 — four-step summary: horizontal numbered stepper on desktop, vertical on phones. */
+/** Four-step summary of the approved journey; the full five steps live on /how-it-works/. */
 export function Process() {
   return (
     <section id="how-it-works" aria-labelledby="process-title" className="section">
       <div className="container-site">
-        <SectionHeading
-          index="04"
-          id="process-title"
-          badge="How it works"
-          title="Four simple steps"
-          lead="Official decisions always stay with the authorities — we help you get there prepared."
-        />
-        <ol className="stepper mt-10 lg:mt-14">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <SectionHeading
+            id="process-title"
+            badge="How it works"
+            title="A simple, guided process"
+            lead="Official decisions always stay with the authorities — we help you arrive prepared."
+            align="left"
+          />
+          <Link href="/how-it-works/" className="link-tertiary shrink-0" data-reveal>
+            See the full journey
+            <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
+          </Link>
+        </div>
+        <ol className="steps steps-row mt-10 lg:mt-14">
           {homeSteps.map((step, i) => (
-            <li key={step.title} className="stepper-item" data-reveal>
-              <span className="stepper-num" aria-hidden="true">
+            <li key={step.title} className="step" data-reveal style={revealDelay(i * 70)}>
+              <span className={`step-num ${i === homeSteps.length - 1 ? "step-num-strong" : ""}`} aria-hidden="true">
                 {i + 1}
               </span>
               <div>
@@ -31,12 +38,6 @@ export function Process() {
             </li>
           ))}
         </ol>
-        <div className="mt-8 flex justify-center">
-          <Link href="/how-it-works/" className="link-tertiary">
-            See how it works
-            <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
-          </Link>
-        </div>
       </div>
     </section>
   );

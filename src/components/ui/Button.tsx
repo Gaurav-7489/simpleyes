@@ -45,7 +45,7 @@ export function ButtonLink({
   location,
 }: CommonProps & { href: string }) {
   return (
-    <Link href={href} data-magnetic data-cta-location={location} className={classes(variant, size, className)}>
+    <Link href={href} data-cta-location={location} className={classes(variant, size, className)}>
       <Face icon={icon}>{children}</Face>
     </Link>
   );
@@ -66,7 +66,7 @@ export function WhatsAppButton({
       href={whatsappHref(service)}
       target="_blank"
       rel="noopener noreferrer"
-      data-magnetic
+     
       data-cta="whatsapp"
       data-cta-location={location}
       data-topic={service?.slug ?? "general"}

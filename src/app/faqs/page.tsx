@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ShieldCheck } from "lucide-react";
 import { allFaqs, faqCategories } from "@/content/faqs";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
@@ -21,11 +22,21 @@ export default function FaqsPage() {
     <>
       <PageHero
         badge="FAQs"
-        title="Questions & answers"
+        title="Frequently Asked Questions"
         lead={`Clear answers about what ${site.name} does, what it doesn't do, and how to get started.`}
         crumbs={[{ name: "FAQs", path: "/faqs/" }]}
       />
-      <section aria-label="Frequently asked questions" className="pb-[var(--section-y)]">
+      <div className="container-site max-w-[960px] pt-10">
+        <p className="note">
+          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
+          <span>
+            <strong className="font-medium text-ink">In short:</strong> {site.name} is an independent private documentation-assistance
+            service. It is not an embassy, consulate or application centre, and it cannot approve applications or speed up official
+            processing.
+          </span>
+        </p>
+      </div>
+      <section aria-label="Frequently asked questions" className="pb-[var(--section-y)] pt-10">
         <div className="container-site max-w-[960px]">
           <FaqBrowser categories={faqCategories} />
         </div>

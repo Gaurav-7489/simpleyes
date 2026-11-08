@@ -10,7 +10,6 @@ import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { services } from "@/content/services";
 import { whatsappHref } from "@/lib/whatsapp";
 import { RevealObserver } from "@/components/RevealObserver";
-import { LazyMotion } from "@/components/LazyMotion";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Analytics } from "@/components/analytics/Analytics";
 
@@ -64,17 +63,17 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           Skip to content
         </a>
         <Header />
-        <main id="main" tabIndex={-1} className="outline-none">
-          {children}
-        </main>
+        {/* Before <main> in DOM order: a pointer/touch shortcut that sequential keyboard focus never meets mid-page. */}
         <FloatingWhatsApp
           generalHref={whatsappHref()}
           serviceHrefs={Object.fromEntries(services.map((service) => [service.slug, whatsappHref(service)]))}
         />
+        <main id="main" tabIndex={-1} className="outline-none">
+          {children}
+        </main>
         <Footer />
         {site.gaMeasurementId && <Analytics measurementId={site.gaMeasurementId} />}
         <RevealObserver />
-        <LazyMotion />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </body>
     </html>

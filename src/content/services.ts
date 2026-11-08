@@ -881,6 +881,23 @@ export function getService(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);
 }
 
+/** Short labels for compact tiles. Each is a prefix of the full title, so the rest can be added for screen readers. */
+const shortLabels: Record<string, string> = {
+  "passport-services": "Passport",
+  "oci-services": "OCI",
+  "attestation-legalisation": "Attestation",
+  "affidavits-declarations": "Affidavits",
+  "visa-documentation-support": "Visa & Documentation",
+  "family-documentation": "Family Documentation",
+};
+
+/** Visible short label + screen-reader remainder, so the accessible name is always the full service title. */
+export function serviceLabel(service: Pick<Service, "slug" | "title">): { short: string; rest: string } {
+  const short = shortLabels[service.slug];
+  if (!short || !service.title.startsWith(short)) return { short: service.title, rest: "" };
+  return { short, rest: service.title.slice(short.length) };
+}
+
 export function relatedServices(service: Service): Service[] {
   return service.related.map(getService).filter((s): s is Service => s !== undefined);
 }

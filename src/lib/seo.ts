@@ -67,6 +67,7 @@ export function organizationJsonLd() {
         url: `https://wa.me/${site.whatsapp.number}`,
         areaServed: "DE",
         availableLanguage: ["English"],
+        ...(site.contact.email ? { email: site.contact.email } : {}),
       },
     ],
   };
@@ -130,5 +131,21 @@ export function contactPageJsonLd() {
     name: `Contact ${site.name}`,
     url: absoluteUrl("/contact/"),
     about: { "@id": orgId },
+  };
+}
+
+/** ItemList of the eight services for the Services overview (mirrors the visible directory). */
+export function servicesItemListJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${site.name} services`,
+    numberOfItems: services.length,
+    itemListElement: services.map((service, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: service.title,
+      url: absoluteUrl(`/services/${service.slug}/`),
+    })),
   };
 }

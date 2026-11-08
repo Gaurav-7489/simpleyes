@@ -40,30 +40,30 @@ export default function PricingPage() {
         </ButtonLink>
       </PageHero>
 
-      <section aria-labelledby="fee-types" className="pb-[var(--section-y)]">
+      <section aria-labelledby="fee-types" className="section">
         <div className="container-site">
-          <h2 id="fee-types" className="type-h2 text-center" data-reveal>
+          <h2 id="fee-types" className="type-h2" data-reveal>
             Four kinds of cost to understand
           </h2>
-          <ol className="mx-auto mt-10 grid max-w-[960px] gap-4">
+          <ol className="mt-10 grid gap-4 sm:grid-cols-2">
             {pricing.feeTypes.map((fee, i) => (
               <li
                 key={fee.title}
-                className={`card flex items-start gap-4 ${i === 0 ? "!border-accent-900 !bg-accent-900" : i === 1 ? "card-mint" : ""}`}
+                className={`card flex items-start gap-4 ${i === 0 ? "card-mint" : ""}`}
                 data-reveal
                 style={revealDelay(i * 60)}
               >
                 <span
                   aria-hidden="true"
                   className={`grid size-10 shrink-0 place-items-center rounded-[12px] font-display font-semibold ${
-                    i === 0 ? "bg-white text-accent-900" : "bg-accent-50 text-accent-700 ring-1 ring-accent-100"
+                    i === 0 ? "bg-cta text-white" : "bg-accent-50 text-accent-700 ring-1 ring-accent-100"
                   }`}
                 >
                   {i + 1}
                 </span>
                 <div>
-                  <h3 className={`type-card-title ${i === 0 ? "text-white" : ""}`}>{fee.title}</h3>
-                  <p className={`mt-1.5 text-[0.9375rem] leading-relaxed ${i === 0 ? "text-white/90" : "text-ink-2"}`}>{fee.body}</p>
+                  <h3 className="type-card-title">{fee.title}</h3>
+                  <p className="type-body mt-1.5">{fee.body}</p>
                 </div>
               </li>
             ))}
@@ -73,21 +73,21 @@ export default function PricingPage() {
 
       <FeeTable fees={pricing.serviceFees} />
 
-      <section aria-labelledby="quote-factors" className="section bg-white">
+      <section aria-labelledby="quote-factors" className="section section-tint">
         <div className="container-site grid gap-6 lg:grid-cols-2">
-          <div className="card" data-reveal>
+          <div className="card !bg-canvas !shadow-none" data-reveal>
             <h2 id="quote-factors" className="type-card-title">
               What may shape a quotation
             </h2>
             <ul className="mt-4 flex flex-wrap gap-2">
               {pricing.factors.map((factor) => (
-                <li key={factor} className="rounded-full border border-line bg-canvas px-3.5 py-2 text-sm text-ink">
+                <li key={factor} className="rounded-full border border-line bg-white px-3.5 py-2 text-sm text-ink">
                   {factor}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="card card-mint flex flex-col gap-3" data-reveal style={revealDelay(60)}>
+          <div className="card flex flex-col gap-3" data-reveal style={revealDelay(60)}>
             <h2 className="type-card-title">How our quotation model works</h2>
             <ul className="flex flex-col gap-3 type-body">
               {[

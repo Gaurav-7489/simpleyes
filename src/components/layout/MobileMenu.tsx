@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircle } from "lucide-react";
 import type { NavItem } from "@/content/site";
 import { useHydrated } from "@/lib/useHydrated";
 
-type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem };
+type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem; whatsappHref: string };
 
 /**
  * Accessible disclosure-style mobile menu:
@@ -16,7 +16,7 @@ type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem };
  * - focus is kept inside the menu while open, page scroll is locked
  * - closes on navigation and when the viewport reaches desktop width
  */
-export function MobileMenu({ items, services, cta }: Props) {
+export function MobileMenu({ items, services, cta, whatsappHref }: Props) {
   const hydrated = useHydrated();
   const pathname = usePathname();
   // The menu is "open for a given path": navigating anywhere closes it without an effect.
@@ -102,7 +102,7 @@ export function MobileMenu({ items, services, cta }: Props) {
         aria-controls={panelId}
         aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((value) => !value)}
-        className="relative grid size-11 place-items-center rounded-full text-ink transition-colors hover:bg-black/5"
+        className="relative grid size-11 place-items-center rounded-full border border-line bg-white text-ink transition-colors duration-200 hover:bg-canvas-alt"
       >
         <span aria-hidden="true" className="relative block h-3.5 w-5">
           <span
@@ -127,7 +127,7 @@ export function MobileMenu({ items, services, cta }: Props) {
       <div
         aria-hidden="true"
         onClick={() => close(false)}
-        className={`fixed inset-0 -z-10 bg-canvas/40 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`fixed inset-x-0 bottom-0 top-16 -z-10 bg-ink/10 transition-opacity duration-200 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -138,10 +138,10 @@ export function MobileMenu({ items, services, cta }: Props) {
         data-open={open}
         inert={!open}
         aria-hidden={!open}
-        className="mobile-panel absolute inset-x-0 top-[calc(100%+8px)] origin-top rounded-[14px] bg-white/95 p-3 shadow-[var(--shadow-frame),0_20px_40px_-16px_rgb(0_0_0/0.18)] ring-1 ring-black/5"
+        className="mobile-panel absolute inset-x-[var(--gutter)] top-[calc(100%+8px)] origin-top rounded-[22px] border border-line bg-white p-3 shadow-[var(--shadow-lg)]"
         // When closed the panel is visibility:hidden, so its links are not focusable.
       >
-        <nav aria-label="Mobile" className="max-h-[calc(100dvh-140px)] overflow-y-auto overscroll-contain">
+        <nav aria-label="Mobile" className="max-h-[calc(100dvh-230px)] overflow-y-auto overscroll-contain">
           <ul className="flex flex-col">
             {items.map((item) =>
               item.href === "/services/" ? (
@@ -151,7 +151,7 @@ export function MobileMenu({ items, services, cta }: Props) {
                     aria-expanded={servicesOpen}
                     aria-controls={servicesId}
                     onClick={() => setServicesOpen((v) => !v)}
-                    className="flex min-h-12 w-full items-center justify-between rounded-[10px] px-3 font-display text-lg text-ink transition-colors hover:bg-black/[0.04]"
+                    className="flex min-h-12 w-full items-center justify-between rounded-[14px] px-3 font-display text-lg text-ink transition-colors duration-200 hover:bg-canvas-alt"
                   >
                     {item.label}
                     <ChevronDown
@@ -160,19 +160,22 @@ export function MobileMenu({ items, services, cta }: Props) {
                       strokeWidth={1.75}
                     />
                   </button>
-                  <ul id={servicesId} hidden={!servicesOpen} className="mb-2 ml-3 border-l border-line pl-2">
+                  <div id={servicesId} className="mobile-services" data-open={servicesOpen}>
+                  <ul className="mb-2 ml-3 border-l border-line pl-2">
                     {[{ label: "All services", href: "/services/" }, ...services].map((service) => (
                       <li key={service.href}>
                         <Link
                           href={service.href}
                           onClick={() => close(false)}
-                          className="flex min-h-11 items-center rounded-[10px] px-3 text-[0.9375rem] text-ink-2 transition-colors hover:bg-black/[0.04] hover:text-ink"
+                          tabIndex={servicesOpen ? undefined : -1}
+                          className="flex min-h-11 items-center rounded-[12px] px-3 text-[0.9375rem] text-ink-2 transition-colors duration-200 hover:bg-canvas-alt hover:text-ink"
                         >
                           {service.label}
                         </Link>
                       </li>
                     ))}
                   </ul>
+                  </div>
                 </li>
               ) : (
                 <li key={item.href}>
@@ -180,7 +183,7 @@ export function MobileMenu({ items, services, cta }: Props) {
                     href={item.href}
                     onClick={() => close(false)}
                     aria-current={pathname === item.href ? "page" : undefined}
-                    className="flex min-h-12 items-center rounded-[10px] px-3 font-display text-lg text-ink transition-colors hover:bg-black/[0.04]"
+                    className="flex min-h-12 items-center rounded-[14px] px-3 font-display text-lg text-ink transition-colors duration-200 hover:bg-canvas-alt aria-[current=page]:bg-accent-50"
                   >
                     {item.label}
                   </Link>
@@ -189,9 +192,26 @@ export function MobileMenu({ items, services, cta }: Props) {
             )}
           </ul>
         </nav>
-        <Link href={cta.href} onClick={() => close(false)} data-cta-location="mobile-menu" className="btn btn-dark mt-3 w-full">
-          <span className="btn-face w-full justify-center">{cta.label}</span>
-        </Link>
+        <div className="mt-3 grid gap-2 border-t border-line pt-3">
+          <Link href={cta.href} onClick={() => close(false)} data-cta-location="mobile-menu" className="btn btn-dark w-full">
+            <span className="btn-face w-full justify-center">{cta.label}</span>
+          </Link>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cta="whatsapp"
+            data-cta-location="mobile-menu"
+            data-topic="general"
+            className="btn btn-light w-full"
+          >
+            <span className="btn-face w-full justify-center">
+              <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
+              Chat on WhatsApp
+              <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+            </span>
+          </a>
+        </div>
       </div>
     </>
   );

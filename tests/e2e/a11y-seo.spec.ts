@@ -100,7 +100,7 @@ test.describe("SEO", () => {
   test("important content is server-rendered", async ({ request }) => {
     const html = await (await request.get("/")).text();
     for (const phrase of [
-      "Your Documentation Journey,",
+      "Documentation Support for Indians in",
       site.coverageStatement,
       "not affiliated with",
       ...services.map((s) => s.title.replace("&", "&amp;")),

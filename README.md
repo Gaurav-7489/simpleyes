@@ -18,12 +18,18 @@ Everything the owners still have to supply or approve is tracked in
 - Fonts: Outfit (headings, buttons) + DM Sans (body) via `next/font/google`, self-hosted at build time (§16)
 - **Playwright** + **axe-core** for e2e, responsive, accessibility and SEO tests; **Lighthouse** in CI
 
+**Design: Premium V2 (approved Concept 2).** Tokens, type scale, buttons, surfaces and motion live in
+`src/app/globals.css` (see its header for contrast-checked colours). Motion is CSS-only: a short hero entrance,
+one shared scroll-reveal observer (`RevealObserver`), 150–300 ms hover/press/menu/accordion transitions, all
+disabled under `prefers-reduced-motion`. No motion library, no scroll-jacking. The hero artwork is an original
+SVG (`src/components/home/HeroVisual.tsx`).
+
 Client JavaScript is limited to navigation (Services dropdown, mobile menu), the FAQ accordion/filter, the
-enquiry form, consent-gated analytics, one shared scroll-reveal observer and a small motion layer (scroll
-progress, subtle spring hover on buttons/cards — `src/components/MotionLayer.tsx` — and gentle drag physics
-for the hero illustration chips on desktop, `src/components/home/HeroPhysics.tsx`). Native scrolling only
-(no scroll-jacking, §16); all motion is transform-only and disabled for reduced motion / touch. All content,
-FAQs and structured data are server-rendered HTML.
+enquiry form, the post-hero action bar (`FloatingWhatsApp`), consent-gated analytics and the reveal observer.
+All content, FAQs and structured data are server-rendered HTML.
+
+Redesign notes: [`docs/REDESIGN-AUDIT.md`](docs/REDESIGN-AUDIT.md) · [`docs/SEO-GEO-AEO-AUDIT.md`](docs/SEO-GEO-AEO-AUDIT.md) ·
+[`docs/LAUNCH-BLOCKERS.md`](docs/LAUNCH-BLOCKERS.md) · screenshots in [`docs/screenshots/`](docs/screenshots/).
 
 ## Getting started
 
@@ -44,6 +50,7 @@ npm run dev        # http://localhost:3000
 | `npm run check:launch` | Owner inputs/approvals and live Contact activation check; expected to fail until owner setup is complete |
 | `npm run test:e2e` | Playwright suite (requires `npm run build` and `npx playwright install chromium`) |
 | `CROSS_BROWSER=1 npm run test:e2e` | Also run Firefox and iPhone/WebKit (install those browsers first) |
+| `PW_CHROMIUM_PATH=/path/to/chrome npm run test:e2e` | Use a preinstalled Chromium instead of `playwright install` |
 | `npm run check` | All of the above |
 
 ## Environment variables
@@ -65,13 +72,10 @@ src/
   app/                 routes (home, services, services/[slug], how-it-works, about, faqs, pricing, contact,
                        thank-you, privacy, terms, disclaimer, impressum) + sitemap, robots, manifest, llms.txt
   components/
-    home/              homepage sections in §07 order (Hero, WhatWeDo=Introduction, Services, WhySimplyes,
-                       Process, WhoWeHelp, Approach, TrustPanel, FaqSection) — FinalCta is shared
-    layout/            Header, NavLinks (Services dropdown), MobileMenu, Footer, FloatingWhatsApp, BackToTop
+    home/              homepage sections (Hero + HeroVisual, Services, Process, WhySimplyes, FaqSection) — FinalCta is shared
+    layout/            Header, NavLinks (Services dropdown), MobileMenu, Footer, FloatingWhatsApp (action bar), BackToTop
     contact/           EnquiryForm, ThankYouTracker
     analytics/         Analytics (consent banner + GA4), TrackServiceView
-    service/           ServiceSection (titled list card for service pages)
-    illustrations/     original SVG art
     ui/                Button, Badge, Icon, SectionHeading, Wordmark, JsonLd
   content/             ALL copy and business data (site.ts, services.ts, faqs.ts, home.ts)
   lib/                 seo.ts (metadata + JSON-LD), analytics.ts, whatsapp.ts, style.ts

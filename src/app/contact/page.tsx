@@ -24,13 +24,13 @@ export default function ContactPage() {
     <>
       <PageHero
         badge="Contact"
-        title="Get assistance"
-        lead="Tell us what you need — a short description is enough. A real person will get back to you and explain the next step."
+        title="Get Assistance"
+        lead="Tell us what you need — a short description is enough. A real person will get back to you and explain the next step. No documents are needed at this stage."
         crumbs={[{ name: "Contact Us", path: "/contact/" }]}
       />
 
-      <section aria-label="Contact options" className="pb-[var(--section-y)]">
-        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+      <section aria-label="Contact options" className="section !pt-[clamp(40px,5vw,64px)]">
+        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:items-start lg:gap-10">
           <EnquiryForm
             services={services.map((s) => ({ slug: s.slug, title: s.title }))}
             endpoint={site.enquiryEndpoint}
@@ -45,7 +45,7 @@ export default function ContactPage() {
                 <MessageCircle aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
                 WhatsApp
               </h2>
-              <p className="type-body">Prefer to chat? Message us with the service you need.</p>
+              <p className="type-body">Prefer to chat? Message us with the service you need — {site.whatsapp.display}.</p>
               <a
                 href={whatsappHref()}
                 target="_blank"
@@ -53,10 +53,13 @@ export default function ContactPage() {
                 data-cta="whatsapp"
                 data-cta-location="contact-aside"
                 data-topic="general"
-                className="font-display text-xl text-ink underline decoration-line underline-offset-[6px] hover:decoration-accent-700"
+                className="btn btn-dark self-start"
               >
-                {site.whatsapp.display}
-                <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+                <span className="btn-face">
+                  <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                  Chat on WhatsApp
+                  <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+                </span>
               </a>
               {(hours || responseTime) && <p className="text-sm text-ink-2">{[hours, responseTime].filter(Boolean).join(" · ")}</p>}
             </div>
@@ -87,7 +90,7 @@ export default function ContactPage() {
               </Link>
             </div>
 
-            <div className="card card-mint flex flex-col gap-3">
+            <div className="card card-quiet flex flex-col gap-3">
               <h2 className="type-card-title flex items-center gap-2">
                 <LockKeyhole aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
                 How we handle your details

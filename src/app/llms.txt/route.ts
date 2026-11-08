@@ -1,7 +1,7 @@
 import { allFaqs } from "@/content/faqs";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
-import { independenceStatement } from "@/content/home";
+import { doesDoesNot, independenceStatement, journeySteps } from "@/content/home";
 import { absoluteUrl } from "@/lib/seo";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -16,7 +16,7 @@ export function GET() {
     "",
     `- Tagline: ${site.tagline}`,
     `- Coverage: ${site.coverageStatement}`,
-    `- Contact: enquiry form ${absoluteUrl("/contact/")} · WhatsApp ${site.whatsapp.display} (${whatsappHref().split("?")[0]})`,
+    `- Contact: enquiry form ${absoluteUrl("/contact/")} · WhatsApp ${site.whatsapp.display} (${whatsappHref().split("?")[0]})${site.contact.email ? ` · Email ${site.contact.email}` : ""}`,
     "- Language: English",
     "",
     independenceStatement,
@@ -24,6 +24,15 @@ export function GET() {
     "## Services",
     "",
     ...services.map((s) => `- [${s.title}](${absoluteUrl(`/services/${s.slug}/`)}): ${s.summary}`),
+    "",
+    "## How it works",
+    "",
+    ...journeySteps.map((step, i) => `${i + 1}. ${step.title} (${step.who}): ${step.body}`),
+    "",
+    "## What SimplYes does not do",
+    "",
+    ...doesDoesNot.doesNot.map((item) => `- ${item}`),
+    "- Fees: quotation-based service fees, explained before paid assistance begins; government/consular fees and third-party costs are separate.",
     "",
     "## Pages",
     "",

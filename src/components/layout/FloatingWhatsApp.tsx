@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { enquiryHref } from "@/content/services";
 
 type Props = {
   /** Prebuilt, encoded wa.me links: the general one and one per published service slug. */
@@ -11,11 +13,12 @@ type Props = {
 };
 
 /**
- * Floating WhatsApp shortcut. Appears once the visitor has scrolled past the hero
- * (60% of the viewport), and hides while the footer or the final-CTA WhatsApp
- * button is on screen so it never covers them or the back-to-top control. Hidden
- * while the mobile menu is open (html[data-menu-open], via CSS). Uses the
- * service's own message on service pages.
+ * Contact affordance that appears once the visitor has scrolled past the hero.
+ * - Phones/tablets: a slim bottom bar with Get Assistance + WhatsApp.
+ * - Desktop: a single WhatsApp pill in the corner.
+ * It hides while the footer or a final CTA ([data-wa-anchor]) is on screen, while the mobile menu is open
+ * and while a form field has focus (CSS), so it never covers content or duplicates an on-screen CTA.
+ * On service pages both actions carry the service (pre-selected enquiry, service-specific WhatsApp text).
  */
 export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
   const pathname = usePathname() ?? "/";
@@ -46,26 +49,39 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
   }, [pathname]);
 
   const slug = /^\/services\/([^/]+)\/?$/.exec(pathname)?.[1];
-  const href = (slug && serviceHrefs[slug]) || generalHref;
+  const serviceSlug = slug && serviceHrefs[slug] ? slug : undefined;
+  const href = (serviceSlug && serviceHrefs[serviceSlug]) || generalHref;
   const shown = scrolled && !anchorInView;
+  const onContact = pathname.startsWith("/contact");
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      data-cta="whatsapp"
-      data-topic={slug && serviceHrefs[slug] ? slug : "general"}
-      data-floating-wa
-      data-visible={shown}
-      aria-label="Chat with SimplYes on WhatsApp (opens in a new tab)"
-      // Hidden state uses visibility:hidden, which also removes it from the tab order and accessibility tree.
-      className="fab-wa btn btn-dark"
-    >
-      <span className="btn-face">
-        <MessageCircle aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.75} />
-        <span className="fab-wa-label">WhatsApp</span>
-      </span>
-    </a>
+    <div className="action-bar" data-visible={shown}>
+      {!onContact && (
+        <Link
+          href={enquiryHref(serviceSlug ? { slug: serviceSlug } : undefined, serviceSlug === "corporate-services" ? "corporate" : undefined)}
+          data-cta-location="action-bar"
+          className="btn btn-dark action-bar-primary"
+        >
+          <span className="btn-face">Get Assistance</span>
+        </Link>
+      )}
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cta="whatsapp"
+        data-topic={serviceSlug ?? "general"}
+        data-floating-wa
+        data-visible={shown}
+        aria-label="Chat with SimplYes on WhatsApp (opens in a new tab)"
+        // Hidden state uses visibility:hidden (inherited from the bar), which also removes it from the tab order.
+        className={`fab-wa btn ${onContact ? "btn-dark flex-1" : "btn-light"}`}
+      >
+        <span className="btn-face w-full">
+          <MessageCircle aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.75} />
+          <span className="fab-wa-label">WhatsApp</span>
+        </span>
+      </a>
+    </div>
   );
 }

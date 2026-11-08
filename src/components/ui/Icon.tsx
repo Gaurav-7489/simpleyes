@@ -46,16 +46,18 @@ export function Icon({ name, className }: { name: ServiceIcon | IconKey; classNa
   return <Component aria-hidden="true" className={className ?? "size-5"} strokeWidth={1.75} />;
 }
 
-/** Mint rounded tile holding an icon, as used across cards. */
-export function IconTile({ name, size = "md" }: { name: ServiceIcon | IconKey; size?: "sm" | "md" }) {
+const tileSizes = {
+  sm: { box: "size-9 rounded-[11px]", icon: "size-[18px]" },
+  md: { box: "size-11", icon: "size-5" },
+  lg: { box: "size-14 rounded-[16px]", icon: "size-6" },
+} as const;
+
+/** Soft rounded tile holding an icon — one shared treatment across the site. */
+export function IconTile({ name, size = "md", className }: { name: ServiceIcon | IconKey; size?: keyof typeof tileSizes; className?: string }) {
+  const s = tileSizes[size];
   return (
-    <span
-      aria-hidden="true"
-      className={`inline-grid shrink-0 place-items-center rounded-[12px] bg-accent-50 text-accent-700 ring-1 ring-accent-100 ${
-        size === "sm" ? "size-9" : "size-11"
-      }`}
-    >
-      <Icon name={name} className={size === "sm" ? "size-4" : "size-5"} />
+    <span aria-hidden="true" className={`icon-tile ${s.box} ${className ?? ""}`}>
+      <Icon name={name} className={s.icon} />
     </span>
   );
 }

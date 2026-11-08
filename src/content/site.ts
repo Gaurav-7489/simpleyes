@@ -110,15 +110,20 @@ export const enquiryService = (() => {
 
 export type NavItem = { label: string; href: string };
 
-/** §06 desktop navigation: Home · Services ▾ · How It Works · About Us · FAQs · Contact Us · [Get Assistance]. */
+/**
+ * Primary navigation (V2, Concept 2): Home · Services ▾ · How It Works · About · FAQs, with the
+ * Get Assistance button (→ /contact/) on the right. The mobile menu appends `contactNav`.
+ */
 export const primaryNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services/" },
   { label: "How It Works", href: "/how-it-works/" },
-  { label: "About Us", href: "/about/" },
+  { label: "About", href: "/about/" },
   { label: "FAQs", href: "/faqs/" },
-  { label: "Contact Us", href: "/contact/" },
 ];
+
+/** Contact entry shown in the mobile menu (on desktop the Get Assistance button covers it). */
+export const contactNav: NavItem = { label: "Contact", href: "/contact/" };
 
 /** Primary CTA in the header and across the site. */
 export const getAssistance: NavItem = { label: "Get Assistance", href: "/contact/" };

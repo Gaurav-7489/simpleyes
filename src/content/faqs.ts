@@ -216,5 +216,5 @@ function pick(ids: string[]): Faq[] {
   return ids.map((id) => allFaqs.find((faq) => faq.id === id)).filter((faq): faq is Faq => faq !== undefined);
 }
 
-/** Homepage selection (§07 section 9): includes the two required questions. */
-export const homeFaqs: Faq[] = pick(["official-service", "guarantee", "which-services", "get-started", "official-fees", "cities"]);
+/** Homepage selection (V2: five questions): independence first, plus the guarantee question. */
+export const homeFaqs: Faq[] = pick(["official-service", "guarantee", "get-started", "official-fees", "which-services"]);

@@ -16,7 +16,23 @@ export type IconKey =
   | "residents"
   | "corporate";
 
-/** §07 section 4 — Why SimplYes? */
+/** V2 homepage hero (Concept 2). Wording stays within the approved scope and independence statement. */
+export const homeHero = {
+  eyebrow: "Redefining consular services",
+  titleLead: "Documentation Support for Indians in",
+  titleAccent: "Germany.",
+  lead: "Independent assistance for your consular and documentation needs. We help you understand what applies, prepare your paperwork and know your next step.",
+};
+
+/** V2 homepage "Why SimplYes" — four focused points drawn from the approved benefits below. */
+export const homeWhy: { icon: IconKey; title: string; body: string }[] = [
+  { icon: "guidance", title: "Clarity", body: "Requirements explained in plain language, without jargon." },
+  { icon: "personal", title: "Personal guidance", body: "A real person helps you, shaped around your situation — not a generic checklist." },
+  { icon: "organised", title: "Organised preparation", body: "A structured way to gather and check what your process needs." },
+  { icon: "transparent", title: "Transparent scope", body: "Clear about what we do, what we don't, and what stays with the authorities." },
+];
+
+/** §07 section 4 — Why SimplYes? (full list, kept for reference and other pages) */
 export const whyItems: { icon: IconKey; title: string; body: string }[] = [
   { icon: "personal", title: "Personalised assistance", body: "Guidance shaped around your situation, not a generic checklist." },
   { icon: "guidance", title: "Clear guidance", body: "Requirements explained in plain language, without jargon." },

@@ -16,6 +16,8 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${port}`,
     trace: "retain-on-failure",
+    // Optional: point at a preinstalled Chromium (e.g. sandboxes where `playwright install` is unavailable).
+    ...(process.env.PW_CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH } } : {}),
   },
   webServer: {
     command: `node scripts/serve-static.mjs out ${port}`,
