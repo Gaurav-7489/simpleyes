@@ -102,6 +102,33 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
 - **Docs:** handover document; this report; deployment guide updated to the real hosting state;
   [`ENQUIRY-SETUP.md`](ENQUIRY-SETUP.md) (Formdall costs, account setup, test, mailbox identification).
 
+## UI redesign (owners' mockup, Nov 2026)
+
+Branch `claude/ui-redesign-mockup`. Visual layer only; confirmed copy, page structure and behaviour are unchanged.
+
+- **Palette:** deep green actions (`#005C45`, white text 8:1), `#00905A` highlight for large text/icons only
+  (3.9:1), mint surfaces (`#E2F4E6`). Background `#F6F9F5` and text `#13211D` unchanged.
+- **Header:** floating white bar, current page in a mint pill, "Get Assistance ↗" button. Logo stand-in:
+  green check + "SimplYes." (replace with the official SVG).
+- **Home hero:** eyebrow, confirmed H1 with green highlight, original SVG Berlin scene (Brandenburg Gate, TV
+  tower) with floating icon tiles, and a strip of the eight services (4 × 2 tiles on phones, one panel on
+  desktop; accessible names are the full service titles).
+- **Phones/tablets:** bottom tab bar (Home, Services, Enquiry, Menu); "Menu" opens the existing accessible menu.
+  The WhatsApp button sits above the bar; the footer is padded so nothing is hidden behind it; the bar hides
+  while a form field is focused or the menu is open.
+- **Sub-pages:** left-aligned mint heroes with a green corner wave; white rounded cards and icon tiles; round
+  step markers; softly filled form fields (border raised to 3:1 contrast, WCAG 1.4.11).
+- **Not copied from the mockup, on purpose:**
+  - the Indian passport cover with the national emblem (the spec forbids official-looking imagery and
+    government seals, §07/§08/§16, and use of the State Emblem of India is legally restricted);
+  - the mockup's headline, "Contact" button and How It Works step names ("Share Documents", "We Process &
+    Coordinate", "Get It Done"). These conflict with the confirmed copy and with the spec's rules (no
+    documents through the website, SimplYes does not process applications or promise outcomes). The
+    confirmed wording stays until the owners approve changes.
+- **Tests:** new checks for the tab bar (phones only, current page, opens the menu, never covers the
+  WhatsApp button or footer content; mutation-checked) and for the service strip. Full suite: 176 passed,
+  0 failed.
+
 ## Deviations and decisions
 
 - **Platform:** custom build (§19 Option B: Next.js · React · TypeScript · Tailwind, static export on

@@ -10,9 +10,9 @@ import type { IllustrationKind } from "@/content/services";
 const INK = "#13211d";
 const LINE = "#d7dad8";
 const PAPER = "#fbfbfb";
-const GREEN = "#0b7f8c";
-const GREEN_DARK = "#085e68";
-const GREEN_TINT = "#def0f2";
+const GREEN = "#00905a";
+const GREEN_DARK = "#005c45";
+const GREEN_TINT = "#e2f4e6";
 
 function Defs({ id }: { id: string }) {
   return (
