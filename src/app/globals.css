@@ -3,7 +3,8 @@
 /*
  * SimplYes design tokens (Website Development Specification §16 + the owners' UI mockup, Nov 2026).
  * Confirmed: background #F6F9F5, primary text #13211D. Accent: deep green taken from the mockup
- * (buttons #005C45, highlight #00905A, mint pills #E2F4E6), replacing the earlier teal #0B7F8C.
+ * (buttons #005C45, highlight #00905A, mint pills #E2F4E6), confirmed by the owners on 12 Nov 2026,
+ * replacing the earlier teal #0B7F8C.
  * Contrast: #005C45 is 7.6:1 on the background; #007A4E 5.1:1 (small text OK); #00905A is 3.9:1, so
  * it is used only for large display text, icons and decoration — never body text.
  */

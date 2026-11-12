@@ -106,8 +106,9 @@ or clipped text at 320–2560 px; tap targets; reduced motion; no console errors
 
 Branch `claude/ui-redesign-mockup`. Visual layer only; confirmed copy, page structure and behaviour are unchanged.
 
-- **Palette:** deep green actions (`#005C45`, white text 8:1), `#00905A` highlight for large text/icons only
-  (3.9:1), mint surfaces (`#E2F4E6`). Background `#F6F9F5` and text `#13211D` unchanged.
+- **Palette (confirmed by the owners, 12 Nov 2026):** deep green actions (`#005C45`, white text 8:1), `#00905A` highlight for large text/icons only
+  (3.9:1), mint surfaces (`#E2F4E6`). Background `#F6F9F5` and text `#13211D` unchanged. Replaces the
+  earlier teal `#0B7F8C`.
 - **Header:** floating white bar, current page in a mint pill, "Get Assistance ↗" button. Logo stand-in:
   green check + "SimplYes." (replace with the official SVG).
 - **Home hero:** eyebrow, confirmed H1 with green highlight, original SVG Berlin scene (Brandenburg Gate, TV
