@@ -6,7 +6,7 @@ import { revealDelay } from "@/lib/style";
 
 type Crumb = { name: string; path: string };
 
-/** Sub-page hero: breadcrumb, label pill, display heading, lead — same orb backdrop as the home hero. */
+/** Sub-page hero (owners' mockup): left-aligned breadcrumb, label, heading and lead on mint, with a green wave. */
 export function PageHero({
   badge,
   title,
@@ -21,12 +21,11 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative isolate overflow-hidden pb-[clamp(40px,5vw,72px)] pt-[clamp(104px,10vw,148px)]">
-      <div aria-hidden="true" className="hero-rings -z-10" />
-      <div aria-hidden="true" className="hero-orb -z-10 !top-[38%] opacity-80" />
-      <div className="container-site flex flex-col items-center text-center">
+    <section className="hero-mint relative isolate overflow-hidden pb-[clamp(40px,5vw,72px)] pt-[clamp(100px,10vw,140px)]">
+      <PageWave />
+      <div className="container-site flex flex-col items-start text-left">
         <nav aria-label="Breadcrumb" className="hero-intro mb-6">
-          <ol className="flex flex-wrap items-center justify-center gap-1 text-[0.8125rem] text-ink-2">
+          <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-ink-2">
             <li>
               <Link href="/" className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
                 Home
@@ -55,22 +54,48 @@ export function PageHero({
           <Badge>{badge}</Badge>
         </div>
         <h1
-          className="type-hero hero-intro mt-5 max-w-[22ch]"
+          className="type-hero hero-intro mt-4 max-w-[22ch]"
           style={revealDelay(60)}
         >
           {title}
         </h1>
         {lead && (
-          <p className="type-lead hero-intro mt-6 max-w-[44rem] sm:text-[1.0625rem]" style={revealDelay(120)}>
+          <p className="type-lead hero-intro mt-5 max-w-[44rem] sm:text-[1.0625rem]" style={revealDelay(120)}>
             {lead}
           </p>
         )}
         {children && (
-          <div className="hero-intro mt-8 flex flex-wrap items-center justify-center gap-3" style={revealDelay(180)}>
+          <div className="hero-intro mt-8 flex flex-wrap items-center gap-3" style={revealDelay(180)}>
             {children}
           </div>
         )}
       </div>
     </section>
+  );
+}
+
+/** Decorative green waves in the top-right corner of sub-page heroes. */
+function PageWave() {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 420 260"
+      preserveAspectRatio="xMaxYMin meet"
+      className="pointer-events-none absolute right-0 top-0 -z-10 h-[clamp(180px,30vw,320px)] w-auto opacity-90"
+    >
+      <defs>
+        <linearGradient id="pw-a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#e2f4e6" />
+          <stop offset="1" stopColor="#c3e8cf" />
+        </linearGradient>
+        <linearGradient id="pw-b" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="#a6dc5c" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#00a26c" stopOpacity="0.55" />
+        </linearGradient>
+      </defs>
+      <path d="M120 0h300v230c-60-10-90-60-120-110S220 20 120 0z" fill="url(#pw-a)" />
+      <path d="M230 0h190v150c-40-6-64-40-84-76S280 8 230 0z" fill="url(#pw-b)" />
+    </svg>
   );
 }

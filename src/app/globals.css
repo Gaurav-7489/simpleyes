@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
 /*
- * SimplYes design tokens (Website Development Specification §16).
- * Confirmed: background #F6F9F5, primary text #13211D, primary teal #0B7F8C.
- * The accent scale is derived from the teal: --color-accent-500 / --color-teal
- * IS the brand teal (filled buttons, logo gradient, illustrations). Text links
- * and outlines use the darker 600/700 steps because #0B7F8C on #F6F9F5 is
- * 4.47:1, just under WCAG AA for body text (white on #0B7F8C is 4.74:1).
+ * SimplYes design tokens (Website Development Specification §16 + the owners' UI mockup, Nov 2026).
+ * Confirmed: background #F6F9F5, primary text #13211D. Accent: deep green taken from the mockup
+ * (buttons #005C45, highlight #00905A, mint pills #E2F4E6), confirmed by the owners on 12 Nov 2026,
+ * replacing the earlier teal #0B7F8C.
+ * Contrast: #005C45 is 7.6:1 on the background; #007A4E 5.1:1 (small text OK); #00905A is 3.9:1, so
+ * it is used only for large display text, icons and decoration — never body text.
  */
 @theme {
   --font-display: var(--font-outfit), "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: #f6f9f5;
-  --color-canvas-alt: #edf4ef;
+  --color-canvas-alt: #eaf4ef;
   --color-surface: #ffffff;
   --color-ink: #13211d;
   --color-ink-2: #3d4c47;
   --color-ink-3: #56655f;
-  --color-line: #dbe5df;
+  --color-line: #dbe7e0;
 
-  --color-accent-50: #f0f8f9;
-  --color-accent-100: #def0f2;
-  --color-accent-200: #bce2e6;
-  --color-accent-300: #81c7cf;
-  --color-accent-500: #0b7f8c;
-  --color-accent-600: #096d78;
-  --color-accent-700: #085e68;
-  --color-accent-900: #05393f;
-  --color-lime: #b8e05a;
-  --color-green: #2fa35e;
-  --color-teal: #0b7f8c;
+  --color-accent-50: #eef8f1;
+  --color-accent-100: #e2f4e6;
+  --color-accent-200: #c3e8cf;
+  --color-accent-300: #8ed3a8;
+  --color-accent-500: #00905a;
+  --color-accent-600: #007a4e;
+  --color-accent-700: #005c45;
+  --color-accent-900: #003a2c;
+  --color-lime: #a6dc5c;
+  --color-green: #00a26c;
+  --color-teal: #00905a;
 
   --radius-card: 14px;
   --radius-frame-inner: 16px;
@@ -276,7 +276,7 @@
   .btn-dark {
     color: #fff;
     background: var(--color-teal);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 8px 20px -10px rgb(8 94 104 / 0.6);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 8px 20px -10px rgb(0 92 69 / 0.6);
   }
 
   /* Secondary (outline). */
@@ -412,7 +412,7 @@
     box-shadow:
       0 0 0 5px rgb(255 255 255 / 0.8),
       0 0 0 6px var(--color-accent-100),
-      0 10px 22px -8px rgb(8 94 104 / 0.55);
+      0 10px 22px -8px rgb(0 92 69 / 0.55);
   }
 
   .orb-soft {
@@ -440,7 +440,7 @@
       inset 0 1px 1px rgb(255 255 255 / 0.65),
       inset 0 -0.08em 0.16em rgb(0 0 0 / 0.12),
       0 0 0 0.05em rgb(255 255 255 / 0.7),
-      0 0.15em 0.4em -0.1em rgb(8 94 104 / 0.35);
+      0 0.15em 0.4em -0.1em rgb(0 92 69 / 0.35);
     text-shadow: 0 1px 0 rgb(0 0 0 / 0.08);
   }
 
@@ -607,7 +607,7 @@
   pointer-events: none;
   background:
     radial-gradient(circle at 50% 30%, rgb(155 197 61 / 0.22) 0%, rgb(155 197 61 / 0) 26%),
-    radial-gradient(circle at 50% 62%, rgb(11 127 140 / 0.22) 0%, rgb(11 127 140 / 0) 40%),
+    radial-gradient(circle at 50% 62%, rgb(0 144 90 / 0.22) 0%, rgb(0 144 90 / 0) 40%),
     radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0) 52%, rgb(255 255 255 / 0.85) 60%, rgb(196 226 211 / 0.4) 64%, rgb(255 255 255 / 0) 71%);
 }
 
@@ -767,7 +767,7 @@
 
 .physics-chip[data-grab="true"] {
   cursor: grabbing;
-  box-shadow: 0 18px 36px -12px rgb(8 94 104 / 0.35);
+  box-shadow: 0 18px 36px -12px rgb(0 92 69 / 0.35);
 }
 
 @media (max-width: 479px) {
@@ -1042,7 +1042,7 @@ html[data-form-focus] .fab-wa {
 .cta-band {
   background:
     radial-gradient(120% 120% at 100% 0%, rgb(155 197 61 / 0.18) 0%, transparent 45%),
-    radial-gradient(90% 120% at 0% 100%, rgb(11 127 140 / 0.25) 0%, transparent 50%),
+    radial-gradient(90% 120% at 0% 100%, rgb(0 144 90 / 0.25) 0%, transparent 50%),
     var(--color-accent-900);
 }
 
@@ -1163,7 +1163,7 @@ html[data-form-focus] .fab-wa {
 .field:focus {
   outline: none;
   border-color: var(--color-accent-700);
-  box-shadow: 0 0 0 3px rgb(8 94 104 / 0.2);
+  box-shadow: 0 0 0 3px rgb(0 92 69 / 0.2);
 }
 
 .field[aria-invalid="true"] {
@@ -1394,7 +1394,7 @@ select.field {
   border-color: transparent;
   background:
     radial-gradient(90% 70% at 100% 0%, rgb(155 197 61 / 0.18), transparent 60%),
-    radial-gradient(80% 80% at 0% 100%, rgb(11 127 140 / 0.28), transparent 60%),
+    radial-gradient(80% 80% at 0% 100%, rgb(0 144 90 / 0.28), transparent 60%),
     var(--color-accent-900);
 }
 
@@ -1878,7 +1878,7 @@ select.field {
   color: #fff;
   background:
     radial-gradient(70% 90% at 100% 0%, rgb(155 197 61 / 0.2), transparent 60%),
-    radial-gradient(80% 80% at 0% 100%, rgb(11 127 140 / 0.3), transparent 60%),
+    radial-gradient(80% 80% at 0% 100%, rgb(0 144 90 / 0.3), transparent 60%),
     var(--color-accent-900);
 }
 
@@ -1973,4 +1973,320 @@ select.field {
   border-radius: 20px 20px 6px 20px;
   background: var(--color-accent-50);
   border: 1px solid var(--color-accent-100);
+}
+
+/* =========================================================================
+ * UI redesign after the owners' mockup (Nov 2026): mint surfaces, deep-green
+ * actions, white rounded tiles, Berlin hero scene, service strip, bottom tab bar.
+ * Kept inside the components layer so Tailwind utilities still win.
+ * ========================================================================= */
+@layer components {
+  /* Buttons: deep green primary (white text 8:1), white secondary with a soft outline. */
+  .btn-dark {
+    background: var(--color-accent-700);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.14),
+      0 10px 24px -12px rgb(0 92 69 / 0.7);
+  }
+
+  .btn-light {
+    color: var(--color-ink);
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px #b7cfc2,
+      0 6px 18px -12px rgb(0 58 44 / 0.35);
+  }
+
+  @media (hover: hover) {
+    .btn-dark:hover {
+      background: var(--color-accent-900);
+    }
+
+    .btn-light:hover {
+      background: var(--color-accent-50);
+    }
+  }
+
+  /* Cards and tiles: white, generous radius, thin border, soft green-tinted shadow. */
+  .card {
+    border-radius: 20px;
+    border-color: rgb(219 231 224 / 0.9);
+    box-shadow:
+      0 1px 2px rgb(19 33 29 / 0.04),
+      0 14px 32px -22px rgb(0 58 44 / 0.3);
+  }
+
+  .icon-tile {
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px var(--color-line),
+      0 6px 14px -10px rgb(0 58 44 / 0.35);
+  }
+
+  .faq-item {
+    border-radius: 16px;
+    border-color: rgb(219 231 224 / 0.9);
+    box-shadow: 0 8px 20px -18px rgb(0 58 44 / 0.35);
+  }
+
+  .faq-toggle {
+    background: transparent;
+    color: var(--color-ink);
+  }
+
+  /* Small all-caps label above hero headings ("REDEFINING CONSULAR SERVICES"). */
+  .eyebrow-caps {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+  }
+}
+
+/* Mint backdrop shared by the home hero and sub-page heroes. */
+.hero-mint {
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 10%, rgb(195 232 207 / 0.55) 0%, rgb(195 232 207 / 0) 70%),
+    radial-gradient(ellipse 60% 50% at 0% 100%, rgb(226 244 230 / 0.9) 0%, rgb(226 244 230 / 0) 70%),
+    linear-gradient(180deg, #eef7f2 0%, var(--color-canvas) 100%);
+}
+
+/* Header bar: a floating white rounded panel (no backdrop-filter: it would trap the fixed mobile backdrop). */
+.header-bar {
+  border-radius: 20px;
+  background: rgb(255 255 255 / 0.94);
+  border: 1px solid rgb(219 231 224 / 0.9);
+  box-shadow: 0 10px 30px -18px rgb(0 58 44 / 0.35);
+}
+
+/* Hero scene card + floating icon tiles. */
+.scene-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #e9f3ee;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.7) inset,
+    0 30px 60px -36px rgb(0 58 44 / 0.55);
+}
+
+.float-tile {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  color: var(--color-accent-600);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--color-line),
+    0 18px 36px -18px rgb(0 58 44 / 0.5);
+}
+
+.float-tile-b {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .float-tile {
+    animation: float-tile 6s ease-in-out infinite;
+  }
+
+  .float-tile-b {
+    animation-delay: -3s;
+  }
+
+  @keyframes float-tile {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+/* Service strip under the hero: 4 tiles per row on phones, one 8-column panel from 1024px. */
+.service-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.service-strip-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  min-height: 92px;
+  padding: 12px 6px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--color-ink);
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 10px 22px -18px rgb(0 58 44 / 0.45);
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.service-strip-link::after {
+  content: "";
+  position: absolute;
+  left: 28%;
+  right: 28%;
+  bottom: 8px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-accent-500);
+  transform: scaleX(0);
+  transition: transform 0.25s var(--ease-out-soft);
+}
+
+.service-strip-link:hover,
+.service-strip-link:focus-visible {
+  background: var(--color-accent-50);
+}
+
+.service-strip-link:hover::after,
+.service-strip-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+@media (min-width: 1024px) {
+  .service-strip {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 0;
+    padding: 10px;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid rgb(219 231 224 / 0.9);
+    box-shadow: 0 24px 50px -34px rgb(0 58 44 / 0.5);
+  }
+
+  .service-strip > li + li {
+    border-left: 1px solid var(--color-line);
+  }
+
+  .service-strip-link {
+    min-height: 104px;
+    font-size: 0.875rem;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+/* Bottom tab bar (phones/tablets). */
+.tabbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 6px max(10px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  background: rgb(255 255 255 / 0.97);
+  border-top: 1px solid var(--color-line);
+  box-shadow: 0 -10px 30px -22px rgb(0 58 44 / 0.4);
+}
+
+.tabbar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 52px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink-2);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabbar-item[aria-current="page"] {
+  color: var(--color-accent-700);
+  background: var(--color-accent-50);
+}
+
+.tabbar-item:disabled {
+  opacity: 1;
+}
+
+/* The bar hides while a form field is focused (the on-screen keyboard is up) and while the menu is open. */
+html[data-form-focus] .tabbar,
+html[data-menu-open] .tabbar {
+  visibility: hidden;
+}
+
+@media (max-width: 1023px) {
+  /* Keep the footer clear of the tab bar, and lift the WhatsApp button above it. */
+  footer[aria-label="Site footer"] {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+  }
+
+  .fab-wa {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Vertical stepper: round check-style markers on a green line (How It Works). */
+.stepper-num {
+  border-radius: 999px;
+  color: var(--color-accent-700);
+  background: var(--color-accent-100);
+  box-shadow: inset 0 0 0 1px var(--color-accent-200);
+}
+
+.stepper-item:not(:last-child)::before {
+  background: linear-gradient(180deg, var(--color-accent-300), var(--color-accent-100));
+}
+
+/* Form fields: soft mint fill, still a 3:1 border for the field boundary. */
+.field {
+  background: #f7fbf9;
+  border-color: #7d978b;
+  border-radius: 12px;
+}
+
+/* Service-page art panel: same generous radius as the hero scene card. */
+.card-art {
+  border-radius: 24px;
+}
+
+/* Smallest phones (≤ 380px): a touch smaller strip labels and floating tiles so nothing crowds the edges. */
+@media (max-width: 380px) {
+  .service-strip {
+    gap: 8px;
+  }
+
+  .service-strip-link {
+    min-height: 84px;
+    padding-inline: 4px;
+    font-size: 0.75rem;
+  }
+
+  .float-tile {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  .float-tile-b {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+  }
 }

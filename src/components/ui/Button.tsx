@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react";
 import type { Service } from "@/content/services";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -12,7 +12,7 @@ type CommonProps = {
   children: ReactNode;
   variant?: Variant;
   size?: Size;
-  icon?: "arrow" | "chat" | "none";
+  icon?: "arrow" | "up-right" | "chat" | "none";
   className?: string;
   /** Where the CTA sits on the page, for the cta_click / whatsapp_click "location" parameter. */
   location?: string;
@@ -29,6 +29,7 @@ function Face({ children, icon }: { children: ReactNode; icon: CommonProps["icon
     <span className="btn-face">
       {children}
       {icon === "arrow" && <ArrowRight aria-hidden="true" className="btn-icon size-4" strokeWidth={1.75} />}
+      {icon === "up-right" && <ArrowUpRight aria-hidden="true" className="btn-icon size-4" strokeWidth={1.75} />}
       {icon === "chat" && <MessageCircle aria-hidden="true" className="btn-icon size-4" strokeWidth={1.75} />}
     </span>
   );

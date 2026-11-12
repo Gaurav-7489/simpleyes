@@ -46,14 +46,12 @@ export function Icon({ name, className }: { name: ServiceIcon | IconKey; classNa
   return <Component aria-hidden="true" className={className ?? "size-5"} strokeWidth={1.75} />;
 }
 
-/** Mint rounded tile holding an icon, as used across cards. */
+/** White rounded tile with a green outline icon (owners' mockup), as used across cards. */
 export function IconTile({ name, size = "md" }: { name: ServiceIcon | IconKey; size?: "sm" | "md" }) {
   return (
     <span
       aria-hidden="true"
-      className={`inline-grid shrink-0 place-items-center rounded-[12px] bg-accent-50 text-accent-700 ring-1 ring-accent-100 ${
-        size === "sm" ? "size-9" : "size-11"
-      }`}
+      className={`icon-tile inline-grid shrink-0 place-items-center text-accent-600 ${size === "sm" ? "size-9 rounded-[11px]" : "size-12 rounded-[14px]"}`}
     >
       <Icon name={name} className={size === "sm" ? "size-4" : "size-5"} />
     </span>

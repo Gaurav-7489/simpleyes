@@ -29,7 +29,7 @@ export function Footer() {
       <div className="container-site py-12 pb-[max(3rem,env(safe-area-inset-bottom))] lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
           <div className="sm:max-w-sm">
-            <Wordmark />
+            <Wordmark idSuffix="footer" />
             <p className="mt-3 text-sm leading-relaxed text-ink-2">
               Independent documentation assistance for Indians in Germany. {site.coverageStatement}
             </p>

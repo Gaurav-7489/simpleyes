@@ -5,6 +5,7 @@ import "./globals.css";
 import { isProductionBuild, site } from "@/content/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { Header } from "@/components/layout/Header";
+import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { services } from "@/content/services";
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           serviceHrefs={Object.fromEntries(services.map((service) => [service.slug, whatsappHref(service)]))}
         />
         <Footer />
+        <MobileTabBar />
         {site.gaMeasurementId && <Analytics measurementId={site.gaMeasurementId} />}
         <RevealObserver />
         <LazyMotion />

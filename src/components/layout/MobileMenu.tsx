@@ -6,6 +6,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { NavItem } from "@/content/site";
 import { useHydrated } from "@/lib/useHydrated";
+import { OPEN_MENU_EVENT } from "./MobileTabBar";
 
 type Props = { items: NavItem[]; services: NavItem[]; cta: NavItem };
 
@@ -44,6 +45,13 @@ export function MobileMenu({ items, services, cta }: Props) {
     },
     [setOpen],
   );
+
+  // The bottom tab bar's "Menu" button opens this same menu.
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener(OPEN_MENU_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_MENU_EVENT, onOpen);
+  }, [setOpen]);
 
   useEffect(() => {
     if (!open) return;

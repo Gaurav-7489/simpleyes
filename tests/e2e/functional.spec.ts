@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { faqCategories } from "../../src/content/faqs";
+import { services } from "../../src/content/services";
 import { routes, WHATSAPP_NUMBER } from "./routes";
 
 test.describe("pages", () => {
@@ -173,5 +174,55 @@ test.describe("content works without JavaScript", () => {
     await expect(page.getByText("Decisions rest with the relevant authorities.").first()).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
     expect(hidden).toBe(0);
+  });
+});
+
+test.describe("redesign: bottom tab bar and service strip", () => {
+  test("tab bar shows on phones only, marks the current page and opens the menu", async ({ page, isMobile }) => {
+    await page.goto("/services/");
+    const bar = page.getByRole("navigation", { name: "Quick" });
+    if (!isMobile) {
+      await expect(bar).toBeHidden();
+      return;
+    }
+    await expect(bar).toBeVisible();
+    await expect(bar.getByRole("link")).toHaveCount(3);
+    await expect(bar.getByRole("link", { name: "Services" })).toHaveAttribute("aria-current", "page");
+    await expect(bar.getByRole("link", { name: "Home" })).not.toHaveAttribute("aria-current", "page");
+    await bar.getByRole("button", { name: "Show menu" }).click();
+    const toggle = page.getByRole("button", { name: "Close menu" });
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
+    await expect(bar).toBeHidden(); // hidden behind the open menu
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Open menu" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("tab bar never covers footer content or the WhatsApp button", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "phones only");
+    await page.goto("/about/");
+    const bar = await page.getByRole("navigation", { name: "Quick" }).boundingBox();
+    // Floating WhatsApp button sits above the bar.
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
+    const fab = page.locator("[data-floating-wa]");
+    await expect(fab).toBeVisible();
+    const f = (await fab.boundingBox())!;
+    expect(f.y + f.height).toBeLessThanOrEqual(bar!.y);
+    // At the very bottom, nothing in the footer (links, back-to-top, copyright) is under the bar.
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const lowest = await page.evaluate(() =>
+      Math.max(...[...document.querySelectorAll("footer a, footer button, footer p")].map((el) => el.getBoundingClientRect().bottom)),
+    );
+    expect(lowest).toBeLessThanOrEqual(bar!.y);
+  });
+
+  test("hero service strip links all eight services by their full names", async ({ page }) => {
+    await page.goto("/");
+    const strip = page.getByRole("navigation", { name: "Services", exact: true });
+    const names = await strip.getByRole("link").evaluateAll((links) => links.map((a) => (a.textContent ?? "").trim()));
+    expect(names).toHaveLength(8);
+    for (const service of services) {
+      await expect(strip.getByRole("link", { name: service.title, exact: true })).toHaveAttribute("href", `/services/${service.slug}/`);
+    }
   });
 });

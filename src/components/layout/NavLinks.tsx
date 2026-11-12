@@ -14,9 +14,10 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
+/** Mockup style: plain links, the current page in a mint pill. */
 const linkClass = (active: boolean) =>
-  `relative inline-flex min-h-11 items-center gap-1 rounded-[10px] px-3 py-2 text-[0.9375rem] transition-colors duration-200 hover:text-ink ${
-    active ? "font-medium text-ink" : "text-ink-2"
+  `relative inline-flex min-h-11 items-center gap-1 rounded-full px-4 py-2 text-[0.9375rem] transition-colors duration-200 hover:bg-accent-50 hover:text-ink ${
+    active ? "bg-accent-100 font-medium text-accent-900" : "text-ink-2"
   }`;
 
 /**
@@ -111,7 +112,6 @@ function ServicesMenu({ active }: { active: boolean }) {
           className={`size-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           strokeWidth={1.75}
         />
-        {active && <span aria-hidden="true" className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent-700" />}
       </button>
       <div
         id={panelId}
@@ -171,8 +171,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
           <li key={item.href}>
             <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass(active)}>
               {item.label}
-              {active && <span aria-hidden="true" className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent-700" />}
-            </Link>
+                  </Link>
           </li>
         );
       })}
