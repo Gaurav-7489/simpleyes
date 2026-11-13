@@ -1,30 +1,29 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
 import { revealDelay } from "@/lib/style";
 
 type Crumb = { name: string; path: string };
 
 /** Sub-page hero (owners' mockup): left-aligned breadcrumb, label, heading and lead on mint, with a green wave. */
 export function PageHero({
-  badge,
   title,
   lead,
   crumbs,
   children,
 }: {
-  badge: string;
+  /** Kept for compatibility; the compact layout (owners' mockup) no longer shows a label above the title. */
+  badge?: string;
   title: ReactNode;
   lead?: ReactNode;
   crumbs: Crumb[];
   children?: ReactNode;
 }) {
   return (
-    <section className="hero-mint relative isolate overflow-hidden pb-[clamp(40px,5vw,72px)] pt-[clamp(100px,10vw,140px)]">
+    <section className="hero-mint relative isolate overflow-hidden pb-[var(--section-y-compact)] pt-[clamp(92px,9vw,120px)]">
       <PageWave />
       <div className="container-site flex flex-col items-start text-left">
-        <nav aria-label="Breadcrumb" className="hero-intro mb-6">
+        <nav aria-label="Breadcrumb" className="hero-intro mb-3">
           <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-ink-2">
             <li>
               <Link href="/" className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
@@ -50,22 +49,16 @@ export function PageHero({
             })}
           </ol>
         </nav>
-        <div className="hero-intro">
-          <Badge>{badge}</Badge>
-        </div>
-        <h1
-          className="type-hero hero-intro mt-4 max-w-[22ch]"
-          style={revealDelay(60)}
-        >
+        <h1 className="type-page-title hero-intro max-w-[22ch]" style={revealDelay(60)}>
           {title}
         </h1>
         {lead && (
-          <p className="type-lead hero-intro mt-5 max-w-[44rem] sm:text-[1.0625rem]" style={revealDelay(120)}>
+          <p className="type-lead hero-intro mt-3 max-w-[44rem]" style={revealDelay(120)}>
             {lead}
           </p>
         )}
         {children && (
-          <div className="hero-intro mt-8 flex flex-wrap items-center gap-3" style={revealDelay(180)}>
+          <div className="hero-intro mt-5 flex flex-wrap items-center gap-3" style={revealDelay(180)}>
             {children}
           </div>
         )}

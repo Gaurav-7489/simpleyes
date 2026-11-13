@@ -83,11 +83,11 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
       </p>
 
       {visible.length === 0 ? (
-        <p className="mt-10 rounded-[14px] border border-dashed border-line bg-white px-5 py-8 text-center text-ink-2">
+        <p className="mt-6 rounded-[14px] border border-dashed border-line bg-white px-5 py-8 text-center text-ink-2">
           No questions match “{query}”. Try another word, or contact us with your question.
         </p>
       ) : (
-        <div className="mt-10 flex flex-col gap-12">
+        <div className="mt-6 flex flex-col gap-7">
           {visible.map((category) => (
             <section key={category.id} id={category.id} aria-labelledby={`${category.id}-title`} className="scroll-mt-[calc(var(--header-h)+24px)]">
               <h2 id={`${category.id}-title`} className="type-card-title mb-4 !text-[1.375rem]">

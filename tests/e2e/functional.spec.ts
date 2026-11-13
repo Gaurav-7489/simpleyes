@@ -226,3 +226,23 @@ test.describe("redesign: bottom tab bar and service strip", () => {
     }
   });
 });
+
+test.describe("short pages: tap-to-open service sections", () => {
+  test("rows start closed, open on tap, open from a deep link, and stay in the HTML", async ({ page }) => {
+    await page.goto("/services/passport-services/");
+    const row = page.getByRole("button", { name: "What SimplYes can help with" });
+    await expect(row).toHaveAttribute("aria-expanded", "false");
+    const panel = page.locator(`#${await row.getAttribute("aria-controls")}`);
+    await expect(panel).toBeHidden();
+    await row.click();
+    await expect(row).toHaveAttribute("aria-expanded", "true");
+    await expect(panel).toBeVisible();
+
+    await page.goto("/services/passport-services/#what-to-prepare");
+    await expect(page.getByRole("button", { name: "What to have ready" })).toHaveAttribute("aria-expanded", "true");
+
+    // Collapsed content is still server-rendered (crawlable, and visible without JavaScript).
+    const html = await (await page.request.get("/services/passport-services/")).text();
+    expect(html).toContain("Please don&#x27;t send passport numbers or documents with your enquiry.");
+  });
+});

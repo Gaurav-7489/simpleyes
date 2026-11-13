@@ -14,7 +14,7 @@ export function BackToTop() {
         window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
       }}
     >
-      <svg className="ring" viewBox="0 0 56 56" aria-hidden="true">
+      <svg className="progress-ring" viewBox="0 0 56 56" aria-hidden="true">
         <circle className="track" cx="28" cy="28" r="26" />
         <circle className="bar" cx="28" cy="28" r="26" />
       </svg>
