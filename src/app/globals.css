@@ -45,6 +45,8 @@
   --header-h: 80px;
   --gutter: 18px;
   --section-y: 80px;
+  /* Short inner pages (owners' mockup): tighter vertical rhythm between blocks. */
+  --section-y-compact: 28px;
 
   /* Layered shadows measured from the reference (frame, card, dark button). */
   --shadow-frame: 0 0.7px 0.7px -0.67px rgb(0 0 0 / 0.04), 0 1.8px 1.8px -1.33px rgb(0 0 0 / 0.04),
@@ -65,6 +67,7 @@
   :root {
     --gutter: 32px;
     --section-y: 96px;
+    --section-y-compact: 40px;
   }
 }
 
@@ -912,7 +915,7 @@
   transition: transform 0.4s var(--ease-out-soft);
 }
 
-.to-top svg.ring {
+.to-top svg.progress-ring {
   position: absolute;
   inset: 0;
   transform: rotate(-90deg);
@@ -2288,5 +2291,157 @@ html[data-menu-open] .tabbar {
     width: 44px;
     height: 44px;
     border-radius: 13px;
+  }
+}
+
+
+/* =========================================================================
+ * Short inner pages (owners' mockup): page title, tiles, compact lists.
+ * ========================================================================= */
+.type-page-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.45rem + 2.2vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.service-tile,
+.value-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 12px 26px -22px rgb(0 58 44 / 0.45);
+}
+
+.service-tile {
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.25s var(--ease-out-soft);
+}
+
+.service-tile:hover {
+  background: var(--color-accent-50);
+  box-shadow:
+    inset 0 0 0 1px var(--color-accent-200),
+    0 16px 30px -22px rgb(0 58 44 / 0.55);
+}
+
+.service-tile-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 2px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-accent-700);
+}
+
+@media (min-width: 1024px) {
+  .service-tile,
+  .value-tile {
+    padding: 20px;
+  }
+}
+
+.situation-tile {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  height: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 10px 22px -20px rgb(0 58 44 / 0.45);
+}
+
+.related-tile,
+.contact-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  transition: background-color 0.2s;
+}
+
+.related-tile {
+  height: 100%;
+  padding: 10px 14px 10px 10px;
+  border-radius: 16px;
+  font-size: 0.9375rem;
+}
+
+.contact-pill {
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.related-tile:hover,
+.contact-pill:hover {
+  background: var(--color-accent-50);
+}
+
+/* How It Works: vertical step list (mockup). */
+.step-list {
+  display: grid;
+  gap: 10px;
+}
+
+.step-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 4px 14px;
+  align-items: start;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 10px 22px -20px rgb(0 58 44 / 0.45);
+}
+
+.step-row .stepper-num {
+  width: 40px;
+  height: 40px;
+}
+
+.step-who {
+  grid-column: 2;
+  justify-self: start;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-900);
+  background: var(--color-accent-100);
+}
+
+/* Disclosure rows: content area. */
+.disclosure-body {
+  padding: 0 18px 18px;
+}
+
+@layer components {
+  .faq-button {
+    min-height: 52px;
+    padding-block: 10px;
   }
 }

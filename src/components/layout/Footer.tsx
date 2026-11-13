@@ -10,25 +10,28 @@ import { BackToTop } from "./BackToTop";
 import { ConsentSettingsButton } from "@/components/analytics/Analytics";
 
 const linkClass =
-  "inline-flex min-h-9 items-center text-[0.9375rem] text-ink-2 underline-offset-4 transition-colors hover:text-ink hover:underline";
+  "inline-flex min-h-9 items-center text-sm leading-snug text-ink-2 lg:text-[0.9375rem] underline-offset-4 transition-colors hover:text-ink hover:underline";
 
 function Column({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
       <h2 className="font-display text-sm font-semibold uppercase tracking-[0.06em] text-ink">{title}</h2>
-      <ul className="mt-3 flex flex-col">{children}</ul>
+      <ul className="mt-2 flex flex-col">{children}</ul>
     </div>
   );
 }
 
-/** §07 section 11 footer: Company · Services · Information · Contact, independence disclaimer, copyright. */
+/**
+ * §07 section 11 footer: Company · Services · Information · Contact, independence disclaimer, copyright.
+ * Phones use two columns (stacked columns per §07) so the footer stays short; every link stays visible.
+ */
 export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-line bg-white" aria-label="Site footer">
-      <div className="container-site py-12 pb-[max(3rem,env(safe-area-inset-bottom))] lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
-          <div className="sm:max-w-sm">
+      <div className="container-site py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] lg:py-16">
+        <div className="grid grid-cols-2 gap-x-5 gap-y-7 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
+          <div className="col-span-2 sm:max-w-sm lg:col-span-1">
             <Wordmark idSuffix="footer" />
             <p className="mt-3 text-sm leading-relaxed text-ink-2">
               Independent documentation assistance for Indians in Germany. {site.coverageStatement}
@@ -102,7 +105,7 @@ export function Footer() {
           </Column>
         </div>
 
-        <p className="mt-10 rounded-[14px] border border-accent-100 bg-accent-50 px-5 py-4 text-sm leading-relaxed text-ink-2">
+        <p className="mt-8 rounded-[14px] border border-accent-100 bg-accent-50 px-5 py-4 text-sm leading-relaxed text-ink-2">
           <strong className="font-medium text-ink">Independent service:</strong> {independenceStatement}
         </p>
 

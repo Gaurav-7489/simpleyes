@@ -130,6 +130,41 @@ Branch `claude/ui-redesign-mockup`. Visual layer only; confirmed copy, page stru
   WhatsApp button or footer content; mutation-checked) and for the service strip. Full suite: 176 passed,
   0 failed.
 
+## Short inner pages (owners' mockup, Nov 2026)
+
+Branch `claude/compact-pages`. Inner pages follow the mockup's page screens and are much shorter; every
+section the spec requires is still on the page.
+
+| Page | Desktop before → after (px) | iPhone before → after (px) |
+|---|---|---|
+| Services | 2,829 → 1,681 | 4,248 → 2,930 |
+| Service page (e.g. Passport) | 6,547 → 2,773 | 10,665 → 3,959 |
+| How It Works | 2,966 → 1,833 | 5,300 → 3,383 |
+| About | 3,426 → 2,012 | 5,618 → 3,399 |
+| Contact | 2,285 → 2,116 | 4,205 → 3,686 |
+| FAQs | 4,332 → 3,497 | 5,443 → 4,424 |
+| Pricing | 3,042 → 2,420 | 4,490 → 3,709 |
+
+- **Service pages:** hero, situation tiles, mid-page CTA, related-service tiles, official sources, closing CTA and
+  contact options stay visible. The long §08 sections (About, Who it's for, What we help with, Document
+  categories, Process, What to have ready, What's included, Outside scope, FAQs) are tap-to-open rows: real
+  headings with `aria-expanded` buttons, content server-rendered and visible without JavaScript, and
+  `/services/<slug>/#<section>` opens a row directly.
+- **Services:** 4 × 2 tiles (2 per row on phones) with icon, name, one-line summary and "View Service".
+- **How It Works:** five steps as a vertical list (mockup), the authority boundary, and "does / does not do"
+  kept visible (§09: the boundary must be impossible to miss).
+- **About:** story and independence statement visible; seven values as icon tiles; mission & vision,
+  customer-first approach and clarity & transparency as tap-to-open rows.
+- **All inner pages:** compact headers (mockup titles such as "Our Services", "How It Works", "About SimplYes",
+  "Frequently Asked Questions") and a compact closing band. The homepage keeps its full layout.
+- **Footer on phones:** two columns instead of one (1,565 → 1,156 px); every link still visible.
+- **Fixed:** the back-to-top button showed a dark square around it on every page (live too). Its SVG used the
+  class `ring`, which is also a Tailwind utility (1 px box-shadow). Renamed to `progress-ring`.
+- **Tests:** new checks for the tap-to-open rows (closed by default, open on tap and from a deep link, content in
+  the HTML). Two floating-WhatsApp tests now use a service page, because on the shortened pages the closing
+  CTA (which has its own WhatsApp button) is on screen almost at once and hides the floating button by design.
+  Full suite: 178 passed, 0 failed.
+
 ## Deviations and decisions
 
 - **Platform:** custom build (§19 Option B: Next.js · React · TypeScript · Tailwind, static export on

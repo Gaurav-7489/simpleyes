@@ -228,13 +228,14 @@ test.describe("floating WhatsApp button", () => {
 
   test("is hidden while the mobile menu is open", async ({ page, isMobile }) => {
     test.skip(!isMobile, "mobile only");
-    await page.goto("/services/");
-    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
+    // A service page: long enough that the button shows before the closing CTA (which hides it by design).
+    await page.goto("/services/passport-services/");
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     const fab = page.locator("[data-floating-wa]");
     await expect(fab).toBeVisible();
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.getByRole("button", { name: "Open menu" }).click();
-    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     await expect(fab).toBeHidden();
   });
 
@@ -285,7 +286,8 @@ test.describe("floating WhatsApp button", () => {
 
   test("when visible, it is focusable with a visible focus ring", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard flow on desktop");
-    await page.goto("/about/");
+    // A service page: long enough that the button shows before the closing CTA (which hides it by design).
+    await page.goto("/services/passport-services/");
     await page.keyboard.press("Tab"); // keyboard modality, so :focus-visible applies
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     const fab = page.locator("[data-floating-wa]");

@@ -14,13 +14,56 @@ export function FinalCta({
   service,
   primaryLabel = service ? "Get Assistance With This Service" : "Get Assistance",
   primaryHref,
+  compact = false,
 }: {
   title?: string;
   lead?: string;
   service?: Service;
   primaryLabel?: string;
   primaryHref?: string;
+  /** Short band for inner pages (owners' mockup: short pages): text left, buttons right. */
+  compact?: boolean;
 }) {
+  if (compact) {
+    return (
+      <section aria-labelledby="final-cta-title" className="pb-[var(--section-y-compact)]">
+        <div className="container-site">
+          <div
+            className="cta-band relative isolate flex flex-col gap-5 overflow-hidden rounded-[24px] px-6 py-7 text-white sm:px-8 lg:flex-row lg:items-center lg:justify-between"
+            data-wa-anchor
+          >
+            <div className="max-w-[46ch]">
+              <h2 id="final-cta-title" className="type-card-title !text-[1.375rem] text-white">
+                {title}
+              </h2>
+              <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-white/85">{lead}</p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link href={primaryHref ?? enquiryHref(service)} data-cta-location="final-cta" className="btn btn-on-dark">
+                <span className="btn-face">{primaryLabel}</span>
+              </Link>
+              <a
+                href={whatsappHref(service)}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cta="whatsapp"
+                data-cta-location="final-cta"
+                data-topic={service?.slug ?? "general"}
+                className="btn btn-outline-on-dark"
+              >
+                <span className="btn-face">
+                  <MessageCircle aria-hidden="true" className="size-4" strokeWidth={1.75} />
+                  WhatsApp
+                  <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section aria-labelledby="final-cta-title" className="section">
       <div className="container-site">
