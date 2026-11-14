@@ -21,7 +21,7 @@ export default function FaqsPage() {
     <>
       <PageHero
         badge="FAQs"
-        title="Questions & answers"
+        title="Frequently Asked Questions"
         lead={`Clear answers about what ${site.name} does, what it doesn't do, and how to get started.`}
         crumbs={[{ name: "FAQs", path: "/faqs/" }]}
       />
@@ -30,7 +30,7 @@ export default function FaqsPage() {
           <FaqBrowser categories={faqCategories} />
         </div>
       </section>
-      <FinalCta title="Still have a question?" lead="Contact us — a real person will get back to you." primaryLabel="Contact Us" primaryHref="/contact/" />
+      <FinalCta compact title="Still have a question?" lead="Contact us — a real person will get back to you." primaryLabel="Contact Us" primaryHref="/contact/" />
       <JsonLd data={[faqJsonLd(allFaqs), breadcrumbJsonLd([{ name: "FAQs", path: "/faqs/" }])]} />
     </>
   );

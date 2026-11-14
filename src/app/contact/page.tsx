@@ -25,7 +25,7 @@ export default function ContactPage() {
       <PageHero
         badge="Contact"
         title="Get assistance"
-        lead="Tell us what you need — a short description is enough. A real person will get back to you and explain the next step."
+        lead="Tell us what you need — a short description is enough. A real person will get back to you."
         crumbs={[{ name: "Contact Us", path: "/contact/" }]}
       />
 

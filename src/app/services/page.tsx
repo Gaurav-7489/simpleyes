@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { ServiceIndex } from "@/components/ServiceIndex";
-import { ButtonLink } from "@/components/ui/Button";
+import { IconTile } from "@/components/ui/Icon";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
@@ -16,30 +17,40 @@ export const metadata: Metadata = pageMetadata({
   path: "/services/",
 });
 
-/** §06 — Services overview: all eight categories side by side, each linking to its page. */
+/** §06 — Services overview, owners' mockup layout: all eight services as tiles, each linking to its page. */
 export default function ServicesPage() {
   return (
     <>
       <PageHero
         badge="Services"
-        title="Documentation assistance, by service"
-        lead={`Eight service categories for Indians in Germany. Each page explains who it is for, how ${site.name} can help, what to prepare and what remains with the authorities.`}
+        title="Our Services"
+        lead="Choose the service you need assistance with."
         crumbs={[{ name: "Services", path: "/services/" }]}
-      >
-        <ButtonLink href="/contact/" location="services-hero">
-          Get Assistance
-        </ButtonLink>
-      </PageHero>
-      <section aria-label="All services" className="pb-[var(--section-y)]">
+      />
+      <section aria-label="All services" className="pb-[var(--section-y-compact)]">
         <div className="container-site">
-          <ServiceIndex services={services} headingLevel="h2" />
-          <p className="mx-auto mt-10 max-w-[60ch] text-center text-sm text-ink-2">
-            Not sure which service fits? Send an enquiry and describe your situation — we&apos;ll point you to the right
-            one.
+          <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+            {services.map((service) => (
+              <li key={service.slug}>
+                <Link href={`/services/${service.slug}/`} className="service-tile" data-cta-location="services-grid">
+                  <IconTile name={service.icon} />
+                  <h2 className="font-display text-[1rem] font-medium leading-tight text-ink sm:text-[1.0625rem]">{service.title}</h2>
+                  <p className="text-[0.8125rem] leading-snug text-ink-2 sm:text-sm">{service.summary}</p>
+                  <span className="service-tile-more" aria-hidden="true">
+                    View Service
+                    <ArrowRight className="size-3.5" strokeWidth={1.75} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 text-center text-sm text-ink-2">
+            Not sure which service fits? <Link href="/contact/" className="font-medium text-accent-700 underline underline-offset-4">Send an enquiry</Link> and
+            describe your situation.
           </p>
         </div>
       </section>
-      <FinalCta />
+      <FinalCta compact />
       <JsonLd data={breadcrumbJsonLd([{ name: "Services", path: "/services/" }])} />
     </>
   );

@@ -118,6 +118,7 @@ export default function PricingPage() {
       </section>
 
       <FinalCta
+        compact
         title="Request a service quote"
         lead="Tell us which service you need and a little about your situation. We'll explain the fee before any assistance begins."
         primaryLabel="Request a Service Quote"
