@@ -53,6 +53,22 @@ export type Service = {
   /** Overrides the default prefilled WhatsApp text (still non-sensitive). */
   whatsappMessage?: string;
   illustration: IllustrationKind;
+  /** Short, visual page layout (icons over paragraphs). When set, the service page uses it. */
+  visual?: ServiceVisual;
+};
+
+/** Icon names for the visual layout; mapped to outline icons in ServiceVisualBody. */
+export type VisualIcon =
+  | "calendar" | "alert" | "edit" | "new" | "chat" | "route" | "folder" | "building"
+  | "passport" | "home" | "camera" | "mail" | "check" | "cross";
+
+/** Visual service page: a few words per item, each with an icon. */
+export type ServiceVisual = {
+  situations: { icon: VisualIcon; label: string; hint: string }[];
+  steps: { icon: VisualIcon; label: string }[];
+  ready: { icon: VisualIcon; label: string }[];
+  weDo: string[];
+  weDont: string[];
 };
 
 const CHECKED = "2026-10-30";
@@ -201,6 +217,28 @@ export const services: Service[] = [
     related: ["family-documentation", "oci-services", "affidavits-declarations"],
     sources: [sources.outsourcing],
     illustration: "documents",
+    visual: {
+      situations: [
+        { icon: "calendar", label: "Expiring soon", hint: "Renewal" },
+        { icon: "alert", label: "Lost or damaged", hint: "Reissue" },
+        { icon: "edit", label: "Details to correct", hint: "Name, address and more" },
+        { icon: "new", label: "First adult passport", hint: "New application" },
+      ],
+      steps: [
+        { icon: "chat", label: "Tell us your situation" },
+        { icon: "route", label: "We identify your route" },
+        { icon: "folder", label: "Prepare your documents" },
+        { icon: "building", label: "You apply at the official centre" },
+      ],
+      ready: [
+        { icon: "passport", label: "Current or last passport" },
+        { icon: "home", label: "Proof of address in Germany" },
+        { icon: "camera", label: "Photos and signature" },
+        { icon: "mail", label: "Any letters or emails received" },
+      ],
+      weDo: ["Find your passport route", "A checklist for your case", "Check documents, photo and signature", "Prepare you for your appointment"],
+      weDont: ["Issue passports", "Book or speed up appointments", "Influence official decisions", "Give legal advice"],
+    },
   },
   {
     slug: "oci-services",

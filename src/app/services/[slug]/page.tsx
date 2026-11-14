@@ -13,6 +13,7 @@ import { IconTile } from "@/components/ui/Icon";
 import { Badge } from "@/components/ui/Badge";
 import { ServiceArt } from "@/components/illustrations/ServiceArt";
 import { ServiceSection } from "@/components/service/ServiceSection";
+import { ServiceVisualBody } from "@/components/service/ServiceVisualBody";
 import { ServiceCard } from "@/components/ServiceCard";
 import { FaqList } from "@/components/FaqList";
 import { FinalCta } from "@/components/FinalCta";
@@ -121,6 +122,10 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         </div>
       </section>
 
+      {service.visual ? (
+        <ServiceVisualBody service={service} ctaHref={primaryHref} ctaLabel={ctaLabel} />
+      ) : (
+        <>
       {/* 2 · Service introduction (+ unique explainer) */}
       <section aria-labelledby="introduction" className="section !pt-0">
         <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
@@ -279,6 +284,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         </div>
       </section>
 
+        </>
+      )}
+
       {/* 11 · Relevant FAQs */}
       <section aria-labelledby="service-faqs" className="section bg-white">
         <div className="container-site max-w-[860px]">
@@ -319,7 +327,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
       </section>
 
       {/* 12 · Related services */}
-      {related.length > 0 && (
+      {!service.visual && related.length > 0 && (
         <section aria-labelledby="related-services" className="section">
           <div className="container-site">
             <h2 id="related-services" className="type-h2 text-center" data-reveal>
@@ -345,6 +353,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
       />
 
       {/* 14 · Contact options */}
+      {!service.visual && (
       <section aria-labelledby="contact-options" className="pb-[var(--section-y)]">
         <div className="container-site max-w-[1000px]">
           <h2 id="contact-options" className="type-card-title text-center">
@@ -399,6 +408,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
           </ul>
         </div>
       </section>
+      )}
 
       <JsonLd
         data={[

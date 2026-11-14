@@ -72,18 +72,13 @@ test.describe("content rules", () => {
     }
   });
 
-  test("homepage has the eleven sections in the confirmed order", async ({ page }) => {
+  test("homepage has its sections in the confirmed order", async ({ page }) => {
     await page.goto("/");
     const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? ""));
     expect(ids).toEqual([
       "hero-title",
-      "intro-title",
       "services-title",
       "why-title",
-      "process-title",
-      "who-title",
-      "approach-title",
-      "trust-title",
       "faq-title",
       "final-cta-title",
     ]);
@@ -97,7 +92,9 @@ test.describe("content rules", () => {
     test(`${service.slug} has every section and a service-specific WhatsApp link`, async ({ page }) => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
-      for (const heading of [
+      const headings = service.visual
+        ? ["Which one is you?", "How it works", "Have ready", "We help with", "We don't", `${service.title} FAQs`]
+        : [
         "About this service",
         "Who this service is for",
         "Common situations",
@@ -110,14 +107,15 @@ test.describe("content rules", () => {
         `${service.title} FAQs`,
         "Related services",
         "Other ways to reach us",
-      ]) {
+      ];
+      for (const heading of headings) {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
       await expect(page.getByText("subject to verification")).toBeVisible();
       const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
       expect(await ctas.count()).toBeGreaterThanOrEqual(3);
       await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
-      for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
+      if (!service.visual) for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
       await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");

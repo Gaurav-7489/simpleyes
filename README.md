@@ -65,8 +65,7 @@ src/
   app/                 routes (home, services, services/[slug], how-it-works, about, faqs, pricing, contact,
                        thank-you, privacy, terms, disclaimer, impressum) + sitemap, robots, manifest, llms.txt
   components/
-    home/              homepage sections in §07 order (Hero, WhatWeDo=Introduction, Services, WhySimplyes,
-                       Process, WhoWeHelp, Approach, TrustPanel, FaqSection) — FinalCta is shared
+    home/              homepage sections in §07 order (Hero, Services, WhySimplyes, FaqSection) — FinalCta is shared
     layout/            Header, NavLinks (Services dropdown), MobileMenu, Footer, FloatingWhatsApp, BackToTop
     contact/           EnquiryForm, ThankYouTracker
     analytics/         Analytics (consent banner + GA4), TrackServiceView
