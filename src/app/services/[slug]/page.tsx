@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ChevronRight, CircleX, ExternalLink, Info, Mail, MessageCircle, Send } from "lucide-react";
@@ -101,12 +102,16 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
             <h1 className="type-hero hero-intro mt-5" style={revealDelay(60)}>
               {service.title}
             </h1>
-            <p className="type-lead hero-intro mt-4 max-w-[40rem] !text-[1.125rem]" style={revealDelay(120)}>
-              {service.outcome}
-            </p>
-            <p className="hero-intro mt-2 text-sm text-ink-3" style={revealDelay(140)}>
-              Mainly for: {service.mainlyFor}
-            </p>
+            {!service.visual && (
+              <>
+                <p className="type-lead hero-intro mt-4 max-w-[40rem] !text-[1.125rem]" style={revealDelay(120)}>
+                  {service.outcome}
+                </p>
+                <p className="hero-intro mt-2 text-sm text-ink-3" style={revealDelay(140)}>
+                  Mainly for: {service.mainlyFor}
+                </p>
+              </>
+            )}
             <div className="hero-intro mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row" style={revealDelay(180)}>
               <ButtonLink href={primaryHref} location="service-hero">
                 {ctaLabel}
@@ -116,9 +121,23 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
               </WhatsAppButton>
             </div>
           </div>
-          <div className="card-art hero-intro aspect-[4/3] w-full" aria-hidden="true" style={revealDelay(120)}>
-            <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
-          </div>
+          {service.visual ? (
+            <div className="card-art card-photo hero-intro aspect-[4/3] w-full" style={revealDelay(120)}>
+              <Image
+                src={service.visual.photo.src}
+                alt={service.visual.photo.alt}
+                width={service.visual.photo.width}
+                height={service.visual.photo.height}
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="absolute inset-0 size-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="card-art hero-intro aspect-[4/3] w-full" aria-hidden="true" style={revealDelay(120)}>
+              <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
+            </div>
+          )}
         </div>
       </section>
 

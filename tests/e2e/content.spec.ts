@@ -93,7 +93,7 @@ test.describe("content rules", () => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
       const headings = service.visual
-        ? ["Which one is you?", "How it works", "Have ready", "We help with", "We don't", `${service.title} FAQs`]
+        ? ["Which one is you?", `${service.title} FAQs`]
         : [
         "About this service",
         "Who this service is for",
@@ -111,7 +111,7 @@ test.describe("content rules", () => {
       for (const heading of headings) {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
-      await expect(page.getByText("subject to verification")).toBeVisible();
+      if (!service.visual) await expect(page.getByText("subject to verification")).toBeVisible();
       const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
       expect(await ctas.count()).toBeGreaterThanOrEqual(3);
       await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));

@@ -58,17 +58,12 @@ export type Service = {
 };
 
 /** Icon names for the visual layout; mapped to outline icons in ServiceVisualBody. */
-export type VisualIcon =
-  | "calendar" | "alert" | "edit" | "new" | "chat" | "route" | "folder" | "building"
-  | "passport" | "home" | "camera" | "mail" | "check" | "cross";
+export type VisualIcon = "calendar" | "alert" | "edit" | "new";
 
-/** Visual service page: a few words per item, each with an icon. */
+/** Short, visual service page: a hero photo and icon tiles instead of paragraphs. */
 export type ServiceVisual = {
+  photo: { src: string; alt: string; width: number; height: number };
   situations: { icon: VisualIcon; label: string; hint: string }[];
-  steps: { icon: VisualIcon; label: string }[];
-  ready: { icon: VisualIcon; label: string }[];
-  weDo: string[];
-  weDont: string[];
 };
 
 const CHECKED = "2026-10-30";
@@ -218,26 +213,13 @@ export const services: Service[] = [
     sources: [sources.outsourcing],
     illustration: "documents",
     visual: {
+      photo: { src: "/images/passport-services.webp", alt: "An Indian passport on a wooden desk", width: 1200, height: 796 },
       situations: [
         { icon: "calendar", label: "Expiring soon", hint: "Renewal" },
         { icon: "alert", label: "Lost or damaged", hint: "Reissue" },
         { icon: "edit", label: "Details to correct", hint: "Name, address and more" },
         { icon: "new", label: "First adult passport", hint: "New application" },
       ],
-      steps: [
-        { icon: "chat", label: "Tell us your situation" },
-        { icon: "route", label: "We identify your route" },
-        { icon: "folder", label: "Prepare your documents" },
-        { icon: "building", label: "You apply at the official centre" },
-      ],
-      ready: [
-        { icon: "passport", label: "Current or last passport" },
-        { icon: "home", label: "Proof of address in Germany" },
-        { icon: "camera", label: "Photos and signature" },
-        { icon: "mail", label: "Any letters or emails received" },
-      ],
-      weDo: ["Find your passport route", "A checklist for your case", "Check documents, photo and signature", "Prepare you for your appointment"],
-      weDont: ["Issue passports", "Book or speed up appointments", "Influence official decisions", "Give legal advice"],
     },
   },
   {

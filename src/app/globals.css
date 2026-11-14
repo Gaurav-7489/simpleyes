@@ -2046,71 +2046,10 @@ html[data-menu-open] .tabbar {
   background: var(--color-accent-50);
 }
 
-.visual-icon-sm {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 0;
-  border-radius: 12px;
-  background: #fff;
-}
-
-.visual-steps {
-  display: grid;
-  gap: 28px 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  counter-reset: none;
-}
-
-.visual-steps > li {
+/* Photo variant of the service hero art panel. */
+.card-photo {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  text-align: center;
-}
-
-.visual-step-icon {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  border-radius: 999px;
-  color: #fff;
-  background: var(--color-accent-700);
-  box-shadow: 0 0 0 8px var(--color-accent-50);
-}
-
-.visual-step-num {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-accent-900);
-  background: var(--color-lime);
-  border: 2px solid #fff;
-}
-
-@media (min-width: 1024px) {
-  .visual-steps {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  /* Connector between steps on wide screens. */
-  .visual-steps > li:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    top: 36px;
-    left: calc(50% + 52px);
-    right: calc(-50% + 52px);
-    height: 2px;
-    background: var(--color-accent-100);
-  }
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 30px 60px -36px rgb(0 58 44 / 0.55);
 }
