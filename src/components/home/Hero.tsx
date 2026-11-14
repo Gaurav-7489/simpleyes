@@ -27,7 +27,7 @@ export function Hero() {
   return (
     <section
       aria-labelledby="hero-title"
-      className="hero-mint relative isolate overflow-hidden pb-[clamp(40px,5vw,72px)] pt-[clamp(92px,9vw,128px)]"
+      className="hero-mint relative isolate overflow-hidden pb-[clamp(48px,6vw,96px)] pt-[clamp(112px,12vw,176px)]"
     >
       <div className="container-site">
         <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-12">
@@ -69,7 +69,7 @@ export function Hero() {
         </div>
 
         {/* Quick access to the eight services (mockup strip). */}
-        <nav aria-label="Services" className="hero-intro mt-8 lg:mt-10" style={revealDelay(220)}>
+        <nav aria-label="Services" className="hero-intro mt-12 lg:mt-16" style={revealDelay(220)}>
           <ul className="service-strip">
             {services.map((service) => (
               <li key={service.slug}>

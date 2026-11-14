@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -22,7 +23,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { enquiryHref, getService, relatedServices, services } from "@/content/services";
+import { enquiryHref, getService, relatedServices, services, type Service } from "@/content/services";
 import { site } from "@/content/site";
 import { independenceStatement } from "@/content/home";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
@@ -31,6 +32,7 @@ import { ButtonLink, WhatsAppButton } from "@/components/ui/Button";
 import { IconTile } from "@/components/ui/Icon";
 import { ServiceArt } from "@/components/illustrations/ServiceArt";
 import { DisclosureList } from "@/components/DisclosureList";
+import { ServiceVisualBody } from "@/components/service/ServiceVisualBody";
 import { FaqList } from "@/components/FaqList";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -82,6 +84,37 @@ function CheckList({ items, variant = "check" }: { items: readonly string[]; var
         </li>
       ))}
     </ul>
+  );
+}
+
+function OfficialSources({ service, lastChecked }: { service: Service; lastChecked: string | undefined }) {
+  if (service.sources.length === 0 || !lastChecked) return null;
+  return (
+    <div className="mt-5">
+      <h3 id="official-sources" className="text-sm font-medium text-ink">
+        Official sources — checked {formatDate(lastChecked)}
+      </h3>
+      <ul className="mt-1 flex flex-wrap gap-x-4">
+        {service.sources.map((source) => (
+          <li key={source.href}>
+            <a
+              href={source.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-8 items-center gap-1.5 text-sm text-accent-700 underline underline-offset-4"
+            >
+              {source.label}
+              <ExternalLink aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={1.75} />
+              <span className="sr-only"> (official website, opens in a new tab)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1 text-xs text-ink-3">
+        Requirements can change. Where an official instruction differs from anything on this page, the official instruction
+        applies.
+      </p>
+    </div>
   );
 }
 
@@ -143,8 +176,12 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
               <IconTile name={service.icon} />
               <h1 className="type-page-title">{service.title}</h1>
             </div>
-            <p className="type-lead hero-intro mt-3 max-w-[40rem]">{service.outcome}</p>
-            <p className="hero-intro mt-1.5 text-sm text-ink-3">Mainly for: {service.mainlyFor}</p>
+            {!service.visual && (
+              <>
+                <p className="type-lead hero-intro mt-3 max-w-[40rem]">{service.outcome}</p>
+                <p className="hero-intro mt-1.5 text-sm text-ink-3">Mainly for: {service.mainlyFor}</p>
+              </>
+            )}
             <div className="hero-intro mt-5 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <ButtonLink href={primaryHref} location="service-hero">
                 {ctaLabel}
@@ -154,12 +191,44 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
               </WhatsAppButton>
             </div>
           </div>
-          <div className="card-art hero-intro hidden aspect-[16/10] w-full sm:block" aria-hidden="true">
-            <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
-          </div>
+          {service.visual ? (
+            <div className="card-art card-photo hero-intro aspect-[4/3] w-full">
+              <Image
+                src={service.visual.photo.src}
+                alt={service.visual.photo.alt}
+                width={service.visual.photo.width}
+                height={service.visual.photo.height}
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="absolute inset-0 size-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="card-art hero-intro hidden aspect-[16/10] w-full sm:block" aria-hidden="true">
+              <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
+            </div>
+          )}
         </div>
       </section>
 
+      {service.visual ? (
+        <>
+          {/* Owner-approved short layout (passport): situation tiles + one CTA, then FAQs and sources. */}
+          <ServiceVisualBody service={service} ctaHref={primaryHref} ctaLabel={ctaLabel} />
+          <section aria-labelledby="service-faqs" className="pb-[var(--section-y-compact)]">
+            <div className="container-site max-w-[860px]">
+              <h2 id="service-faqs" className="type-card-title !text-[1.375rem]">
+                {service.title} FAQs
+              </h2>
+              <div className="mt-4">
+                <FaqList items={service.faqs} />
+              </div>
+              <OfficialSources service={service} lastChecked={lastChecked} />
+            </div>
+          </section>
+        </>
+      ) : (
+        <>
       {/* 4 · Common customer situations — tiles, as in the mockup */}
       <section aria-labelledby="situations" className="pb-[var(--section-y-compact)]">
         <div className="container-site">
@@ -299,33 +368,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
             ]}
           />
 
-          {service.sources.length > 0 && lastChecked && (
-            <div className="mt-5">
-              <h3 id="official-sources" className="text-sm font-medium text-ink">
-                Official sources — checked {formatDate(lastChecked)}
-              </h3>
-              <ul className="mt-1 flex flex-wrap gap-x-4">
-                {service.sources.map((source) => (
-                  <li key={source.href}>
-                    <a
-                      href={source.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex min-h-8 items-center gap-1.5 text-sm text-accent-700 underline underline-offset-4"
-                    >
-                      {source.label}
-                      <ExternalLink aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={1.75} />
-                      <span className="sr-only"> (official website, opens in a new tab)</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-1 text-xs text-ink-3">
-                Requirements can change. Where an official instruction differs from anything on this page, the official
-                instruction applies.
-              </p>
-            </div>
-          )}
+          <OfficialSources service={service} lastChecked={lastChecked} />
         </div>
       </section>
 
@@ -350,6 +393,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         </section>
       )}
 
+        </>
+      )}
+
       {/* 13 · Enquiry CTA (pre-selected form) */}
       <FinalCta
         compact
@@ -360,50 +406,52 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         primaryHref={primaryHref}
       />
 
-      {/* 14 · Contact options */}
-      <section aria-labelledby="contact-options" className="pb-[var(--section-y-compact)]">
-        <div className="container-site flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <h2 id="contact-options" className="text-sm font-medium text-ink">
-            Other ways to reach us
-          </h2>
-          <ul className="flex flex-wrap justify-center gap-2">
-            <li>
-              <Link href={primaryHref} className="contact-pill">
-                <Send aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                Enquiry form
-              </Link>
-            </li>
-            <li>
-              <a
-                href={whatsappHref(service)}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cta="whatsapp"
-                data-cta-location="service-contact"
-                data-topic={service.slug}
-                className="contact-pill"
-              >
-                <MessageCircle aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                WhatsApp
-                <span className="sr-only"> (opens WhatsApp in a new tab)</span>
-              </a>
-            </li>
-            {site.contact.email && (
+      {/* 14 · Contact options (the owner-approved passport layout omits them) */}
+      {!service.visual && (
+        <section aria-labelledby="contact-options" className="pb-[var(--section-y-compact)]">
+          <div className="container-site flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <h2 id="contact-options" className="text-sm font-medium text-ink">
+              Other ways to reach us
+            </h2>
+            <ul className="flex flex-wrap justify-center gap-2">
+              <li>
+                <Link href={primaryHref} className="contact-pill">
+                  <Send aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
+                  Enquiry form
+                </Link>
+              </li>
               <li>
                 <a
-                  href={`mailto:${site.contact.email}?subject=${encodeURIComponent(`Enquiry — ${service.title}`)}`}
-                  data-cta="email"
+                  href={whatsappHref(service)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cta="whatsapp"
                   data-cta-location="service-contact"
+                  data-topic={service.slug}
                   className="contact-pill"
                 >
-                  <Mail aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                  Email
+                  <MessageCircle aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
+                  WhatsApp
+                  <span className="sr-only"> (opens WhatsApp in a new tab)</span>
                 </a>
               </li>
-            )}
-          </ul>
-        </div>
-      </section>
+              {site.contact.email && (
+                <li>
+                  <a
+                    href={`mailto:${site.contact.email}?subject=${encodeURIComponent(`Enquiry — ${service.title}`)}`}
+                    data-cta="email"
+                    data-cta-location="service-contact"
+                    className="contact-pill"
+                  >
+                    <Mail aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
+                    Email
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <JsonLd
         data={[

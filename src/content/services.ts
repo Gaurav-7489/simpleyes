@@ -53,6 +53,17 @@ export type Service = {
   /** Overrides the default prefilled WhatsApp text (still non-sensitive). */
   whatsappMessage?: string;
   illustration: IllustrationKind;
+  /** Short, visual page layout (icons over paragraphs). When set, the service page uses it. */
+  visual?: ServiceVisual;
+};
+
+/** Icon names for the visual layout; mapped to outline icons in ServiceVisualBody. */
+export type VisualIcon = "calendar" | "alert" | "edit" | "new";
+
+/** Short, visual service page: a hero photo and icon tiles instead of paragraphs. */
+export type ServiceVisual = {
+  photo: { src: string; alt: string; width: number; height: number };
+  situations: { icon: VisualIcon; label: string; hint: string }[];
 };
 
 const CHECKED = "2026-10-30";
@@ -201,6 +212,15 @@ export const services: Service[] = [
     related: ["family-documentation", "oci-services", "affidavits-declarations"],
     sources: [sources.outsourcing],
     illustration: "documents",
+    visual: {
+      photo: { src: "/images/passport-services.webp", alt: "An Indian passport on a wooden desk", width: 1200, height: 796 },
+      situations: [
+        { icon: "calendar", label: "Expiring soon", hint: "Renewal" },
+        { icon: "alert", label: "Lost or damaged", hint: "Reissue" },
+        { icon: "edit", label: "Details to correct", hint: "Name, address and more" },
+        { icon: "new", label: "First adult passport", hint: "New application" },
+      ],
+    },
   },
   {
     slug: "oci-services",
