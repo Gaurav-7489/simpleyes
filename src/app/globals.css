@@ -1381,40 +1381,87 @@ select.field {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px clamp(16px, 4vw, 32px);
+  padding: 14px clamp(16px, 4vw, 32px);
   border-bottom: 1px solid rgb(255 255 255 / 0.08);
   background: rgb(0 0 0 / 0.14);
 }
 
 .why-demo-avatar {
   display: grid;
+  flex-shrink: 0;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 999px;
   color: var(--color-accent-900);
   background: var(--color-lime);
 }
 
-/* Chat scene */
+.why-demo-topic {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-lime);
+  background: rgb(155 197 61 / 0.12);
+  border: 1px solid rgb(155 197 61 / 0.3);
+  transition: opacity 0.35s;
+}
+
+.why-demo-topic.is-leaving {
+  opacity: 0;
+}
+
+.why-demo-toggle {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(255 255 255 / 0.1);
+  transition: background 0.2s;
+}
+
+.why-demo-toggle:hover {
+  background: rgb(255 255 255 / 0.18);
+}
+
+.why-demo-toggle:focus-visible {
+  outline: 2px solid var(--color-lime);
+  outline-offset: 2px;
+}
+
+/* Conversation area: a fixed height so the panel never jumps between conversations. */
 .chat-scene {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-width: 760px;
+  justify-content: center;
+  gap: 16px;
+  height: clamp(320px, 12vw + 200px, 380px);
+  max-width: 980px;
   margin-inline: auto;
-  padding: clamp(28px, 5vw, 56px) clamp(16px, 4vw, 48px) clamp(32px, 5vw, 64px);
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 48px);
+  transition: opacity 0.35s;
+}
+
+.chat-scene.is-leaving {
+  opacity: 0;
 }
 
 .chat-bubble {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  max-width: min(88%, 520px);
-  padding: 14px 18px;
-  font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.125rem);
+  gap: 10px;
+  max-width: min(86%, 620px);
+  padding: 16px 20px;
+  font-size: clamp(0.9375rem, 0.85rem + 0.45vw, 1.1875rem);
   line-height: 1.45;
-  border-radius: 18px;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px -18px rgb(0 0 0 / 0.55);
 }
 
 .chat-in {
@@ -1422,7 +1469,6 @@ select.field {
   color: var(--color-ink);
   background: #fff;
   border-bottom-left-radius: 6px;
-  box-shadow: 0 10px 24px -16px rgb(0 0 0 / 0.5);
 }
 
 .chat-out {
@@ -1430,32 +1476,33 @@ select.field {
   color: var(--color-accent-900);
   background: var(--color-lime);
   border-bottom-right-radius: 6px;
-  box-shadow: 0 10px 24px -16px rgb(0 0 0 / 0.5);
 }
 
 .chat-typing {
   align-self: flex-end;
   display: inline-flex;
-  gap: 4px;
-  padding: 10px 12px;
+  gap: 5px;
+  padding: 14px 16px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.12);
 }
 
 .chat-typing i {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.75);
+}
+
+/* Bubbles appear as the conversation advances (ChatDemo toggles .is-in). */
+.chat-scene > :not(.is-in) {
+  visibility: hidden;
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .chat-in {
-    animation: chat-a 8s var(--ease-out-soft) infinite;
-  }
-
-  .chat-typing {
-    animation: chat-t 8s ease-out infinite;
+  .chat-scene > .is-in {
+    animation: chat-in 0.45s var(--ease-out-soft) both;
   }
 
   .chat-typing i {
@@ -1470,40 +1517,22 @@ select.field {
     animation-delay: 0.3s;
   }
 
-  .chat-out {
-    animation: chat-b 8s var(--ease-out-soft) infinite;
-  }
-
-  .chat-in-2 {
-    animation: chat-c 8s var(--ease-out-soft) infinite;
-  }
-
-  @keyframes chat-c {
-    0%, 58% { opacity: 0; transform: translateY(10px); }
-    66%, 90% { opacity: 1; transform: none; }
-    100% { opacity: 0; }
-  }
-
-  @keyframes chat-a {
-    0% { opacity: 0; transform: translateY(10px); }
-    6%, 90% { opacity: 1; transform: none; }
-    100% { opacity: 0; }
-  }
-
-  @keyframes chat-t {
-    0%, 14% { opacity: 0; }
-    18%, 36% { opacity: 1; }
-    40%, 100% { opacity: 0; }
-  }
-
-  @keyframes chat-b {
-    0%, 38% { opacity: 0; transform: translateY(10px); }
-    46%, 90% { opacity: 1; transform: none; }
-    100% { opacity: 0; }
+  @keyframes chat-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
   }
 
   @keyframes chat-dot {
     50% { transform: translateY(-3px); }
+  }
+}
+
+@media (max-width: 480px) {
+  .why-demo-topic {
+    display: none;
+  }
+
+  .chat-scene {
+    height: 380px;
   }
 }
 
