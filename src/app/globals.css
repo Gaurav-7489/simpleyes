@@ -2028,11 +2028,31 @@ html[data-menu-open] .tabbar {
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
+  width: 100%;
+  height: 100%;
   padding: clamp(16px, 2.5vw, 28px);
+  text-align: left;
   border-radius: 22px;
-  border: 1px solid var(--color-line);
+  border: 1.5px solid var(--color-line);
   background: #fff;
   box-shadow: 0 18px 40px -32px rgb(0 58 44 / 0.45);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.25s, transform 0.25s var(--ease-out-soft);
+}
+
+.visual-tile:hover {
+  border-color: var(--color-accent-300);
+}
+
+.visual-tile:focus-visible {
+  outline: 3px solid var(--color-accent-500);
+  outline-offset: 3px;
+}
+
+.visual-tile[aria-pressed="true"] {
+  border-color: var(--color-accent-700);
+  background: var(--color-accent-50);
+  box-shadow: 0 0 0 3px rgb(0 144 90 / 0.12), 0 22px 44px -30px rgb(0 58 44 / 0.5);
 }
 
 .visual-icon {
@@ -2044,12 +2064,70 @@ html[data-menu-open] .tabbar {
   border-radius: 16px;
   color: var(--color-accent-700);
   background: var(--color-accent-50);
+  transition: background 0.2s, color 0.2s;
 }
 
-/* Photo variant of the service hero art panel. */
-.card-photo {
+.visual-tile[aria-pressed="true"] .visual-icon {
+  color: #fff;
+  background: var(--color-accent-700);
+}
+
+.visual-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: 24px;
+  border: 1px solid var(--color-accent-100);
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgb(166 220 92 / 0.18), transparent 60%),
+    #fff;
+  box-shadow: 0 24px 50px -36px rgb(0 58 44 / 0.45);
+}
+
+.visual-answer-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 62ch;
+}
+
+@media (min-width: 1024px) {
+  .visual-answer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .visual-answer-text {
+    animation: answer-in 0.4s var(--ease-out-soft) both;
+  }
+
+  @media (hover: hover) {
+    .visual-tile:hover {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes answer-in {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+}
+
+/* Photo / illustration variants of the service hero art panel. */
+.card-photo,
+.card-scene {
   position: relative;
   overflow: hidden;
   border-radius: 28px;
   box-shadow: 0 30px 60px -36px rgb(0 58 44 / 0.55);
+}
+
+.card-scene {
+  border: 1px solid var(--color-accent-100);
+  background:
+    radial-gradient(70% 70% at 50% 45%, #fff 0%, rgb(255 255 255 / 0) 70%),
+    linear-gradient(160deg, #f4faf6 0%, #e3f2e8 100%);
 }

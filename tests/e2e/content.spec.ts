@@ -92,30 +92,21 @@ test.describe("content rules", () => {
     test(`${service.slug} has every section and a service-specific WhatsApp link`, async ({ page }) => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
-      const headings = service.visual
-        ? ["Which one is you?", `${service.title} FAQs`]
-        : [
-        "About this service",
-        "Who this service is for",
-        "Common situations",
-        "What SimplYes can help with",
-        "Possible document categories",
-        "How the process works",
-        "What to have ready",
-        "What is included",
-        "What is outside the scope",
-        `${service.title} FAQs`,
-        "Related services",
-        "Other ways to reach us",
-      ];
+      const headings = ["Which one is you?", `${service.title} FAQs`];
       for (const heading of headings) {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
-      if (!service.visual) await expect(page.getByText("subject to verification")).toBeVisible();
+      // Picking a situation tile reveals how SimplYes helps with it.
+      const tiles = page.locator("button.visual-tile");
+      await expect(tiles).toHaveCount(service.visual.tiles.length);
+      await expect(tiles.first()).toHaveAttribute("aria-pressed", "true");
+      const last = service.visual.tiles.length - 1;
+      await tiles.nth(last).click();
+      await expect(tiles.nth(last)).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator(".visual-answer")).toContainText(service.situations[last]!.howWeHelp);
       const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
       expect(await ctas.count()).toBeGreaterThanOrEqual(3);
       await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
-      if (!service.visual) for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
       await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");

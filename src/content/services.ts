@@ -54,16 +54,27 @@ export type Service = {
   whatsappMessage?: string;
   illustration: IllustrationKind;
   /** Short, visual page layout (icons over paragraphs). When set, the service page uses it. */
-  visual?: ServiceVisual;
+  visual: ServiceVisual;
 };
 
-/** Icon names for the visual layout; mapped to outline icons in ServiceVisualBody. */
-export type VisualIcon = "calendar" | "alert" | "edit" | "new";
+/** Tile icons for the visual layout; mapped to outline icons in SituationPicker. */
+export type VisualIcon =
+  | "calendar" | "alert" | "edit" | "new" | "first" | "refresh" | "group" | "upload"
+  | "stamp" | "translate" | "question" | "spelling" | "declaration" | "proxy"
+  | "folder" | "checklist" | "appointment" | "baby" | "spouse" | "degree" | "study"
+  | "relocate" | "onboard" | "home";
 
-/** Short, visual service page: a hero photo and icon tiles instead of paragraphs. */
+/** Original hero illustrations (ServiceScene); the passport page uses a photo instead. */
+export type SceneKind = "oci" | "attestation" | "affidavit" | "visa" | "family" | "student" | "corporate";
+
+/**
+ * Short, interactive service page. `tiles` pair by position with `situations`:
+ * the tile is the short label, the situation's `howWeHelp` is the answer it reveals.
+ */
 export type ServiceVisual = {
-  photo: { src: string; alt: string; width: number; height: number };
-  situations: { icon: VisualIcon; label: string; hint: string }[];
+  photo?: { src: string; alt: string; width: number; height: number };
+  scene?: SceneKind;
+  tiles: { icon: VisualIcon; label: string }[];
 };
 
 const CHECKED = "2026-10-30";
@@ -214,11 +225,11 @@ export const services: Service[] = [
     illustration: "documents",
     visual: {
       photo: { src: "/images/passport-services.webp", alt: "An Indian passport on a wooden desk", width: 1200, height: 796 },
-      situations: [
-        { icon: "calendar", label: "Expiring soon", hint: "Renewal" },
-        { icon: "alert", label: "Lost or damaged", hint: "Reissue" },
-        { icon: "edit", label: "Details to correct", hint: "Name, address and more" },
-        { icon: "new", label: "First adult passport", hint: "New application" },
+      tiles: [
+        { icon: "calendar", label: "Expiring soon" },
+        { icon: "alert", label: "Lost or damaged" },
+        { icon: "edit", label: "Details to correct" },
+        { icon: "new", label: "First adult passport" },
       ],
     },
   },
@@ -332,6 +343,15 @@ export const services: Service[] = [
     related: ["passport-services", "family-documentation"],
     sources: [sources.ociPortal, sources.embassyOci, sources.outsourcing],
     illustration: "form",
+    visual: {
+      scene: "oci",
+      tiles: [
+        { icon: "first", label: "First-time OCI" },
+        { icon: "refresh", label: "New passport or details" },
+        { icon: "group", label: "Family applying together" },
+        { icon: "upload", label: "Upload rejected" },
+      ],
+    },
   },
   {
     slug: "attestation-legalisation",
@@ -433,6 +453,14 @@ export const services: Service[] = [
     related: ["student-services", "affidavits-declarations"],
     sources: [sources.attestationFaq, sources.meaApostille, sources.outsourcing],
     illustration: "process",
+    visual: {
+      scene: "attestation",
+      tiles: [
+        { icon: "stamp", label: "Apostille needed" },
+        { icon: "translate", label: "Translation or notary first" },
+        { icon: "question", label: "Not sure which route" },
+      ],
+    },
   },
   {
     slug: "affidavits-declarations",
@@ -530,6 +558,14 @@ export const services: Service[] = [
     related: ["passport-services", "attestation-legalisation"],
     sources: [sources.attestationFaq, sources.outsourcing],
     illustration: "form",
+    visual: {
+      scene: "affidavit",
+      tiles: [
+        { icon: "spelling", label: "Name spelt differently" },
+        { icon: "declaration", label: "Declaration requested" },
+        { icon: "proxy", label: "Someone acting for me" },
+      ],
+    },
   },
   {
     slug: "visa-documentation-support",
@@ -629,6 +665,14 @@ export const services: Service[] = [
     related: ["attestation-legalisation", "family-documentation"],
     sources: [sources.outsourcing],
     illustration: "appointment",
+    visual: {
+      scene: "visa",
+      tiles: [
+        { icon: "folder", label: "Preparing documents" },
+        { icon: "checklist", label: "Is my file complete?" },
+        { icon: "appointment", label: "Appointment coming up" },
+      ],
+    },
   },
   {
     slug: "family-documentation",
@@ -718,6 +762,14 @@ export const services: Service[] = [
     related: ["passport-services", "oci-services", "corporate-services"],
     sources: [sources.outsourcing, sources.ociPortal],
     illustration: "personal",
+    visual: {
+      scene: "family",
+      tiles: [
+        { icon: "baby", label: "New baby" },
+        { icon: "spouse", label: "Spouse joining me" },
+        { icon: "group", label: "Several renewals at once" },
+      ],
+    },
   },
   {
     slug: "student-services",
@@ -806,6 +858,14 @@ export const services: Service[] = [
     related: ["attestation-legalisation", "passport-services"],
     sources: [sources.attestationFaq, sources.meaApostille],
     illustration: "documents",
+    visual: {
+      scene: "student",
+      tiles: [
+        { icon: "degree", label: "Transcripts and degree" },
+        { icon: "stamp", label: "Certificates need attestation" },
+        { icon: "study", label: "Paperwork while studying" },
+      ],
+    },
   },
   {
     slug: "corporate-services",
@@ -894,6 +954,14 @@ export const services: Service[] = [
     sources: [sources.outsourcing],
     whatsappMessage: "Hello SimplYes, I would like to discuss Corporate Services for our team. Could you explain the next steps?",
     illustration: "process",
+    visual: {
+      scene: "corporate",
+      tiles: [
+        { icon: "relocate", label: "Relocating Indian staff" },
+        { icon: "onboard", label: "Onboarding several employees" },
+        { icon: "home", label: "Employees' families" },
+      ],
+    },
   },
 ];
 
