@@ -94,7 +94,7 @@
 
   /* Page intro: transform only (never opacity), so LCP text paints immediately. */
   .hero-intro {
-    animation: intro-rise 0.9s var(--ease-out) both;
+    animation: intro-rise 0.6s var(--ease-out) both;
     animation-delay: var(--reveal-delay, 0ms);
   }
 

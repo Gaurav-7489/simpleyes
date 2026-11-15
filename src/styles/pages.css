@@ -133,7 +133,7 @@
   letter-spacing: -0.025em;
   transition:
     color var(--dur-2) var(--ease-out),
-    transform var(--dur-3) var(--ease-out);
+    transform var(--dur-2) var(--ease-out);
 }
 
 .svc-row-summary {
@@ -789,7 +789,7 @@
 .svc-gallery-title {
   text-decoration: none;
   background: linear-gradient(var(--color-lime), var(--color-lime)) 0 100% / 0 3px no-repeat;
-  transition: background-size var(--dur-3) var(--ease-out);
+  transition: background-size var(--dur-2) var(--ease-out);
 }
 
 .svc-gallery-title:hover {

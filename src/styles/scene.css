@@ -747,9 +747,19 @@
   }
 }
 
-/* Tilt follows the pointer on desktop (MotionLayer writes --tilt-x/--tilt-y on [data-tilt]). */
-@media (prefers-reduced-motion: no-preference) {
-  .stage[data-tilt] .stage-world {
-    will-change: transform;
-  }
+/*
+ * Tilt follows the pointer on desktop. MotionLayer writes --tilt-x/--tilt-y on the transformed element itself
+ * (.stage-world, .why-sheet). Registered as non-inheriting so a frame's update restyles that one element, not
+ * every descendant; will-change is set by MotionLayer only while the surface is moving.
+ */
+@property --tilt-x {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --tilt-y {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
 }

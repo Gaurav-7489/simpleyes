@@ -70,11 +70,12 @@
   /* Motion */
   --dur-1: 160ms;
   --dur-2: 320ms;
-  --dur-3: 640ms;
-  --dur-4: 1100ms;
+  --dur-3: 420ms;
+  --dur-4: 850ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-settle: cubic-bezier(0.16, 1.12, 0.3, 1);
+  /* No overshoot: calm and exact, as befits a documentation service. */
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Surfaces */
   --paper: #ffffff;

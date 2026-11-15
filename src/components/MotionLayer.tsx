@@ -7,12 +7,19 @@ import { usePathname } from "next/navigation";
  * Site-wide motion layer (one rAF budget, no layout reads during writes):
  *  - `--scroll` (0→1) on <html>, for the progress hairline and the back-to-top ring. Native scrolling only.
  *  - `[data-tilt]` surfaces (3D document stages, the Why sheet) lean gently toward the pointer: spring
- *    physics write `--tilt-x` / `--tilt-y` (degrees), which the stage's own CSS transform reads.
+ *    physics write `--tilt-x` / `--tilt-y` (degrees) on the transformed element itself (registered as
+ *    non-inheriting in scene.css, so only that element restyles), with will-change only while it moves.
  * Skipped for reduced motion; pointer effects only with a fine, hovering pointer. Pure enhancement.
  */
 
 type Body = {
   el: HTMLElement;
+  /** The element whose transform reads the tilt variables. */
+  target: HTMLElement;
+  /** Whether will-change is currently set on the target. */
+  layered: boolean;
+  /** Whether the last written values are the resting ones (no further writes needed). */
+  rested: boolean;
   x: [number, number];
   y: [number, number];
   tx: number;
@@ -75,7 +82,8 @@ export function MotionLayer() {
       dirty = true;
     });
     document.querySelectorAll<HTMLElement>("[data-tilt]").forEach((el) => {
-      const body: Body = { el, x: [0, 0], y: [0, 0], tx: 0, ty: 0, visible: false, rect: null };
+      const target = el.querySelector<HTMLElement>(".stage-world, .why-sheet") ?? el;
+      const body: Body = { el, target, layered: false, rested: true, x: [0, 0], y: [0, 0], tx: 0, ty: 0, visible: false, rect: null };
       byEl.set(el, body);
       bodies.push(body);
       io.observe(el);
@@ -116,13 +124,26 @@ export function MotionLayer() {
         stepSpring(b.y, b.ty, dt);
         const settled = Math.abs(b.x[0] - b.tx) < 0.01 && Math.abs(b.y[0] - b.ty) < 0.01 && Math.abs(b.x[1]) + Math.abs(b.y[1]) < 0.02;
         if (settled) {
-          b.x = [b.tx, 0];
-          b.y = [b.ty, 0];
+          if (b.rested) continue;
+          b.x[0] = b.tx;
+          b.x[1] = 0;
+          b.y[0] = b.ty;
+          b.y[1] = 0;
+          b.rested = true;
+          if (b.layered) {
+            b.target.style.willChange = "";
+            b.layered = false;
+          }
         } else {
           moving = true;
+          b.rested = false;
+          if (!b.layered) {
+            b.target.style.willChange = "transform";
+            b.layered = true;
+          }
         }
-        b.el.style.setProperty("--tilt-x", `${b.x[0].toFixed(3)}deg`);
-        b.el.style.setProperty("--tilt-y", `${b.y[0].toFixed(3)}deg`);
+        b.target.style.setProperty("--tilt-x", `${b.x[0].toFixed(3)}deg`);
+        b.target.style.setProperty("--tilt-y", `${b.y[0].toFixed(3)}deg`);
       }
       if (moving || px > -9000) raf = requestAnimationFrame(tick);
       else running = false;
@@ -154,8 +175,9 @@ export function MotionLayer() {
       document.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       for (const b of bodies) {
-        b.el.style.removeProperty("--tilt-x");
-        b.el.style.removeProperty("--tilt-y");
+        b.target.style.removeProperty("--tilt-x");
+        b.target.style.removeProperty("--tilt-y");
+        b.target.style.willChange = "";
       }
     };
   }, [pathname]);
