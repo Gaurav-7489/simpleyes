@@ -29,6 +29,9 @@ Formdall, a real inbox test, and the legal/business details.**
 
 ## Not done — needs the owners (nothing here can be completed by the developers)
 
+Fill-in form to send to the owner: [owner-request/SimplYes-Owner-Requirements.pdf](owner-request/SimplYes-Owner-Requirements.pdf)
+(source: `owner-request/owner-requirements.html`).
+
 | # | Action | Why only the owner | Guide |
 |---|---|---|---|
 | 1 | Create the Formdall account under Info@simplyes.de; form, email action, origin allowlist, field schema; download the AVV | Accepting provider terms and the data processing agreement on behalf of the business; email verification at Info@simplyes.de | ENQUIRY-SETUP §1–3 |

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SimplYes — Information and actions needed from the business owner</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "DejaVu Sans", Arial, sans-serif; color: #13211d; font-size: 10.2pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 19pt; margin: 0 0 4px; color: #003a2c; }
+  h2 { font-size: 12.5pt; margin: 18px 0 6px; padding: 6px 10px; background: #e2f4e6; border-left: 4px solid #005c45; color: #003a2c; break-after: avoid; }
+  h3 { font-size: 10.5pt; margin: 10px 0 4px; break-after: avoid; }
+  p { margin: 4px 0; }
+  .muted { color: #56655f; }
+  .small { font-size: 8.8pt; }
+  .brand { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #005c45; padding-bottom: 6px; margin-bottom: 10px; }
+  .brand b { font-size: 15pt; color: #005c45; }
+  .box { border: 1px solid #c3d6cb; border-radius: 6px; padding: 8px 10px; margin: 6px 0; break-inside: avoid; }
+  .note { background: #fdf6e3; border: 1px solid #e8c46a; border-radius: 6px; padding: 7px 10px; margin: 8px 0; break-inside: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 4px 0 8px; break-inside: auto; }
+  th, td { border: 1px solid #c3d6cb; padding: 5px 7px; vertical-align: top; text-align: left; }
+  th { background: #f0f7f2; font-size: 9pt; }
+  tr { break-inside: avoid; }
+  td.ans { width: 46%; height: 28px; }
+  td.ans.tall { height: 64px; }
+  td.ans.xtall { height: 96px; }
+  .check { display: inline-block; width: 11px; height: 11px; border: 1.3px solid #13211d; margin-right: 6px; vertical-align: -1px; }
+  ol, ul { margin: 4px 0 4px 18px; padding: 0; }
+  li { margin: 2px 0; }
+  .sig { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .sig div { border-top: 1px solid #13211d; padding-top: 3px; font-size: 9pt; }
+  .pagebreak { break-before: page; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; background: #f0f7f2; padding: 0 3px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="brand"><span><b>SimplYes.</b> &nbsp;Website launch — owner information request</span><span class="muted small">Prepared by VandLabs Studio · 15 November 2026</span></div>
+
+<h1>Information and actions needed from the business owner</h1>
+<p>The SimplYes website is built and live at <b>https://simplyes.de</b>. Everything the development team can do is finished.
+To complete the launch, we need the items below. They are things only the business can provide or approve:
+business facts, legal decisions, and access to the business's own accounts.</p>
+
+<div class="note"><b>Please do not send passwords, card details or private keys</b> — none are needed. Where an action happens in
+your own account (Formdall, Vercel, mailbox), you do it yourself and send us only the public values listed. Everything you
+enter in Sections C–F will be published on the website, so send only approved wording.</div>
+
+<h3>Summary — what unlocks what</h3>
+<table>
+  <tr><th style="width:8%">Part</th><th>Item</th><th style="width:30%">Result when done</th><th style="width:12%">Priority</th></tr>
+  <tr><td>A</td><td>Enquiry form: Formdall account and two values</td><td>Online enquiries reach Info@simplyes.de</td><td><b>Urgent</b></td></tr>
+  <tr><td>B</td><td>Hosting (Vercel) plan and ownership</td><td>Hosting allowed for business use</td><td><b>Urgent</b></td></tr>
+  <tr><td>C</td><td>Impressum (legal notice) details</td><td>Legally required page completed</td><td><b>Urgent</b></td></tr>
+  <tr><td>D</td><td>Privacy details</td><td>Privacy Policy completed</td><td>Required</td></tr>
+  <tr><td>E</td><td>Terms and legal review</td><td>Legal pages approved and published</td><td>Required</td></tr>
+  <tr><td>F</td><td>Brand assets and approvals</td><td>Final logo; approved images and content</td><td>Required</td></tr>
+  <tr><td>G</td><td>Optional business answers</td><td>Extra FAQs, analytics, auto-reply</td><td>Optional</td></tr>
+</table>
+
+<h2>A. Enquiry form — connect it to Info@simplyes.de (owner does this in Formdall)</h2>
+<p>The website's form is ready but not yet connected; until then it offers WhatsApp and email. Formdall is the recommended
+EU form service (servers in Germany, data processing agreement included; free plan: 100 enquiries per month). Full
+step-by-step guide: <code>docs/ENQUIRY-SETUP.md</code> in the GitHub repository.</p>
+<div class="box">
+<ol>
+  <li>Register at <b>app.formdall.de/register</b> using <b>Info@simplyes.de</b> and a strong password (not "Sign in with Google").
+      Accept the terms (this also concludes the data processing agreement, AVV) and confirm the email link.</li>
+  <li>Turn on two-factor login. Under Settings → Data processing, enter the company details and <b>download the AVV PDF</b>.</li>
+  <li>Create a form named <b>SimplYes enquiry</b>. Settings: allowed website <code>simplyes.de</code>; redirect URL empty;
+      store submissions <b>off</b>; honeypot, disposable-address and deliverability checks <b>on</b>; captcha <b>none</b>.</li>
+  <li>Field schema tab: mode <b>reject</b>; add the fields from <b>https://simplyes.de/enquiry-schema.json</b>.</li>
+  <li>Actions tab: add an <b>Email</b> action to <b>Info@simplyes.de</b> with subject <code>{{subject}}</code>. No auto-reply yet.</li>
+  <li>Embed tab: copy the two values below and send them to us (or enter them in Vercel yourself, see B).</li>
+</ol>
+</div>
+<table>
+  <tr><th style="width:54%">Please return</th><th>Answer</th></tr>
+  <tr><td>Form submission URL (looks like <code>https://api.formdall.de/api/v1/f/…</code>)</td><td class="ans"></td></tr>
+  <tr><td>Name of the hidden spam field in the Embed snippet</td><td class="ans"></td></tr>
+  <tr><td>AVV (data processing agreement) downloaded and filed? <span class="muted">(yes / no)</span></td><td class="ans"></td></tr>
+  <tr><td>Formdall plan chosen <span class="muted">(Free / Hobby €4.99 per month)</span></td><td class="ans"></td></tr>
+</table>
+<h3>After the form is connected — one real test (owner)</h3>
+<p>On simplyes.de open Passport Services → choose "Passport renewal" → Continue to Contact → send with your own name and an email
+you control. Confirm the email arrives in Info@simplyes.de (check spam) with the subject
+<i>New SimplYes Enquiry — Passport Services — Passport renewal</i>, and that "Reply" goes to your test address.</p>
+<table>
+  <tr><td style="width:54%">Test enquiry received in the inbox? <span class="muted">(yes / no, date)</span></td><td class="ans"></td></tr>
+  <tr><td>Did it land in spam? <span class="muted">(yes / no)</span></td><td class="ans"></td></tr>
+</table>
+
+<h2>B. Hosting (Vercel)</h2>
+<p>The site runs on Vercel in the developer's personal team <code>gaurav-7489s-projects</code>. Vercel's free Hobby plan is for
+non-commercial use only; a business site should be on <b>Pro</b> (about US$20 per month per member — check current pricing).</p>
+<table>
+  <tr><th style="width:54%">Please decide / confirm</th><th>Answer</th></tr>
+  <tr><td>Current Vercel plan <span class="muted">(Vercel → team switcher → Settings → Billing)</span></td><td class="ans"></td></tr>
+  <tr><td>Upgrade to Pro, or move to a SimplYes-owned Vercel account? <span class="muted">(stay / upgrade / move)</span></td><td class="ans"></td></tr>
+  <tr><td>Should the GitHub repository move to a SimplYes-owned account? <span class="muted">(yes / no)</span></td><td class="ans"></td></tr>
+  <tr><td>Enter the two values from Section A in Vercel yourself, or give the developer temporary access? <span class="muted">(Vercel → simpleyes → Settings → Environment Variables → Production: <code>NEXT_PUBLIC_ENQUIRY_ENDPOINT</code>, <code>NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD</code>, then Redeploy)</span></td><td class="ans"></td></tr>
+</table>
+
+<h2>C. Impressum (legal notice, required for German business websites)</h2>
+<p class="muted small">Exactly as it should appear publicly. Leave optional fields blank if they do not apply.</p>
+<table>
+  <tr><th style="width:42%">Field</th><th>Answer</th></tr>
+  <tr><td>Full legal name of the business</td><td class="ans"></td></tr>
+  <tr><td>Legal form <span class="muted">(e.g. sole trader / Einzelunternehmen, GbR, UG, GmbH)</span></td><td class="ans"></td></tr>
+  <tr><td>Authorised representative / responsible person (full name)</td><td class="ans"></td></tr>
+  <tr><td>Street and house number</td><td class="ans"></td></tr>
+  <tr><td>Postcode and city</td><td class="ans"></td></tr>
+  <tr><td>Country</td><td class="ans">Germany</td></tr>
+  <tr><td>Public email <span class="muted">(currently Info@simplyes.de — confirm)</span></td><td class="ans"></td></tr>
+  <tr><td>Public phone <span class="muted">(currently +49 1521 6627596 — confirm)</span></td><td class="ans"></td></tr>
+  <tr><td>Commercial register court and number <span class="muted">(if registered)</span></td><td class="ans"></td></tr>
+  <tr><td>VAT ID <span class="muted">(if any)</span></td><td class="ans"></td></tr>
+  <tr><td>Any licence, chamber or supervisory authority that must be named <span class="muted">(if any)</span></td><td class="ans"></td></tr>
+</table>
+
+<h2>D. Privacy details</h2>
+<table>
+  <tr><th style="width:42%">Field</th><th>Answer</th></tr>
+  <tr><td>Mailbox provider for Info@simplyes.de (company name and address).<br><span class="muted small">Find it where you log in to read the mailbox, or with an online "MX lookup" for simplyes.de.</span></td><td class="ans tall"></td></tr>
+  <tr><td>Data processing agreement signed with the mailbox provider? <span class="muted">(yes / no)</span></td><td class="ans"></td></tr>
+  <tr><td>How long are enquiry emails kept before deletion? <span class="muted">(e.g. 12 months after the last contact)</span></td><td class="ans"></td></tr>
+  <tr><td>How long are WhatsApp conversations kept?</td><td class="ans"></td></tr>
+  <tr><td>Who can access Info@simplyes.de? Is two-step login on?</td><td class="ans"></td></tr>
+</table>
+
+<h2>E. Terms and legal review</h2>
+<p class="muted small">Either answer the four points, or send complete adviser-approved texts for the Privacy Policy, Terms, Disclaimer and
+Impressum — the website can publish full replacement texts without code changes.</p>
+<table>
+  <tr><th style="width:42%">Point</th><th>Answer (approved wording)</th></tr>
+  <tr><td>Payment methods and when payment is due</td><td class="ans tall"></td></tr>
+  <tr><td>Cancellation and refunds</td><td class="ans tall"></td></tr>
+  <tr><td>Liability</td><td class="ans tall"></td></tr>
+  <tr><td>Complaints procedure</td><td class="ans tall"></td></tr>
+  <tr><td>Who reviews the legal pages (qualified German adviser) and by when?</td><td class="ans"></td></tr>
+  <tr><td>Review completed — date <span class="muted">(only after the adviser approves the wording shown on the site)</span></td><td class="ans"></td></tr>
+</table>
+
+<h2>F. Brand assets and approvals</h2>
+<table>
+  <tr><th style="width:54%">Item</th><th>Answer / attachment</th></tr>
+  <tr><td>Official logo as SVG (and PNG), with the exact gradient colours.<br><span class="muted small">The site currently shows a stand-in (green check + "SimplYes."). Favicon and social image will be made from it.</span></td><td class="ans tall"></td></tr>
+  <tr><td><b>Passport page photo</b> — it shows the Indian State Emblem. The website specification excludes official seals and Indian law restricts the emblem's use.<br><span class="muted small">Approve it explicitly, or ask us to replace it with a neutral image.</span></td><td class="ans tall"><span class="check"></span>Keep (approved) &nbsp;&nbsp;<span class="check"></span>Replace</td></tr>
+</table>
+<h3>Approvals (tick when approved)</h3>
+<table>
+  <tr><th style="width:70%">Approval</th><th>Approved (✓ + date)</th></tr>
+  <tr><td>Branding: logo/wordmark and green colour palette as shown on the site</td><td class="ans"></td></tr>
+  <tr><td>Hosting: plan and account ownership are suitable for a business (Section B)</td><td class="ans"></td></tr>
+  <tr><td>Service content: the eight service pages and their problem options</td><td class="ans"></td></tr>
+  <tr><td>Independence statement: "SimplYes is an independent documentation assistance service. We are not affiliated with any government authority, embassy or consulate. Official applications and decisions remain subject to the relevant authorities."</td><td class="ans tall"></td></tr>
+  <tr><td>Pricing: quotation-based model, no published prices for now</td><td class="ans"></td></tr>
+  <tr><td>Enquiry delivery: real test enquiry received (Section A)</td><td class="ans"></td></tr>
+</table>
+
+<h2>G. Optional business answers</h2>
+<table>
+  <tr><th style="width:42%">Question</th><th>Answer</th></tr>
+  <tr><td>FAQ: How can customers pay?</td><td class="ans"></td></tr>
+  <tr><td>FAQ: What happens if a customer cancels?</td><td class="ans"></td></tr>
+  <tr><td>FAQ: Can you help customers remotely, anywhere in Germany?</td><td class="ans"></td></tr>
+  <tr><td>FAQ: How will customers receive updates? <span class="muted">(email / WhatsApp / phone)</span></td><td class="ans"></td></tr>
+  <tr><td>Response time we may promise <span class="muted">(e.g. within 1 business day — or none)</span></td><td class="ans"></td></tr>
+  <tr><td>Automatic confirmation email to customers? If yes, approved wording</td><td class="ans tall"></td></tr>
+  <tr><td>Website analytics (Google Analytics, with consent banner)? <span class="muted">(yes / no)</span></td><td class="ans"></td></tr>
+  <tr><td>Social media profile links to show in the footer</td><td class="ans"></td></tr>
+  <tr><td>Fixed prices to publish instead of quotes? If yes, per service</td><td class="ans tall"></td></tr>
+</table>
+
+<h2>How to return this</h2>
+<ul>
+  <li>Fill in this form (or reply by email with the section letters) and send it with the logo files to the development team.</li>
+  <li>Do the account steps (A, B) yourself; send only the public values asked for. Never send passwords.</li>
+  <li>When we receive the answers, we enter them in the website, run the launch check, deploy, and confirm completion.</li>
+</ul>
+
+<div class="sig"><div>Name (business owner)</div><div>Signature</div><div>Date</div></div>
+<p class="muted small" style="margin-top:14px">Reference: GitHub repository Gaurav-7489/simpleyes, branch main — owner settings file
+<code>src/content/owner-settings.json</code>; guides <code>docs/ENQUIRY-SETUP.md</code>, <code>docs/OWNER-ACTIVATION.md</code>,
+<code>docs/LAUNCH-STATUS.md</code>.</p>
+</body>
+</html>
