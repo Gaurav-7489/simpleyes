@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEven
 import { CircleAlert, Loader2, MessageCircle, TriangleAlert } from "lucide-react";
 import { track } from "@/lib/analytics";
 import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
-import { DRAFT_KEY, OTHER_ISSUE, OTHER_NOTE_KEY } from "@/lib/enquiry-keys";
+import { clearEnquiryStorage, DRAFT_KEY, OTHER_ISSUE, OTHER_NOTE_KEY, readStored, writeStored } from "@/lib/enquiry-keys";
 import { ENQUIRY_LIMITS } from "@/lib/enquiry-schema";
 import { useHydrated } from "@/lib/useHydrated";
 
@@ -142,18 +142,12 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
   // Restore this tab's draft (e.g. after going Back to a service page) without overriding a fresh URL selection,
   // and pick up a "Something else" note typed on a service page.
   useEffect(() => {
-    let draft: Partial<Values> | null = null;
+    const draft = readStored<Partial<Values>>(DRAFT_KEY);
+    const note = readStored<{ service?: string; note?: string }>(OTHER_NOTE_KEY);
     try {
-      draft = JSON.parse(window.sessionStorage.getItem(DRAFT_KEY) ?? "null");
-    } catch {
-      draft = null;
-    }
-    let note: { service?: string; note?: string } | null = null;
-    try {
-      note = JSON.parse(window.sessionStorage.getItem(OTHER_NOTE_KEY) ?? "null");
       window.sessionStorage.removeItem(OTHER_NOTE_KEY);
     } catch {
-      note = null;
+      /* storage unavailable */
     }
     const fromUrl = Boolean(new URLSearchParams(window.location.search).get("service"));
     const text = (key: keyof Values) => (draft && typeof draft[key] === "string" ? (draft[key] as string).slice(0, 2200) : "");
@@ -175,16 +169,13 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     }));
   }, []);
 
-  // Keep the draft in this tab only, so Back/forward navigation never loses what was typed.
+  // Keep the draft in this tab only (sessionStorage, 30-minute expiry), so Back/forward navigation never loses
+  // what was typed. Consent is never saved; everything is removed once an enquiry is accepted.
   useEffect(() => {
     if (!started.current) return;
-    try {
-      const { consent: _consent, ...draft } = raw;
-      void _consent;
-      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    } catch {
-      /* storage unavailable: nothing to restore later */
-    }
+    const { consent: _consent, ...draft } = raw;
+    void _consent;
+    writeStored(DRAFT_KEY, draft);
   }, [raw]);
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) => {
@@ -295,8 +286,8 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
         if (reply.success === false || reply.ok === false || reply.error || reply.errors ||
             (reply.success !== true && reply.ok !== true)) throw new Error("rejected");
       }
+      clearEnquiryStorage();
       try {
-        window.sessionStorage.removeItem(DRAFT_KEY);
         window.sessionStorage.setItem(LEAD_FLAG, JSON.stringify({ service: service?.title ?? "", preferred_contact: values.contactMethod }));
       } catch {
         /* storage unavailable: the thank-you page simply won't fire the conversion event */

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { pageUpdated } from "@/content/page-dates";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
 import { absoluteUrl } from "@/lib/seo";
@@ -6,7 +7,6 @@ import { absoluteUrl } from "@/lib/seo";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date(site.contentUpdated);
   const legalModified = new Date(site.legal.lastUpdated);
   const pages: { path: string; priority: number; legal?: boolean }[] = [
     { path: "/", priority: 1 },
@@ -31,7 +31,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return pages.map(({ path, priority, legal }) => ({
     url: absoluteUrl(path),
-    lastModified: legal ? legalModified : lastModified,
+    lastModified: legal ? legalModified : new Date(pageUpdated[path] ?? site.contentUpdated),
     changeFrequency: "monthly",
     priority,
   }));

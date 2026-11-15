@@ -3,6 +3,17 @@
   "framework": "nextjs",
   "redirects": [
     {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "simpleyes\\.vercel\\.app"
+        }
+      ],
+      "destination": "https://simplyes.de/$1",
+      "permanent": true
+    },
+    {
       "source": "/services/document-guidance",
       "destination": "/services/",
       "permanent": true
@@ -138,6 +149,21 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=604800"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<host>.+)\\.vercel\\.app"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
         }
       ]
     }

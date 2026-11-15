@@ -9,7 +9,7 @@ import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = pageMetadata({
-  title: `Our Services — Documentation Assistance in Germany | ${site.name}`,
+  title: `Services — Documentation Assistance in Germany | ${site.name}`,
   absoluteTitle: true,
   description:
     "All eight SimplYes services: passport, OCI, attestation & legalisation, affidavits, visa documentation, family, student and corporate documentation assistance.",

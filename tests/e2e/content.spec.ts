@@ -432,6 +432,9 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     });
     await fillAndSend(page);
     await expect(page).toHaveURL(/\/thank-you\/$/);
+    // Nothing the visitor typed remains in the tab once the enquiry is accepted.
+    const left = await page.evaluate(() => Object.keys(window.sessionStorage).filter((k) => k !== "simplyes-lead" && k.startsWith("simplyes")));
+    expect(left).toEqual([]);
     expect(headers["accept"]).toContain("application/json");
     expect(headers["content-type"]).toContain("application/json");
     expect(body[honeypot]).toBe("");
@@ -708,6 +711,33 @@ test.describe("smart contact flow: service page → prefilled form", () => {
     const text = new URL(formWa!).searchParams.get("text") ?? "";
     expect(text).toBe("Hello SimplYes, I need assistance with Passport Services — Passport renewal.");
     expect(text).not.toContain("private");
+  });
+
+  test("drafts stay in this tab only, never include consent, and expire after 30 minutes", async ({ page, context }) => {
+    await page.goto("/contact/?service=oci-services&issue=new-oci");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
+    const stored = await page.evaluate(() => ({
+      session: window.sessionStorage.getItem("simplyes-enquiry-draft"),
+      local: Object.keys(window.localStorage).filter((k) => k.startsWith("simplyes")),
+    }));
+    const parsed = JSON.parse(stored.session ?? "{}");
+    expect(typeof parsed.savedAt).toBe("number");
+    expect(parsed.data.name).toBe("Test Person");
+    expect(parsed.data).not.toHaveProperty("consent");
+    expect(stored.local).toEqual([]);
+    expect(await context.cookies()).toEqual([]);
+
+    // A draft older than 30 minutes is discarded instead of restored.
+    await page.evaluate(() => {
+      const entry = JSON.parse(window.sessionStorage.getItem("simplyes-enquiry-draft")!);
+      entry.savedAt = Date.now() - 31 * 60 * 1000;
+      window.sessionStorage.setItem("simplyes-enquiry-draft", JSON.stringify(entry));
+    });
+    await page.reload();
+    await expect(page.locator("form#enquiry").getByLabel(/Full name/)).toHaveValue("");
+    expect(await page.evaluate(() => window.sessionStorage.getItem("simplyes-enquiry-draft"))).toBeNull();
   });
 
   test("invalid or mismatched URL values are ignored safely", async ({ page }) => {

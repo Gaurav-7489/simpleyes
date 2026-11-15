@@ -28,6 +28,8 @@ export type Service = {
   intro: string[];
   /** Optional explainer shown near the top (OCI "What is OCI?", visa distinction…). */
   explainer?: { title: string; body: string[] };
+  /** Search-result title (≤ 60 characters with " | SimplYes"), worded as people search; no keyword lists. */
+  seoTitle: string;
   metaDescription: string;
   /** Who this service is for. */
   audience: string[];
@@ -121,6 +123,7 @@ export const services: Service[] = [
       "Indian passport processes differ depending on your situation — a first adult passport, a renewal, a reissue, a lost or damaged passport, or a correction to your personal details. Each route can involve different steps and supporting documents.",
       "SimplYes helps Indian nationals living in Germany work out which situation applies, organise the supporting documents and prepare the application before it is submitted through the official channel.",
     ],
+    seoTitle: "Indian Passport Renewal & Reissue Help in Germany",
     metaDescription:
       "Help with Indian passport renewal, reissue, lost or damaged passports and detail corrections for Indians in Germany. Independent documentation assistance.",
     audience: [
@@ -238,6 +241,7 @@ export const services: Service[] = [
         "Eligibility, the documents required and the decision rest entirely with the Government of India. We help you understand the published criteria and prepare.",
       ],
     },
+    seoTitle: "OCI Card Application & Update Help in Germany",
     metaDescription:
       "Help preparing new OCI applications, OCI updates, corrections and family OCI applications for people living in Germany. Independent documentation assistance.",
     audience: [
@@ -355,6 +359,7 @@ export const services: Service[] = [
         "Requirements depend on the document type, the issuing authority and the destination authority. We help you work out the route that appears to apply — official confirmation is always performed by the competent authority.",
       ],
     },
+    seoTitle: "Apostille & Attestation Help in Germany",
     metaDescription:
       "Apostille, attestation and legalisation guidance for educational, personal and certificate documents — for Indians in Germany. Independent documentation assistance.",
     audience: [
@@ -462,6 +467,7 @@ export const services: Service[] = [
         "Where your matter requires legal advice, notarisation or another regulated service, we will tell you so and you should consult an appropriately qualified professional.",
       ],
     },
+    seoTitle: "Affidavit & Declaration Help in Germany",
     metaDescription:
       "Help understanding and preparing name-discrepancy declarations, personal declarations, affidavits and Power of Attorney paperwork — for Indians in Germany.",
     audience: [
@@ -566,6 +572,7 @@ export const services: Service[] = [
         "If your situation needs legal advice, we will tell you so and you should consult a qualified immigration lawyer.",
       ],
     },
+    seoTitle: "Visa Documentation Support in Germany",
     metaDescription:
       "Documentation assistance for visa applications: requirements guidance, checklists and completeness checks. Not immigration-law advice. For Indians in Germany.",
     audience: [
@@ -663,6 +670,7 @@ export const services: Service[] = [
       "When several family members need documentation at the same time — a new baby, a spouse joining, or renewals for the whole household — handling each application separately can lead to inconsistencies and repeated work.",
       "SimplYes treats family documentation as a coordinated household solution: one point of contact, with related requirements aligned across applications.",
     ],
+    seoTitle: "Family Documentation Help in Germany",
     metaDescription:
       "Coordinated family documentation for Indians in Germany: spouse, children, birth- and marriage-related and dependant paperwork, handled per household.",
     audience: [
@@ -758,6 +766,7 @@ export const services: Service[] = [
       "Studying in Germany often means organising transcripts, degree certificates and other academic paperwork — sometimes with attestation — alongside your studies.",
       "SimplYes helps Indian students organise and prepare their academic documentation in plain language, with an approachable process that respects a student budget.",
     ],
+    seoTitle: "Student Document & Attestation Help in Germany",
     metaDescription:
       "Help for Indian students in Germany organising educational certificates, degree documents and academic paperwork, with attestation guidance.",
     audience: [
@@ -852,6 +861,7 @@ export const services: Service[] = [
       "Employers relocating or onboarding Indian staff often face documentation questions that take HR time away from other work — for employees and, frequently, their families.",
       "SimplYes coordinates employee documentation support so your team has one partner for documentation questions. Group arrangements and terms are agreed directly with each employer.",
     ],
+    seoTitle: "Corporate Documentation Support in Germany",
     metaDescription:
       "Documentation coordination for employers relocating or onboarding Indian employees in Germany: employee, relocation, onboarding and family documentation.",
     audience: [
