@@ -13,8 +13,8 @@ Legend: ✅ verified on production or in the build · 🔧 fixed in this change 
 | Canonical domain | ✅ Every page has `<link rel="canonical">` on `https://simplyes.de/…/` | — | None |
 | `www.simplyes.de` | ✅ 308 → `https://simplyes.de/` | — | None |
 | No trailing slash (`/about`) | ✅ 308 → `/about/` | — | None |
-| `simpleyes.vercel.app` | Before: 200, `index, follow`, a full duplicate of the site (canonical pointed to simplyes.de, which limits but does not remove the risk) | Duplicate host | 🔧 `vercel.json` host redirect: 308 → `https://simplyes.de/:path*` |
-| Other production aliases (`simpleyes-<team>.vercel.app`, `simpleyes-git-main-…`) | Serve the production build | Possible duplicates | 🔧 `X-Robots-Tag: noindex, nofollow` for any `*.vercel.app` host. Previews stay usable for testing; `simplyes.de` gets no such header |
+| `simpleyes.vercel.app` | Before: 200, `index, follow`, a full duplicate of the site (canonical pointed to simplyes.de, which limits but does not remove the risk) | Duplicate host | ✅ Fixed: 308 → `https://simplyes.de/<same path>` (regex host rule; the plain-string form did not match on Vercel) |
+| Other production aliases (`simpleyes-<team>.vercel.app`, `simpleyes-git-main-…`) | Serve the production build | Possible duplicates | ✅ `X-Robots-Tag: noindex, nofollow` for any `*.vercel.app` host (seen live before the redirect rule took over). Previews stay usable for testing; `simplyes.de` gets no such header |
 | Preview/staging builds | ✅ `robots.txt` disallows everything and pages are `noindex` when `NEXT_PUBLIC_SITE_ENV` ≠ `production` | — | None |
 | `/privacy-policy` | 308 → `/privacy-policy/` → 308 → `/privacy/` (2 hops) | Minor: the platform adds the slash before `vercel.json` redirects run | ℹ️ Acceptable (Google follows up to 10 hops); the page is noindex until legal review |
 | Unreviewed legal pages | ✅ `noindex`, not in the sitemap | — | ⏳ Set `legal.reviewed` only after a real review |
@@ -74,7 +74,7 @@ concrete reason. robots.txt is a request that reputable crawlers honour, not acc
 
 ## 4. Changes in this release
 
-1. `vercel.json`: `simpleyes.vercel.app` → 308 to `https://simplyes.de/:path*`; `X-Robots-Tag: noindex, nofollow`
+1. `vercel.json`: `simpleyes.vercel.app` → 308 to `https://simplyes.de/$1`; `X-Robots-Tag: noindex, nofollow`
    on every other `*.vercel.app` host. Unit test `tests/unit/hosting.test.mjs`.
 2. `src/content/page-dates.ts` + `src/app/sitemap.ts`: per-page `lastmod`.
 3. `seoTitle` per service (`src/content/services.ts`); `/services/` title shortened.
@@ -95,3 +95,26 @@ concrete reason. robots.txt is a request that reputable crawlers honour, not acc
 6. Give the developer read access (Search Console → Settings → Users) if reports should be reviewed.
 
 Until these are done, nobody can state whether or how the site is indexed.
+
+## 6. Tests and production evidence (15 Nov 2026)
+
+- Local: lint ✅, typecheck ✅, production build ✅, unit tests 18/18 ✅, Playwright 202 passed / 96 skipped
+  (endpoint-only), the endpoint suite against a mock-endpoint build 34/34 ✅. `check:launch` **fails by design**
+  on 20 pending owner items; it was not disabled.
+- CI on https://github.com/Gaurav-7489/simpleyes/pull/13 and https://github.com/Gaurav-7489/simpleyes/pull/14:
+  `quality` ✅, `enquiry-and-browsers` ✅, Vercel ✅. Main `7b7523e` deployed (Vercel status success).
+- Live checks with `curl`:
+
+| URL | Result |
+|---|---|
+| `https://simpleyes.vercel.app/` | 308 → `https://simplyes.de/` |
+| `https://simpleyes.vercel.app/about/?z=2` | 308 → `https://simplyes.de/about/?z=2` |
+| `https://www.simplyes.de/` | 308 → `https://simplyes.de/` |
+| `https://simplyes.de/about/` | 200, no `X-Robots-Tag` |
+| `/services/passport-services/` title | "Indian Passport Renewal & Reissue Help in Germany \| SimplYes" (60) |
+| `/thank-you/`, `/privacy/` | `noindex, nofollow` |
+| `/sitemap.xml` | 15 URLs; `/how-it-works/` lastmod 2026-11-13, service pages 2026-11-15 |
+| `/robots.txt` | Three groups (search, AI search/retrieval, training) as in §2 |
+
+Not verified: indexing status in Google/Bing (no access), other production alias hosts (Vercel deployment
+protection returns 403 to this session), real-browser behaviour outside Chromium.
