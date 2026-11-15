@@ -43,7 +43,7 @@ export function DisclosureList({ items, headingLevel = "h2" }: { items: Disclosu
     });
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col">
       {items.map((item) => {
         const isOpen = open.has(item.id);
         const buttonId = `${uid}-${item.id}-b`;
@@ -60,7 +60,7 @@ export function DisclosureList({ items, headingLevel = "h2" }: { items: Disclosu
                 onClick={() => toggle(item.id)}
                 className="faq-button"
               >
-                <span className="flex items-center gap-3">
+                <span className="flex items-center gap-4">
                   {item.icon}
                   <span>{item.title}</span>
                 </span>

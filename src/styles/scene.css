@@ -1,0 +1,755 @@
+/*
+ * The Living Document System — CSS 3D document scenes.
+ *
+ * A stage is a camera looking down at a tabletop at an angle. Objects (sheets, booklets, cards, envelopes,
+ * folders, stamps…) float above the table at different heights and cast soft shadows onto it. Everything is
+ * sized in container-query units (cqw) of the stage, so a scene scales fluidly from a 320px phone to a
+ * 1440px hero. No WebGL, no images, no runtime dependency: decorative HTML/CSS that renders server-side.
+ *
+ * Object geometry comes from inline custom properties set by <DocumentStage>:
+ *   --x, --y   centre on the table, in % of the stage      --w   width, in cqw
+ *   --z        height above the table, in cqw               --rz  rotation on the table (deg)
+ *   --rx, --ry tilt (deg)                                   --i   order, for staggered entrances
+ */
+
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--stage-ratio, 1 / 0.9);
+  container-type: inline-size;
+  pointer-events: none;
+  user-select: none;
+}
+
+.stage-camera {
+  position: absolute;
+  inset: 0;
+  perspective: 240cqw;
+  perspective-origin: 50% 30%;
+}
+
+.stage-world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--cam-rx, 52deg) + var(--tilt-x, 0deg))) rotateZ(calc(var(--cam-rz, -28deg) + var(--tilt-y, 0deg)))
+    scale(var(--cam-scale, 1));
+}
+
+/* Soft ambient light pooled on the table under the composition. */
+.stage-floor {
+  position: absolute;
+  inset: 12% 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 144 90 / 0.12), rgb(166 220 92 / 0.06) 55%, transparent 100%);
+  transform: translateZ(-0.5cqw);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.obj {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: calc(var(--w) * 1cqw);
+  /* 1em = 1/25 of the object's width: everything inside an object scales with it. */
+  font-size: calc(var(--w) * 0.04cqw);
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) rotateZ(calc(var(--rz, 0) * 1deg));
+}
+
+/* Shadow cast on the table: wider and softer the higher the object floats. */
+.obj-shadow {
+  position: absolute;
+  inset: 4% 6%;
+  border-radius: 8%;
+  background: rgb(13 46 38 / 0.55);
+  filter: blur(calc(var(--z) * 0.16cqw + 0.5cqw));
+  opacity: calc(0.42 - var(--z) * 0.014);
+  transform: translate3d(calc(var(--z) * 0.22cqw), calc(var(--z) * 0.32cqw), 0);
+}
+
+.obj[data-round] .obj-shadow {
+  border-radius: 50%;
+}
+
+.obj-body {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--z) * 1cqw)) rotateX(calc(var(--rx, 0) * 1deg)) rotateY(calc(var(--ry, 0) * 1deg));
+}
+
+/* ----- Paper ----------------------------------------------------------------------------------------- */
+.o-sheet {
+  position: relative;
+  aspect-ratio: 1 / 1.414;
+  padding: 2.2em 2em;
+  border-radius: 0.35em;
+  background: linear-gradient(155deg, #ffffff 0%, #fbfdfb 45%, #eef4f0 100%);
+  box-shadow:
+    inset 0 0 0 0.06em rgb(13 46 38 / 0.08),
+    inset 0.5em 0.5em 1.5em -1em rgb(255 255 255 / 1);
+  overflow: hidden;
+}
+
+/* Light sweeping across the paper. */
+.o-sheet::after,
+.o-card::after,
+.o-booklet-cover::after,
+.o-envelope::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgb(255 255 255 / 0.55) 0%, rgb(255 255 255 / 0) 38%, rgb(255 255 255 / 0) 70%, rgb(13 46 38 / 0.05) 100%);
+  pointer-events: none;
+}
+
+.o-sheet[data-tone="mint"] {
+  background: linear-gradient(155deg, #f2faf4 0%, #e2f4e6 100%);
+}
+
+.o-sheet[data-tone="landscape"] {
+  aspect-ratio: 1.414 / 1;
+  padding: 1.8em 2.2em;
+}
+
+.o-sheet[data-tone="note"] {
+  aspect-ratio: 1 / 1;
+  padding: 2em;
+  background: linear-gradient(155deg, #f4fbe9 0%, #e4f3c8 100%);
+}
+
+/* Text lines, headings and marks printed on documents (pure decoration). */
+.ln {
+  height: 0.62em;
+  margin-top: 1.05em;
+  border-radius: 1em;
+  background: rgb(19 33 29 / 0.13);
+}
+
+.ln-h {
+  height: 1.15em;
+  margin-top: 0;
+  background: rgb(19 33 29 / 0.78);
+  border-radius: 0.25em;
+}
+
+.ln-g {
+  background: rgb(0 92 69 / 0.55);
+}
+
+.ln-lime {
+  background: var(--color-lime);
+}
+
+.ln-gap {
+  margin-top: 2em;
+}
+
+.mark-row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-top: 1.2em;
+}
+
+.mark-row .ln {
+  flex: 1;
+  margin-top: 0;
+}
+
+.mark-box {
+  flex: none;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 0.35em;
+  box-shadow: inset 0 0 0 0.16em rgb(0 92 69 / 0.45);
+}
+
+.mark-box[data-on] {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d2e26' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+      center / 72% no-repeat,
+    var(--color-lime);
+  box-shadow: none;
+}
+
+.mark-photo {
+  width: 6.4em;
+  aspect-ratio: 0.78;
+  border-radius: 0.4em;
+  background:
+    radial-gradient(circle at 50% 38%, rgb(0 92 69 / 0.28) 0 22%, transparent 23%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgb(0 92 69 / 0.28) 0 70%, transparent 72%),
+    linear-gradient(180deg, #e8f3ec, #d6eadf);
+}
+
+.mark-sign {
+  height: 2.2em;
+  margin-top: 2em;
+  width: 55%;
+  border-bottom: 0.14em solid rgb(19 33 29 / 0.35);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30' fill='none' stroke='%23005c45' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M4 22c8-14 14-16 16-8s-6 10 2 2 10-12 14-4 6 6 12-2 10-6 14 0 8 6 16-4 14 2 34 0'/%3E%3C/svg%3E")
+    left bottom / contain no-repeat;
+}
+
+/* Certificate: a fine double border and an abstract ribbon — deliberately no seal or emblem. */
+.o-sheet[data-variant="certificate"] {
+  box-shadow:
+    inset 0 0 0 0.06em rgb(13 46 38 / 0.08),
+    inset 0 0 0 0.9em #fff,
+    inset 0 0 0 1em rgb(0 92 69 / 0.35),
+    inset 0 0 0 1.25em #fff,
+    inset 0 0 0 1.32em rgb(166 220 92 / 0.9);
+  padding: 3.2em 3em;
+  text-align: center;
+}
+
+.mark-ribbon {
+  position: absolute;
+  right: 2.6em;
+  bottom: 2.6em;
+  width: 4.4em;
+  height: 4.4em;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-lime) 0 46%, #8fc84a 47% 56%, var(--color-lime) 57%);
+  box-shadow: 0 0.3em 0.6em -0.2em rgb(13 46 38 / 0.4);
+}
+
+.mark-ribbon::before,
+.mark-ribbon::after {
+  content: "";
+  position: absolute;
+  top: 82%;
+  width: 1.4em;
+  height: 2.6em;
+  background: var(--color-accent-700);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+  z-index: -1;
+}
+
+.mark-ribbon::before {
+  left: 0.9em;
+  transform: rotate(14deg);
+}
+
+.mark-ribbon::after {
+  right: 0.9em;
+  transform: rotate(-14deg);
+}
+
+/* ----- Vellum: translucent tracing paper ------------------------------------------------------------- */
+.o-vellum {
+  position: relative;
+  aspect-ratio: 1 / 1.3;
+  padding: 2.2em 2em;
+  border-radius: 0.4em;
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.66), rgb(226 244 230 / 0.5));
+  box-shadow:
+    inset 0 0 0 0.08em rgb(255 255 255 / 0.95),
+    inset 0 0 0 0.16em rgb(0 92 69 / 0.12),
+    inset 0 0 2em rgb(255 255 255 / 0.4);
+}
+
+.o-vellum .ln {
+  background: rgb(0 92 69 / 0.28);
+}
+
+/* ----- Passport-inspired booklet (blank: no emblem, no country name, no data) ------------------------- */
+.o-booklet {
+  position: relative;
+  aspect-ratio: 0.7;
+  transform-style: preserve-3d;
+}
+
+.o-booklet-pages {
+  position: absolute;
+  inset: 1.5% 1.5% 1.5% 3%;
+  border-radius: 0.3em 0.9em 0.9em 0.3em;
+  background: repeating-linear-gradient(90deg, #f7faf8 0 0.18em, #e3ece6 0.18em 0.24em);
+  transform: translateZ(-1.1em);
+  box-shadow: 0 0 0 0.05em rgb(13 46 38 / 0.1);
+}
+
+.o-booklet-cover {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0.5em 1.4em 1.4em 0.5em;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgb(255 255 255 / 0.16), transparent 55%),
+    linear-gradient(160deg, #12715a 0%, #0b5a47 45%, #0a4a3b 100%);
+  box-shadow:
+    inset 0.5em 0 0.6em -0.3em rgb(0 0 0 / 0.35),
+    inset 0 0 0 0.08em rgb(255 255 255 / 0.12);
+}
+
+/* Fine tooled frame and a single abstract lime tab: premium, not official. */
+.o-booklet-cover::before {
+  content: "";
+  position: absolute;
+  inset: 1.6em 1.6em 1.6em 2.2em;
+  border-radius: 0.5em 1em 1em 0.5em;
+  box-shadow: inset 0 0 0 0.1em rgb(166 220 92 / 0.55);
+}
+
+.o-booklet-mark {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 7em;
+  height: 7em;
+  border-radius: 50%;
+  transform: translate(-40%, -50%);
+  background: repeating-radial-gradient(circle, rgb(166 220 92 / 0.5) 0 0.08em, transparent 0.09em 0.7em);
+  -webkit-mask-image: radial-gradient(circle, #000 55%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 55%, transparent 72%);
+}
+
+.o-booklet-lines {
+  position: absolute;
+  left: 30%;
+  right: 22%;
+  bottom: 18%;
+}
+
+.o-booklet-lines .ln {
+  background: rgb(166 220 92 / 0.6);
+  height: 0.5em;
+  margin-top: 0.9em;
+}
+
+/* Open spread */
+.o-spread {
+  position: relative;
+  display: flex;
+  aspect-ratio: 1.42;
+  transform-style: preserve-3d;
+}
+
+.o-spread-page {
+  position: relative;
+  flex: 1;
+  padding: 1.8em 1.6em;
+  background: linear-gradient(180deg, #fbfdfb, #eef5f0);
+  box-shadow: inset 0 0 0 0.05em rgb(13 46 38 / 0.08);
+  overflow: hidden;
+}
+
+.o-spread-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-radial-gradient(circle at 120% 120%, rgb(0 92 69 / 0.06) 0 0.08em, transparent 0.09em 0.55em);
+}
+
+.o-spread-page:first-child {
+  border-radius: 0.6em 0 0 0.6em;
+  transform-origin: 100% 50%;
+  transform: rotateY(10deg);
+}
+
+.o-spread-page:last-child {
+  border-radius: 0 0.6em 0.6em 0;
+  transform-origin: 0 50%;
+  transform: rotateY(-10deg);
+}
+
+.o-spread-page:first-child::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 3em;
+  background: linear-gradient(90deg, transparent, rgb(13 46 38 / 0.12));
+}
+
+.o-spread-page:last-child::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3em;
+  background: linear-gradient(270deg, transparent, rgb(13 46 38 / 0.1));
+}
+
+.o-spread-cover {
+  position: absolute;
+  inset: -1.6% -1.2%;
+  border-radius: 0.9em;
+  background: linear-gradient(160deg, #12715a, #0a4a3b);
+  transform: translateZ(-0.6em);
+}
+
+/* ----- Card (ID-1 ratio; abstract, unofficial) ------------------------------------------------------- */
+.o-card {
+  position: relative;
+  aspect-ratio: 1.586;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 1.4em;
+  background: linear-gradient(150deg, #ffffff 0%, #f1f9f3 60%, #dff1e5 100%);
+  box-shadow: inset 0 0 0 0.07em rgb(13 46 38 / 0.1);
+}
+
+.o-card-band {
+  height: 22%;
+  background: linear-gradient(90deg, var(--color-accent-700), #0a7a5c 70%, var(--color-accent-500));
+}
+
+.o-card-body {
+  display: flex;
+  gap: 1.6em;
+  padding: 1.6em 1.8em;
+}
+
+.o-card-body > div {
+  flex: 1;
+}
+
+.o-card-chip {
+  position: absolute;
+  right: 1.8em;
+  bottom: 1.6em;
+  width: 3.4em;
+  height: 2.6em;
+  border-radius: 0.5em;
+  background:
+    linear-gradient(90deg, transparent 32%, rgb(13 46 38 / 0.15) 33% 35%, transparent 36% 64%, rgb(13 46 38 / 0.15) 65% 67%, transparent 68%),
+    linear-gradient(180deg, transparent 45%, rgb(13 46 38 / 0.15) 46% 54%, transparent 55%),
+    linear-gradient(135deg, #e6f6c9, var(--color-lime));
+}
+
+.o-card .mark-photo {
+  width: 5.6em;
+}
+
+/* ----- Envelope ---------------------------------------------------------------------------------------- */
+.o-envelope {
+  position: relative;
+  aspect-ratio: 1.55;
+  overflow: hidden;
+  border-radius: 0.8em;
+  background: linear-gradient(170deg, #fbfdfb 0%, #e8f1eb 100%);
+  box-shadow: inset 0 0 0 0.07em rgb(13 46 38 / 0.1);
+}
+
+.o-envelope-flap {
+  position: absolute;
+  inset: 0 0 38% 0;
+  background: linear-gradient(180deg, #f1f7f3, #dce9e1);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  filter: drop-shadow(0 0.3em 0.3em rgb(13 46 38 / 0.18));
+}
+
+.o-envelope::before {
+  content: "";
+  position: absolute;
+  inset: 30% 0 0 0;
+  background: linear-gradient(0deg, rgb(13 46 38 / 0.05), transparent);
+  clip-path: polygon(0 100%, 50% 18%, 100% 100%);
+}
+
+.o-envelope-seal {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: 4.2em;
+  height: 4.2em;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d2e26' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+      center / 52% no-repeat,
+    radial-gradient(circle at 35% 30%, #c6ec8f, var(--color-lime) 60%, #8fc84a);
+  box-shadow: 0 0.3em 0.6em -0.2em rgb(13 46 38 / 0.45);
+}
+
+/* ----- Folder ------------------------------------------------------------------------------------------ */
+.o-folder {
+  position: relative;
+  aspect-ratio: 1.3;
+  transform-style: preserve-3d;
+}
+
+.o-folder-back {
+  position: absolute;
+  inset: 6% 0 0 0;
+  border-radius: 0.6em 1em 1em 1em;
+  background: linear-gradient(170deg, #0f6a53, #0a4d3d);
+}
+
+.o-folder-back::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -8%;
+  width: 38%;
+  height: 12%;
+  border-radius: 0.8em 0.8em 0 0;
+  background: inherit;
+}
+
+.o-folder-paper {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 0;
+  height: 70%;
+  padding: 1.6em;
+  border-radius: 0.4em;
+  background: linear-gradient(180deg, #fff, #f3f8f5);
+  transform: translateZ(0.5em);
+}
+
+.o-folder-paper + .o-folder-paper {
+  left: 12%;
+  right: 3%;
+  top: 4%;
+  transform: translateZ(0.8em) rotate(3deg);
+}
+
+.o-folder-front {
+  position: absolute;
+  inset: 30% 0 0 0;
+  border-radius: 0.6em 0.6em 1em 1em;
+  background: linear-gradient(175deg, #1a8a6c 0%, #0f6a53 100%);
+  transform: translateZ(1.2em);
+  box-shadow: inset 0 0.15em 0 rgb(255 255 255 / 0.18);
+}
+
+.o-folder-front::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  top: 14%;
+  width: 22%;
+  height: 0.9em;
+  border-radius: 0.3em;
+  background: var(--color-lime);
+}
+
+.o-folder[data-tone="mint"] .o-folder-back {
+  background: linear-gradient(170deg, #cfead8, #b7dfc6);
+}
+
+.o-folder[data-tone="mint"] .o-folder-front {
+  background: linear-gradient(175deg, #e2f4e6 0%, #c9e8d3 100%);
+  box-shadow: inset 0 0.15em 0 rgb(255 255 255 / 0.7);
+}
+
+/* ----- Rubber stamp (an object, not an imprint — no seal artwork) ------------------------------------- */
+.o-stamp {
+  position: relative;
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+}
+
+.o-stamp-base,
+.o-stamp-neck,
+.o-stamp-knob {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.o-stamp-base {
+  inset: 0;
+  background: radial-gradient(circle at 35% 30%, #1d8466, #0b5a47 70%);
+  box-shadow: inset 0 0 0 0.6em rgb(255 255 255 / 0.06);
+}
+
+.o-stamp-base::before {
+  content: "";
+  position: absolute;
+  inset: -0.2em;
+  border-radius: 50%;
+  background: #0a4a3b;
+  transform: translateZ(-1.2em);
+}
+
+.o-stamp-neck {
+  inset: 30%;
+  background: radial-gradient(circle at 35% 30%, #2a9a78, #0d5f4a);
+  transform: translateZ(3em);
+}
+
+.o-stamp-knob {
+  inset: 18%;
+  background: radial-gradient(circle at 34% 28%, #d6f2a8, var(--color-lime) 55%, #86bd43);
+  box-shadow: inset -0.4em -0.6em 1em rgb(13 46 38 / 0.25);
+  transform: translateZ(6em);
+}
+
+/* Abstract imprint: a ring of ink with a check, rendered on paper as a mark of review. */
+.mark-imprint {
+  position: absolute;
+  width: 6em;
+  height: 6em;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 0.3em rgb(0 92 69 / 0.4),
+    inset 0 0 0 0.75em transparent,
+    inset 0 0 0 0.9em rgb(0 92 69 / 0.2);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23005c45' stroke-opacity='.55' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4L18 8'/%3E%3C/svg%3E")
+    center / 48% no-repeat;
+  transform: rotate(-14deg);
+}
+
+/* ----- Pen ---------------------------------------------------------------------------------------------- */
+.o-pen {
+  position: relative;
+  aspect-ratio: 14;
+  border-radius: 1em;
+  background: linear-gradient(180deg, #2b7a63 0%, #0d2e26 55%, #071a15 100%);
+  box-shadow: inset 0 0.12em 0 rgb(255 255 255 / 0.3);
+}
+
+.o-pen::before {
+  content: "";
+  position: absolute;
+  right: -5%;
+  top: 22%;
+  bottom: 22%;
+  width: 8%;
+  background: linear-gradient(180deg, #e9efe9, #9fb0a6);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.o-pen::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  top: -18%;
+  width: 30%;
+  height: 34%;
+  border-radius: 0.3em;
+  background: var(--color-lime);
+}
+
+/* ----- Rolled diploma ------------------------------------------------------------------------------------ */
+.o-scroll {
+  position: relative;
+  aspect-ratio: 4.6;
+  border-radius: 2em;
+  background: linear-gradient(180deg, #ffffff 0%, #f2f7f3 35%, #d7e6dc 70%, #f6faf7 100%);
+  box-shadow: inset 0 0 0 0.06em rgb(13 46 38 / 0.12);
+}
+
+.o-scroll::before {
+  content: "";
+  position: absolute;
+  left: 44%;
+  top: -4%;
+  bottom: -4%;
+  width: 12%;
+  background: linear-gradient(180deg, #1a8a6c, #0b5a47);
+  border-radius: 0.2em;
+}
+
+.o-scroll::after {
+  content: "";
+  position: absolute;
+  right: 0.6em;
+  top: 18%;
+  bottom: 18%;
+  width: 1.6em;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #e3ece6 0 40%, #c9d9cf 60%);
+}
+
+/* ----- Small elements ------------------------------------------------------------------------------------ */
+.o-check {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d2e26' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+      center / 50% no-repeat,
+    radial-gradient(circle at 35% 30%, #d0f09f, var(--color-lime) 58%, #8fc84a);
+  box-shadow: inset -0.6em -0.8em 1.4em rgb(13 46 38 / 0.18);
+}
+
+.o-tag {
+  aspect-ratio: 2.6;
+  border-radius: 0.8em;
+  padding: 0.9em 1.4em;
+  background: linear-gradient(180deg, #fff, #eef6f1);
+  box-shadow: inset 0 0 0 0.08em rgb(0 92 69 / 0.25);
+}
+
+.o-tag .ln {
+  margin-top: 0.7em;
+}
+
+.o-tag .ln:first-child {
+  margin-top: 0;
+}
+
+/* ----- Entrance: documents settle onto the table (one directed sequence) --------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .stage[data-intro] .obj-body {
+    animation: settle var(--dur-4) var(--ease-settle) both;
+    animation-delay: calc(var(--i, 0) * 85ms + 120ms);
+  }
+
+  .stage[data-intro] .obj-shadow {
+    animation: settle-shadow var(--dur-4) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 85ms + 120ms);
+  }
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+      transform: translateZ(calc((var(--z) + 34) * 1cqw)) rotateX(calc((var(--rx, 0) + 18) * 1deg)) rotateY(calc((var(--ry, 0) - 10) * 1deg))
+        rotateZ(10deg);
+    }
+    35% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes settle-shadow {
+    from {
+      opacity: 0;
+      scale: 1.4;
+    }
+  }
+}
+
+/* ----- Switching scenes: inactive compositions sink away, the active one lifts in ------------------------ */
+.stage-set .scene .obj-body,
+.stage-set .scene .obj-shadow {
+  transition:
+    transform var(--dur-3) var(--ease-out),
+    opacity var(--dur-2) var(--ease-out);
+}
+
+.stage-set .scene[data-active="true"] .obj-body,
+.stage-set .scene[data-active="true"] .obj-shadow {
+  transition-delay: calc(var(--i, 0) * 55ms + 80ms);
+}
+
+.stage-set .scene:not([data-active="true"]) .obj-body {
+  opacity: 0;
+  transform: translateZ(calc((var(--z) + 14) * 1cqw)) rotateX(calc(var(--rx, 0) * 1deg)) rotateY(calc(var(--ry, 0) * 1deg)) scale(0.94);
+}
+
+.stage-set .scene:not([data-active="true"]) .obj-shadow {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-set .scene .obj-body,
+  .stage-set .scene .obj-shadow {
+    transition: none;
+  }
+}
+
+/* Tilt follows the pointer on desktop (MotionLayer writes --tilt-x/--tilt-y on [data-tilt]). */
+@media (prefers-reduced-motion: no-preference) {
+  .stage[data-tilt] .stage-world {
+    will-change: transform;
+  }
+}

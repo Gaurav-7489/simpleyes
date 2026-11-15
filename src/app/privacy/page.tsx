@@ -25,7 +25,7 @@ export default function PrivacyPage() {
     <>
       <PageHero badge="Legal" title="Datenschutz / Privacy Policy" crumbs={[{ name: "Datenschutz / Privacy", path: "/privacy/" }]} />
       <section className="pb-[var(--section-y)]">
-        <div className="container-site max-w-[760px]">
+        <div className="container-site"><div className="max-w-[760px]">
           {!site.legal.reviewed && (
             <PendingReview>
               This privacy notice describes how this website is built and operated. It has not yet been reviewed by
@@ -170,6 +170,7 @@ export default function PrivacyPage() {
             </p>
           </div>
           </OwnerPolicy>
+        </div>
         </div>
       </section>
     </>

@@ -1,0 +1,109 @@
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+    /* Keeps anchored/focused content clear of the floating WhatsApp button. */
+    scroll-padding-bottom: 88px;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    interpolate-size: allow-keywords;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    background: var(--color-canvas);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  /* 3D stages may paint slightly past their box; clip sideways without creating a scroll container
+     (overflow: clip keeps position: sticky working). */
+  main {
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-lime);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-700);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--r-pill);
+  background: var(--color-folder);
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* ----- Reveal (progressive enhancement) --------------------------------------------------------------
+ * Content is visible without JS. A tiny inline script adds `.js` to <html>; only then do [data-reveal]
+ * elements wait for the shared IntersectionObserver. Used sparingly — one quiet rise, never on every block. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-3) var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Page intro: transform only (never opacity), so LCP text paints immediately. */
+  .hero-intro {
+    animation: intro-rise 0.9s var(--ease-out) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  @keyframes intro-rise {
+    from {
+      transform: translateY(16px);
+    }
+    to {
+      transform: none;
+    }
+  }
+}

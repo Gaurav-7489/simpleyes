@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-/** Homepage: Hero → Choose your service → Why SimplYes → Simple process → FAQs → Contact (footer in the layout). */
+/** Homepage: Hero → Choose your service → Why SimplYes → Five steps → FAQs → Contact (footer in the layout). */
 export default function HomePage() {
   return (
     <>
@@ -25,7 +25,7 @@ export default function HomePage() {
       <WhySimplyes />
       <SimpleProcess />
       <FaqSection />
-      <FinalCta compact />
+      <FinalCta />
     </>
   );
 }

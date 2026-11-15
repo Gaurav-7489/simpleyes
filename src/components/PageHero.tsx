@@ -2,64 +2,50 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 import { revealDelay } from "@/lib/style";
+import { DocumentStage } from "@/components/scene/DocumentStage";
+import type { SceneKey } from "@/components/scene/scenes";
 
 type Crumb = { name: string; path: string };
 
-/** Sub-page hero (owners' mockup): left-aligned breadcrumb, label, heading and lead on mint, with a green wave. */
+/** Inner-page hero: breadcrumb, a large editorial title and lead, and (optionally) the page's document scene. */
 export function PageHero({
   title,
   lead,
   crumbs,
+  scene,
   children,
 }: {
-  /** Kept for compatibility; the compact layout (owners' mockup) no longer shows a label above the title. */
+  /** Kept for compatibility; the editorial layout shows no label above the title. */
   badge?: string;
   title: ReactNode;
   lead?: ReactNode;
   crumbs: Crumb[];
+  /** Decorative 3D composition beside the title (wide screens) or under it (phones). */
+  scene?: SceneKey;
   children?: ReactNode;
 }) {
   return (
-    <section className="hero-mint relative isolate overflow-hidden pb-[var(--section-y-compact)] pt-[clamp(92px,9vw,120px)]">
-      <PageWave />
-      <div className="container-site flex flex-col items-start text-left">
-        <nav aria-label="Breadcrumb" className="hero-intro mb-3">
-          <ol className="flex flex-wrap items-center gap-1 text-[0.8125rem] text-ink-2">
-            <li>
-              <Link href="/" className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
-                Home
-              </Link>
-            </li>
-            {crumbs.map((crumb, i) => {
-              const last = i === crumbs.length - 1;
-              return (
-                <li key={crumb.path} className="flex items-center gap-1">
-                  <ChevronRight aria-hidden="true" className="size-3.5 text-ink-3" />
-                  {last ? (
-                    <span aria-current="page" className="px-1 text-ink">
-                      {crumb.name}
-                    </span>
-                  ) : (
-                    <Link href={crumb.path} className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
-                      {crumb.name}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
-        <h1 className="type-page-title hero-intro max-w-[22ch]" style={revealDelay(60)}>
-          {title}
-        </h1>
-        {lead && (
-          <p className="type-lead hero-intro mt-3 max-w-[44rem]" style={revealDelay(120)}>
-            {lead}
-          </p>
-        )}
-        {children && (
-          <div className="hero-intro mt-5 flex flex-wrap items-center gap-3" style={revealDelay(180)}>
-            {children}
+    <section className="page-hero" data-has-scene={scene ? "" : undefined}>
+      <div className="container-site page-hero-grid">
+        <div className="page-hero-copy">
+          <Breadcrumb crumbs={crumbs} />
+          <h1 className="type-page-title hero-intro mt-6 max-w-[16ch]" style={revealDelay(40)}>
+            {title}
+          </h1>
+          {lead && (
+            <p className="type-lead hero-intro mt-5 max-w-[40rem]" style={revealDelay(100)}>
+              {lead}
+            </p>
+          )}
+          {children && (
+            <div className="hero-intro mt-8 flex flex-wrap items-center gap-3" style={revealDelay(160)}>
+              {children}
+            </div>
+          )}
+        </div>
+        {scene && (
+          <div className="page-hero-stage" aria-hidden="true">
+            <DocumentStage scene={scene} intro tilt ratio="1 / 0.8" />
           </div>
         )}
       </div>
@@ -67,28 +53,23 @@ export function PageHero({
   );
 }
 
-/** Decorative green waves in the top-right corner of sub-page heroes. */
-function PageWave() {
+export function Breadcrumb({ crumbs }: { crumbs: Crumb[] }) {
   return (
-    <svg
-      aria-hidden="true"
-      focusable="false"
-      viewBox="0 0 420 260"
-      preserveAspectRatio="xMaxYMin meet"
-      className="pointer-events-none absolute right-0 top-0 -z-10 h-[clamp(180px,30vw,320px)] w-auto opacity-90"
-    >
-      <defs>
-        <linearGradient id="pw-a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#e2f4e6" />
-          <stop offset="1" stopColor="#c3e8cf" />
-        </linearGradient>
-        <linearGradient id="pw-b" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stopColor="#a6dc5c" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#00a26c" stopOpacity="0.55" />
-        </linearGradient>
-      </defs>
-      <path d="M120 0h300v230c-60-10-90-60-120-110S220 20 120 0z" fill="url(#pw-a)" />
-      <path d="M230 0h190v150c-40-6-64-40-84-76S280 8 230 0z" fill="url(#pw-b)" />
-    </svg>
+    <nav aria-label="Breadcrumb" className="breadcrumb hero-intro">
+      <ol>
+        <li>
+          <Link href="/">Home</Link>
+        </li>
+        {crumbs.map((crumb, i) => {
+          const last = i === crumbs.length - 1;
+          return (
+            <li key={crumb.path}>
+              <ChevronRight aria-hidden="true" className="size-3.5" />
+              {last ? <span aria-current="page">{crumb.name}</span> : <Link href={crumb.path}>{crumb.name}</Link>}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
   );
 }

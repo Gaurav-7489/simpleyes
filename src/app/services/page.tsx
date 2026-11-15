@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { services } from "@/content/services";
+import { enquiryHref, services } from "@/content/services";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { ServiceTiles } from "@/components/ServiceTiles";
+import { DocumentStage } from "@/components/scene/DocumentStage";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
@@ -16,22 +16,64 @@ export const metadata: Metadata = pageMetadata({
   path: "/services/",
 });
 
-/** §06 — Services overview, owners' mockup layout: all eight services as tiles, each linking to its page. */
+/** Services overview: a gallery of the eight approved services, each with its own document composition. */
 export default function ServicesPage() {
   return (
     <>
       <PageHero
-        badge="Services"
         title="Our Services"
-        lead="Choose the service you need assistance with."
+        lead="Eight kinds of Indian documentation, explained and prepared with you. Choose the one that matches your situation."
         crumbs={[{ name: "Services", path: "/services/" }]}
       />
-      <section aria-label="All services" className="pb-[var(--section-y-compact)]">
+
+      <section aria-label="All services" className="pb-[var(--section-y)]">
         <div className="container-site">
-          <ServiceTiles services={services} headingLevel="h2" />
-          <p className="mt-5 text-center text-sm text-ink-2">
-            Not sure which service fits? <Link href="/contact/" className="font-medium text-accent-700 underline underline-offset-4">Send an enquiry</Link> and
-            describe your situation.
+          <ul className="svc-gallery">
+            {services.map((service, i) => {
+              const href = `/services/${service.slug}/`;
+              return (
+                <li key={service.slug} className="svc-gallery-item" data-flip={i % 2 === 1 ? "" : undefined}>
+                  <Link href={href} className="svc-gallery-stage" tabIndex={-1} aria-hidden="true">
+                    <DocumentStage scene={service.scene.kind} tilt ratio="1 / 0.74" />
+                  </Link>
+                  <div className="svc-gallery-copy">
+                    <h2 className="type-h2">
+                      <Link href={href} className="svc-gallery-title" data-cta-location="services-page">
+                        {service.title}
+                      </Link>
+                    </h2>
+                    <p className="type-lead mt-4 max-w-[34rem]">{service.summary}</p>
+                    <p className="mt-6 text-[0.9375rem] font-medium text-ink">Common requests</p>
+                    <ul className="svc-gallery-issues mt-2">
+                      {service.issues.map((issue) => (
+                        <li key={issue.id}>{issue.label}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                      <Link href={href} className="btn btn-light" data-cta-location="services-page">
+                        <span className="btn-face">
+                          View {service.shortTitle ?? service.title}
+                        </span>
+                      </Link>
+                      <Link
+                        href={enquiryHref(service, service.slug === "corporate-services" ? "corporate" : undefined)}
+                        className="link-tertiary"
+                        data-cta-location="services-page"
+                      >
+                        Get assistance
+                        <span className="sr-only"> with {service.title}</span>
+                      </Link>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-16 text-[1.0625rem] text-ink-2">
+            Not sure which service fits?{" "}
+            <Link href="/contact/" className="link-tertiary">
+              Send an enquiry and describe your situation
+            </Link>
           </p>
         </div>
       </section>

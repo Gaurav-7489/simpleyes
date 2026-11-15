@@ -47,7 +47,7 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="faq-tools">
         <div role="group" aria-label="Filter questions by category" className="flex flex-wrap gap-2">
           {[{ id: "all", label: "All" }, ...categories].map((c) => (
             <button
@@ -56,15 +56,13 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
               disabled={!hydrated}
               aria-pressed={active === c.id}
               onClick={() => setActive(c.id)}
-              className={`min-h-11 rounded-full px-4 text-sm font-medium transition-colors ${
-                active === c.id ? "bg-accent-700 text-white" : "border border-line bg-white text-ink-2 hover:border-accent-300 hover:text-ink"
-              }`}
+              className="faq-chip"
             >
               {c.label}
             </button>
           ))}
         </div>
-        <label className="relative block md:w-72">
+        <label className="relative block md:w-80">
           <span className="sr-only">Search questions</span>
           <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-3" strokeWidth={1.75} />
           <input
@@ -83,14 +81,14 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
       </p>
 
       {visible.length === 0 ? (
-        <p className="mt-6 rounded-[14px] border border-dashed border-line bg-white px-5 py-8 text-center text-ink-2">
+        <p className="mt-10 rounded-[16px] border border-dashed border-line-strong px-5 py-10 text-center text-ink-2">
           No questions match “{query}”. Try another word, or contact us with your question.
         </p>
       ) : (
-        <div className="mt-6 flex flex-col gap-7">
+        <div className="mt-12 flex flex-col gap-14">
           {visible.map((category) => (
             <section key={category.id} id={category.id} aria-labelledby={`${category.id}-title`} className="scroll-mt-[calc(var(--header-h)+24px)]">
-              <h2 id={`${category.id}-title`} className="type-card-title mb-4 !text-[1.375rem]">
+              <h2 id={`${category.id}-title`} className="type-h2 mb-6 !text-[clamp(1.5rem,1.2rem+1.1vw,2.25rem)]">
                 {category.label}
               </h2>
               <FaqList items={category.items} />

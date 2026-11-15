@@ -93,9 +93,7 @@ test.describe("content rules", () => {
     test(`${service.slug} has every section and a service-specific WhatsApp link`, async ({ page }) => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
-      const headings = service.visual
-        ? ["What do you need help with?", `${service.title} FAQs`]
-        : [
+      const headings = [
         "What do you need help with?",
         "About this service",
         "Who this service is for",
@@ -112,13 +110,15 @@ test.describe("content rules", () => {
       for (const heading of headings) {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
-      if (!service.visual) await expect(page.getByText("subject to verification")).toBeVisible();
+      await expect(page.getByText("subject to verification")).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Sound familiar?" })).toBeVisible();
+      for (const s of service.situations) await expect(page.getByText(s.situation, { exact: true })).toBeVisible();
       // The main action: the problem picker continues to a prefilled form; the closing band links there too.
       await expect(page.getByRole("link", { name: "Continue to Contact" })).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
       await expect(page.getByRole("radio")).toHaveCount(service.issues.length + 1);
       const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
       await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
-      if (!service.visual) for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
+      for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
       await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");

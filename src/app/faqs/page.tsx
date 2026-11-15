@@ -26,8 +26,9 @@ export default function FaqsPage() {
         crumbs={[{ name: "FAQs", path: "/faqs/" }]}
       />
       <section aria-label="Frequently asked questions" className="pb-[var(--section-y)]">
-        <div className="container-site max-w-[960px]">
+        <div className="container-site"><div className="max-w-[960px]">
           <FaqBrowser categories={faqCategories} />
+          </div>
         </div>
       </section>
       <FinalCta compact title="Still have a question?" lead="Contact us — a real person will get back to you." primaryLabel="Contact Us" primaryHref="/contact/" />

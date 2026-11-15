@@ -6,7 +6,6 @@ import { useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import type { NavItem } from "@/content/site";
 import { services } from "@/content/services";
-import { IconTile } from "@/components/ui/Icon";
 import { useHydrated } from "@/lib/useHydrated";
 
 function isActive(pathname: string, href: string) {
@@ -14,11 +13,8 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-/** Mockup style: plain links, the current page in a mint pill. */
-const linkClass = (active: boolean) =>
-  `relative inline-flex min-h-11 items-center gap-1 rounded-full px-4 py-2 text-[0.9375rem] transition-colors duration-200 hover:bg-accent-50 hover:text-ink ${
-    active ? "bg-accent-100 font-medium text-accent-900" : "text-ink-2"
-  }`;
+/** Plain links; the current page carries a lime index mark (see .nav-link). */
+const linkClass = () => "nav-link";
 
 /**
  * Services dropdown (§14): a disclosure button with aria-expanded/aria-controls.
@@ -104,7 +100,8 @@ function ServicesMenu({ active }: { active: boolean }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onClick}
-        className={linkClass(active)}
+        data-active={active}
+        className={linkClass()}
       >
         Services
         <ChevronDown
@@ -116,7 +113,7 @@ function ServicesMenu({ active }: { active: boolean }) {
       <div
         id={panelId}
         data-open={open}
-        className="nav-panel absolute left-1/2 top-[calc(100%+12px)] w-[min(680px,90vw)] -translate-x-1/2 rounded-[16px] border border-line bg-white p-3 shadow-[0_24px_48px_-24px_rgb(19_33_29/0.35)]"
+        className="nav-panel absolute left-1/2 top-[calc(100%+14px)] w-[min(720px,90vw)] -translate-x-1/2 rounded-[24px] bg-white p-3 shadow-[inset_0_0_0_1px_var(--color-line),0_30px_60px_-30px_rgb(13_46_38/0.45)]"
       >
         <ul className="grid grid-cols-2 gap-1">
           {services.map((service) => {
@@ -128,11 +125,11 @@ function ServicesMenu({ active }: { active: boolean }) {
                   href={href}
                   aria-current={current ? "page" : undefined}
                   onClick={close}
-                  className={`flex items-center gap-3 rounded-[12px] p-2.5 transition-colors hover:bg-accent-50 ${current ? "bg-accent-50" : ""}`}
+                  className={`group flex items-start gap-3 rounded-[16px] px-3.5 py-3 transition-colors hover:bg-accent-50 ${current ? "bg-accent-50" : ""}`}
                 >
-                  <IconTile name={service.icon} size="sm" />
+                  <span aria-hidden="true" className="mt-1 h-3 w-4 shrink-0 rounded-t-[3px] bg-accent-100 transition-colors group-hover:bg-lime" />
                   <span className="flex flex-col">
-                    <span className="text-[0.9375rem] font-medium text-ink">{service.title}</span>
+                    <span className="font-display text-[1rem] font-medium text-ink">{service.title}</span>
                     <span className="text-[0.8125rem] leading-snug text-ink-3">{service.mainlyFor}</span>
                   </span>
                 </Link>
@@ -143,9 +140,9 @@ function ServicesMenu({ active }: { active: boolean }) {
         <Link
           href="/services/"
           onClick={close}
-          className="mt-2 flex min-h-11 items-center justify-between rounded-[12px] bg-canvas-alt px-4 text-sm font-medium text-accent-700 hover:bg-accent-50"
+          className="mt-2 flex min-h-12 items-center justify-between rounded-[16px] bg-canvas-alt px-4 text-[0.9375rem] font-medium text-accent-700 hover:bg-accent-50"
         >
-          View all services
+          View all eight services
           <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
         </Link>
       </div>
@@ -169,7 +166,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
         }
         return (
           <li key={item.href}>
-            <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass(active)}>
+            <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass()}>
               {item.label}
                   </Link>
           </li>

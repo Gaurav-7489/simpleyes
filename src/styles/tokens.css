@@ -1,0 +1,114 @@
+/*
+ * SimplYes design tokens — "The Living Document System" (3D editorial, Nov 2026).
+ *
+ * Palette: the owner-confirmed green palette (12 Nov 2026) on the approved background #F6F9F5 and ink #13211D.
+ * Contrast on the canvas: #005C45 7.6:1 (actions, links), #007A4E 5.1:1 (small text OK), #00905A 3.9:1 —
+ * large display text, icons and decoration only. "Folder" #0D2E26 is the dark band; white on it is 14:1.
+ */
+@theme {
+  --font-display: var(--font-outfit), "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: #f6f9f5;
+  --color-canvas-alt: #edf4ef;
+  --color-surface: #ffffff;
+  --color-ink: #13211d;
+  --color-ink-2: #3d4c47;
+  --color-ink-3: #56655f;
+  --color-line: #d9e5de;
+  --color-line-strong: #b4c8bd;
+
+  --color-accent-50: #eef8f1;
+  --color-accent-100: #e2f4e6;
+  --color-accent-200: #c3e8cf;
+  --color-accent-300: #8ed3a8;
+  --color-accent-500: #00905a;
+  --color-accent-600: #007a4e;
+  --color-accent-700: #005c45;
+  --color-accent-900: #003a2c;
+  --color-folder: #0d2e26;
+  --color-lime: #a6dc5c;
+  --color-green: #00a26c;
+  --color-teal: #00905a;
+
+  --radius-card: 16px;
+  --radius-frame: 20px;
+  --radius-frame-inner: 16px;
+
+  --container-site: 1240px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  /* Layout */
+  --header-h: 80px;
+  --gutter: 18px;
+  --section-y: 72px;
+  --section-y-compact: 40px;
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* Radii — a hierarchy, not one value: paper is crisp, surfaces are soft, controls are round. */
+  --r-paper: 4px;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --dur-1: 160ms;
+  --dur-2: 320ms;
+  --dur-3: 640ms;
+  --dur-4: 1100ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-settle: cubic-bezier(0.16, 1.12, 0.3, 1);
+
+  /* Surfaces */
+  --paper: #ffffff;
+  --paper-shade: #f1f6f2;
+  --vellum: rgb(255 255 255 / 0.62);
+  --vellum-edge: rgb(255 255 255 / 0.9);
+
+  /* Shadows — tinted with the folder green, layered so depth reads as soft daylight. */
+  --shadow-1: 0 1px 2px rgb(13 46 38 / 0.06), 0 2px 6px -2px rgb(13 46 38 / 0.08);
+  --shadow-2: 0 1px 2px rgb(13 46 38 / 0.05), 0 12px 28px -16px rgb(13 46 38 / 0.28);
+  --shadow-3: 0 2px 4px rgb(13 46 38 / 0.04), 0 28px 60px -30px rgb(13 46 38 / 0.42);
+  --shadow-card: var(--shadow-2);
+
+  /* Type scale (fluid, 320 → 1440px). Display weight is light; size carries the hierarchy. */
+  --fs-display: clamp(2.5rem, 1.5rem + 4.3vw, 4.75rem);
+  --fs-page: clamp(2.4rem, 1.6rem + 3.4vw, 4.5rem);
+  --fs-h2: clamp(1.875rem, 1.35rem + 2.1vw, 3.125rem);
+  --fs-h3: clamp(1.2rem, 1.08rem + 0.5vw, 1.45rem);
+  --fs-lead: clamp(1.0625rem, 1rem + 0.32vw, 1.25rem);
+  --fs-body: clamp(1rem, 0.97rem + 0.12vw, 1.0625rem);
+  --fs-small: 0.875rem;
+}
+
+@media (min-width: 810px) {
+  :root {
+    --gutter: 32px;
+    --section-y: 112px;
+    --section-y-compact: 56px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --gutter: 40px;
+    --section-y: 120px;
+  }
+}

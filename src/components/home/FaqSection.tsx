@@ -1,25 +1,27 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { homeFaqs } from "@/content/faqs";
+import { independenceStatement } from "@/content/home";
 import { FaqList } from "@/components/FaqList";
 
-/** §07 section 9 — selected FAQs (same wording as the FAQ page — single source of truth). */
+/** Selected FAQs (same wording as the FAQ page — single source of truth), beside the independence statement. */
 export function FaqSection() {
   return (
-    <section id="faqs" aria-labelledby="faq-title" className="section-home bg-white">
-      <div className="container-site">
-        <h2 id="faq-title" className="type-h2">
-          Common questions
-        </h2>
-        <div className="mt-6">
-          <FaqList items={homeFaqs} />
+    <section id="faqs" aria-labelledby="faq-title" className="section faq-home">
+      <div className="container-site faq-home-grid">
+        <div>
+          <h2 id="faq-title" className="type-h2 max-w-[12ch]">
+            Common questions
+          </h2>
+          <p className="mt-6 max-w-[26rem] border-l-2 border-lime pl-4 text-[0.9875rem] leading-relaxed text-ink-2">
+            {independenceStatement}
+          </p>
+          <p className="mt-6">
+            <Link href="/faqs/" className="link-tertiary">
+              Read all FAQs
+            </Link>
+          </p>
         </div>
-        <div className="mt-5">
-          <Link href="/faqs/" className="link-tertiary">
-            View all FAQs
-            <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
-          </Link>
-        </div>
+        <FaqList items={homeFaqs} />
       </div>
     </section>
   );

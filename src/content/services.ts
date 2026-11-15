@@ -1,7 +1,5 @@
-import type { SceneKind } from "@/components/illustrations/ServiceScene";
+import type { ServiceSceneKey } from "@/components/scene/scenes";
 import type { Faq } from "@/content/faqs";
-
-export type IllustrationKind = "documents" | "form" | "photo" | "appointment" | "process" | "personal";
 
 /** Service-specific outline icon (§16: one icon family, never repeated across services). */
 export type ServiceIcon = "passport" | "oci" | "attestation" | "affidavit" | "visa" | "family" | "student" | "corporate";
@@ -53,16 +51,13 @@ export type Service = {
   sources: OfficialSource[];
   /** Overrides the default prefilled WhatsApp text (still non-sensitive). */
   whatsappMessage?: string;
-  illustration: IllustrationKind;
   /**
    * Problems a visitor can pick on the service page (stable ids, used in /contact/?service=&issue=).
    * Taken from the approved scope (§05); "Something else" is added by the UI, never listed here.
    */
   issues: ServiceIssue[];
-  /** Short, visual page layout (icons over paragraphs). When set, the service page uses it. */
-  visual?: ServiceVisual;
-  /** Original illustration for the service page (used when there is no `visual` photo). */
-  scene?: { kind: SceneKind; label: string };
+  /** The service's 3D document composition (src/components/scene/scenes.ts) and its text alternative. */
+  scene: { kind: ServiceSceneKey; label: string };
 };
 
 /** One selectable problem on a service page. `id` is stable: it is used in URLs and enquiry emails. */
@@ -70,11 +65,6 @@ export type ServiceIssue = { id: string; label: string };
 
 export { OTHER_ISSUE } from "@/lib/enquiry-keys";
 import { OTHER_ISSUE } from "@/lib/enquiry-keys";
-
-/** Short, visual service page: a hero photo and icon tiles instead of paragraphs. */
-export type ServiceVisual = {
-  photo: { src: string; alt: string; width: number; height: number };
-};
 
 const CHECKED = "2026-10-30";
 
@@ -221,16 +211,13 @@ export const services: Service[] = [
     ],
     related: ["family-documentation", "oci-services", "affidavits-declarations"],
     sources: [sources.outsourcing],
-    illustration: "documents",
     issues: [
       { id: "renewal", label: "Passport renewal" },
       { id: "new-passport", label: "New passport application" },
       { id: "lost-damaged", label: "Lost or damaged passport" },
       { id: "correction", label: "Correct personal details" },
     ],
-    visual: {
-      photo: { src: "/images/passport-services.webp", alt: "An Indian passport on a wooden desk", width: 1200, height: 796 },
-    },
+    scene: { kind: "passport", label: "Illustration of an open, blank passport-style booklet with its pages and a closed booklet" },
   },
   {
     slug: "oci-services",
@@ -341,8 +328,7 @@ export const services: Service[] = [
     ],
     related: ["passport-services", "family-documentation"],
     sources: [sources.ociPortal, sources.embassyOci, sources.outsourcing],
-    illustration: "form",
-    scene: { kind: "oci", label: "Illustration of an identity card for OCI documentation" },
+    scene: { kind: "oci", label: "Illustration of a blank card resting on its supporting documents" },
     issues: [
       { id: "new-oci", label: "New OCI application" },
       { id: "reissue", label: "OCI reissue (where applicable)" },
@@ -449,8 +435,7 @@ export const services: Service[] = [
     ],
     related: ["student-services", "affidavits-declarations"],
     sources: [sources.attestationFaq, sources.meaApostille, sources.outsourcing],
-    illustration: "process",
-    scene: { kind: "attestation", label: "Illustration of a certificate with a seal and a stamp" },
+    scene: { kind: "attestation", label: "Illustration of stacked certificate sheets and a rubber stamp" },
     issues: [
       { id: "apostille", label: "Apostille guidance" },
       { id: "educational", label: "Educational document attestation" },
@@ -553,8 +538,7 @@ export const services: Service[] = [
     ],
     related: ["passport-services", "attestation-legalisation"],
     sources: [sources.attestationFaq, sources.outsourcing],
-    illustration: "form",
-    scene: { kind: "affidavit", label: "Illustration of a signed declaration and a pen" },
+    scene: { kind: "affidavit", label: "Illustration of a signed declaration, a folded note and a pen" },
     issues: [
       { id: "name-discrepancy", label: "Name discrepancy declaration" },
       { id: "personal-declaration", label: "Personal declaration or affidavit" },
@@ -659,8 +643,7 @@ export const services: Service[] = [
     ],
     related: ["attestation-legalisation", "family-documentation"],
     sources: [sources.outsourcing],
-    illustration: "appointment",
-    scene: { kind: "visa", label: "Illustration of a document folder and an aeroplane on a dotted route" },
+    scene: { kind: "visa", label: "Illustration of an organised document folder, a checklist and a travel booklet" },
     issues: [
       { id: "requirements", label: "Understand document requirements" },
       { id: "application-preparation", label: "Prepare my application" },
@@ -755,8 +738,7 @@ export const services: Service[] = [
     ],
     related: ["passport-services", "oci-services", "corporate-services"],
     sources: [sources.outsourcing, sources.ociPortal],
-    illustration: "personal",
-    scene: { kind: "family", label: "Illustration of a family of three next to a document" },
+    scene: { kind: "family", label: "Illustration of three matching document sets arranged together" },
     issues: [
       { id: "spouse", label: "Spouse documentation" },
       { id: "children", label: "Children or newborn documentation" },
@@ -850,8 +832,7 @@ export const services: Service[] = [
     ],
     related: ["attestation-legalisation", "passport-services"],
     sources: [sources.attestationFaq, sources.meaApostille],
-    illustration: "documents",
-    scene: { kind: "student", label: "Illustration of a graduation cap and a certificate" },
+    scene: { kind: "student", label: "Illustration of an academic certificate, a rolled diploma and study notes" },
     issues: [
       { id: "certificates", label: "Educational certificates" },
       { id: "degree-attestation", label: "Degree attestation guidance" },
@@ -945,8 +926,7 @@ export const services: Service[] = [
     related: ["family-documentation", "visa-documentation-support"],
     sources: [sources.outsourcing],
     whatsappMessage: "Hello SimplYes, I would like to discuss Corporate Services for our team. Could you explain the next steps?",
-    illustration: "process",
-    scene: { kind: "corporate", label: "Illustration of an office building, a briefcase and a document" },
+    scene: { kind: "corporate", label: "Illustration of three employee document folders under one shared checklist" },
     issues: [
       { id: "employee-documentation", label: "Employee documentation" },
       { id: "relocation", label: "Relocation documentation" },
@@ -955,6 +935,12 @@ export const services: Service[] = [
     ],
   },
 ];
+
+/** "Mainly for …" phrased mid-sentence, keeping proper nouns and acronyms ("Indian", "HR") as written. */
+export function mainlyForPhrase(service: Pick<Service, "mainlyFor">): string {
+  const text = service.mainlyFor;
+  return /^(Indian|HR)\b/.test(text) ? text : text.charAt(0).toLowerCase() + text.slice(1);
+}
 
 export function getService(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);

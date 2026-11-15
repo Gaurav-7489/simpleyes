@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
-import { ArrowRight, Check, MessageCircle } from "lucide-react";
+import { Check, MessageCircle } from "lucide-react";
 import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
 import { OTHER_ISSUE, OTHER_NOTE_KEY } from "@/lib/enquiry-keys";
 import { useHydrated } from "@/lib/useHydrated";
@@ -129,7 +129,6 @@ export function ProblemPicker({ slug, title, issues, corporate = false }: Props)
         <Link href={contactHref} onClick={handOver} data-cta-location="problem-picker" className="btn btn-dark">
           <span className="btn-face">
             Continue to Contact
-            <ArrowRight aria-hidden="true" className="btn-icon size-4" strokeWidth={1.75} />
           </span>
         </Link>
         <a

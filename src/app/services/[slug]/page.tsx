@@ -1,35 +1,16 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import {
-  Ban,
-  ChevronRight,
-  CircleCheck,
-  CircleHelp,
-  CircleX,
-  ClipboardList,
-  ExternalLink,
-  FolderOpen,
-  HandHelping,
-  Info,
-  ListOrdered,
-  Mail,
-  MessageCircle,
-  PackageCheck,
-  Send,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
-import { enquiryHref, getService, relatedServices, services, type Service } from "@/content/services";
+import { ExternalLink, Mail, MessageCircle, Send } from "lucide-react";
+import { enquiryHref, getService, mainlyForPhrase, relatedServices, services, type Service } from "@/content/services";
 import { site } from "@/content/site";
 import { independenceStatement } from "@/content/home";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { whatsappHref } from "@/lib/whatsapp";
-import { IconTile } from "@/components/ui/Icon";
-import { ServiceArt } from "@/components/illustrations/ServiceArt";
-import { ServiceScene } from "@/components/illustrations/ServiceScene";
+import { revealDelay } from "@/lib/style";
+import { DocumentStage } from "@/components/scene/DocumentStage";
+import { Breadcrumb } from "@/components/PageHero";
 import { DisclosureList } from "@/components/DisclosureList";
 import { ProblemPicker } from "@/components/service/ProblemPicker";
 import { FaqList } from "@/components/FaqList";
@@ -69,18 +50,10 @@ function formatDate(iso: string) {
 }
 
 function CheckList({ items, variant = "check" }: { items: readonly string[]; variant?: "check" | "cross" }) {
-  const Icon = variant === "check" ? CircleCheck : CircleX;
   return (
-    <ul className="flex flex-col gap-2.5">
+    <ul className="check-list" data-variant={variant === "cross" ? "cross" : undefined}>
       {items.map((item) => (
-        <li key={item} className="flex items-start gap-3 text-[0.9375rem] leading-snug text-ink-2">
-          <Icon
-            aria-hidden="true"
-            className={`mt-0.5 size-4 shrink-0 ${variant === "check" ? "text-accent-600" : "text-ink-3"}`}
-            strokeWidth={1.75}
-          />
-          {item}
-        </li>
+        <li key={item}>{item}</li>
       ))}
     </ul>
   );
@@ -89,18 +62,18 @@ function CheckList({ items, variant = "check" }: { items: readonly string[]; var
 function OfficialSources({ service, lastChecked }: { service: Service; lastChecked: string | undefined }) {
   if (service.sources.length === 0 || !lastChecked) return null;
   return (
-    <div className="mt-5">
-      <h3 id="official-sources" className="text-sm font-medium text-ink">
+    <div className="mt-10 border-t border-line pt-6">
+      <h3 id="official-sources" className="text-[0.9375rem] font-medium text-ink">
         Official sources — checked {formatDate(lastChecked)}
       </h3>
-      <ul className="mt-1 flex flex-wrap gap-x-4">
+      <ul className="mt-2 flex flex-col gap-1">
         {service.sources.map((source) => (
           <li key={source.href}>
             <a
               href={source.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-8 items-center gap-1.5 text-sm text-accent-700 underline underline-offset-4"
+              className="inline-flex min-h-9 items-center gap-1.5 text-[0.9375rem] text-accent-700 underline decoration-accent-300 underline-offset-4 hover:decoration-current"
             >
               {source.label}
               <ExternalLink aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={1.75} />
@@ -109,7 +82,7 @@ function OfficialSources({ service, lastChecked }: { service: Service; lastCheck
           </li>
         ))}
       </ul>
-      <p className="mt-1 text-xs text-ink-3">
+      <p className="mt-2 max-w-[70ch] text-sm text-ink-3">
         Requirements can change. Where an official instruction differs from anything on this page, the official instruction
         applies.
       </p>
@@ -118,12 +91,13 @@ function OfficialSources({ service, lastChecked }: { service: Service; lastCheck
 }
 
 function Note({ children }: { children: ReactNode }) {
-  return <p className="mt-4 rounded-[12px] bg-canvas-alt px-4 py-3 text-sm leading-relaxed text-ink-2">{children}</p>;
+  return <p className="mt-5 max-w-[68ch] border-l-2 border-lime pl-4 text-[0.9375rem] leading-relaxed text-ink-2">{children}</p>;
 }
 
 /**
- * §08 — the same 14 parts on every service page, in the owners' short-page layout: hero, situation tiles and
- * calls to action stay visible; the long sections are tap-to-open rows (real headings, content in the HTML).
+ * A service page: the same information on all eight pages (breadcrumb, H1, introduction, who it is for,
+ * situations, how we help, preparation, five steps, scope, FAQs, related services, contact options and a
+ * service-specific enquiry), each led by its own 3D document composition.
  */
 export default async function ServicePage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
@@ -133,140 +107,109 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
   const path = `/services/${service.slug}/`;
   const related = relatedServices(service);
   const lastChecked = service.sources.map((s) => s.verifiedOn).sort().at(-1);
-  const ctaLabel = "Get Assistance With This Service";
   const corporate = service.slug === "corporate-services";
   const primaryHref = enquiryHref(service, corporate ? "corporate" : undefined);
-  const rowIcon = (Icon: LucideIcon) => (
-    <span aria-hidden="true" className="icon-tile grid size-9 shrink-0 place-items-center rounded-[11px] text-accent-600">
-      <Icon className="size-4" strokeWidth={1.75} />
-    </span>
-  );
 
   return (
     <>
       <TrackServiceView name={service.title} />
 
-      {/* 1 · Service-specific hero */}
-      <section className="hero-mint relative isolate overflow-hidden pb-[var(--section-y-compact)] pt-[clamp(92px,9vw,120px)]">
-        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12">
-          <div className="flex flex-col items-start">
-            <nav aria-label="Breadcrumb" className="hero-intro mb-4">
-              <ol className="flex flex-wrap items-center gap-1 text-sm text-ink-2">
-                <li>
-                  <Link href="/" className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
-                    Home
-                  </Link>
-                </li>
-                <li className="flex items-center gap-1">
-                  <ChevronRight aria-hidden="true" className="size-3.5 text-ink-3" />
-                  <Link href="/services/" className="inline-flex min-h-8 items-center rounded px-1 underline-offset-4 hover:underline">
-                    Services
-                  </Link>
-                </li>
-                <li className="flex items-center gap-1">
-                  <ChevronRight aria-hidden="true" className="size-3.5 text-ink-3" />
-                  <span aria-current="page" className="px-1 text-ink">
-                    {service.title}
-                  </span>
-                </li>
-              </ol>
-            </nav>
-            <div className="hero-intro flex items-center gap-3">
-              <IconTile name={service.icon} />
-              <h1 className="type-page-title">{service.title}</h1>
-            </div>
-            <p className="type-lead hero-intro mt-3 max-w-[40rem]">{service.outcome}</p>
+      {/* Hero: name, outcome, the service's composition, and the main action — pick your problem. */}
+      <section className="service-hero" data-service={service.scene.kind}>
+        <div className="container-site service-hero-grid">
+          <div className="service-hero-head">
+            <Breadcrumb
+              crumbs={[
+                { name: "Services", path: "/services/" },
+                { name: service.title, path },
+              ]}
+            />
+            <h1 className="type-page-title hero-intro mt-6" style={revealDelay(40)}>
+              {service.title}
+            </h1>
+            <p className="type-lead hero-intro mt-5 max-w-[36rem]" style={revealDelay(100)}>
+              {service.outcome}
+            </p>
+            <p className="hero-intro mt-4 text-[0.9375rem] text-accent-700" style={revealDelay(140)}>
+              Mainly for {mainlyForPhrase(service)}
+            </p>
+          </div>
 
-            {/* The main action: pick the problem, continue to a prefilled contact form. */}
-            <div id="choose-problem" className="mt-6 w-full scroll-mt-[calc(var(--header-h)+16px)]">
-              <h2 className="font-display text-[1.25rem] font-medium text-ink">What do you need help with?</h2>
-              <div className="mt-3">
-                <ProblemPicker slug={service.slug} title={service.title} issues={service.issues} corporate={corporate} />
-              </div>
+          <div className="service-hero-stage">
+            <DocumentStage scene={service.scene.kind} label={service.scene.label} intro tilt ratio="1 / 0.84" />
+          </div>
+
+          <div id="choose-problem" className="service-hero-picker scroll-mt-[calc(var(--header-h)+16px)]">
+            <h2 className="type-card-title">What do you need help with?</h2>
+            <p className="mt-1.5 text-[0.9375rem] text-ink-2">Choose the situation closest to yours. It is filled in for you on the next page.</p>
+            <div className="mt-5">
+              <ProblemPicker slug={service.slug} title={service.title} issues={service.issues} corporate={corporate} />
             </div>
           </div>
-          {service.visual ? (
-            <div className="card-art card-photo hero-intro order-first aspect-[16/9] w-full sm:aspect-[4/3] lg:order-none lg:sticky lg:top-[calc(var(--header-h)+16px)]">
-              <Image
-                src={service.visual.photo.src}
-                alt={service.visual.photo.alt}
-                width={service.visual.photo.width}
-                height={service.visual.photo.height}
-                priority
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="absolute inset-0 size-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="card-art hero-intro order-first aspect-[16/9] w-full sm:aspect-[4/3] lg:order-none lg:sticky lg:top-[calc(var(--header-h)+16px)]">
-              {service.scene ? (
-                <ServiceScene kind={service.scene.kind} uid={service.slug} label={service.scene.label} className="absolute inset-0 h-full w-full" />
-              ) : (
-                <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
-              )}
-            </div>
-          )}
         </div>
       </section>
 
-      {service.visual ? (
-        <>
-          {/* Owner-approved short layout (passport): the picker above, then only FAQs and sources. */}
-          <section aria-labelledby="service-faqs" className="pb-[var(--section-y-compact)]">
-            <div className="container-site">
-              <h2 id="service-faqs" className="type-card-title !text-[1.375rem]">
-                {service.title} FAQs
-              </h2>
-              <div className="mt-4">
-                <FaqList items={service.faqs} />
-              </div>
-              <OfficialSources service={service} lastChecked={lastChecked} />
+      {/* Introduction, in plain language. */}
+      <section aria-labelledby="about-service" className="section-tight">
+        <div className="container-site service-split">
+          <h2 id="about-service" className="type-h2 max-w-[12ch]">
+            About this service
+          </h2>
+          <div>
+            <div className="flex max-w-[66ch] flex-col gap-4 text-[1.0625rem] leading-relaxed text-ink-2">
+              {service.intro.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
             </div>
-          </section>
-        </>
-      ) : (
-        <>
-      {/* 2, 3, 5–11 · Details: tap to open */}
-      <section aria-label={`${service.title} details`} className="pb-[var(--section-y-compact)]">
+            {service.explainer && (
+              <div className="explainer vellum mt-8">
+                <h3 className="type-card-title">{service.explainer.title}</h3>
+                {service.explainer.body.map((p) => (
+                  <p key={p} className="mt-3 max-w-[64ch] text-[0.9875rem] leading-relaxed text-ink-2">
+                    {p}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Common situations, in the customer's own words. */}
+      <section aria-labelledby="situations" className="section-tight">
         <div className="container-site">
-          <p className="mb-3 text-sm text-ink-2">
-            Tap a topic to open it. Document categories on this page are indicative and subject to verification.
-          </p>
+          <h2 id="situations" className="type-h2 max-w-[16ch]">
+            Sound familiar?
+          </h2>
+          <ul className="situations mt-10">
+            {service.situations.map((s) => (
+              <li key={s.situation} className="situation">
+                <p className="situation-quote">{s.situation}</p>
+                <p className="situation-answer">{s.howWeHelp}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Details: tap to open (server-rendered, crawlable, visible without JavaScript). */}
+      <section aria-label={`${service.title} details`} className="section-tight">
+        <div className="container-site service-split">
+          <div>
+            <p className="max-w-[28ch] font-display text-[1.375rem] font-light leading-snug tracking-[-0.015em] text-ink">
+              The details, when you need them.
+            </p>
+            <p className="mt-3 max-w-[32ch] text-[0.9375rem] text-ink-2">
+              Tap a topic to open it. Document categories are indicative and subject to verification.
+            </p>
+          </div>
           <DisclosureList
             items={[
-              {
-                id: "introduction",
-                title: "About this service",
-                icon: rowIcon(Info),
-                content: (
-                  <div className="flex flex-col gap-3 type-body">
-                    {service.intro.map((p) => (
-                      <p key={p}>{p}</p>
-                    ))}
-                    {service.explainer && (
-                      <div className="rounded-[14px] bg-accent-50 p-4 ring-1 ring-accent-100">
-                        <h3 className="font-display text-base font-medium text-ink">{service.explainer.title}</h3>
-                        {service.explainer.body.map((p) => (
-                          <p key={p} className="mt-2">
-                            {p}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ),
-              },
-              { id: "who-its-for", title: "Who this service is for", icon: rowIcon(Users), content: <CheckList items={service.audience} /> },
-              {
-                id: "what-we-help-with",
-                title: `What ${site.name} can help with`,
-                icon: rowIcon(HandHelping),
-                content: <CheckList items={service.helpsWith} />,
-              },
+              { id: "who-its-for", title: "Who this service is for", content: <CheckList items={service.audience} /> },
+              { id: "what-we-help-with", title: `What ${site.name} can help with`, content: <CheckList items={service.helpsWith} /> },
               {
                 id: "document-categories",
                 title: "Possible document categories",
-                icon: rowIcon(FolderOpen),
                 content: (
                   <>
                     <CheckList items={service.documentCategories} />
@@ -278,32 +221,8 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
                 ),
               },
               {
-                id: "service-process",
-                title: "How the process works",
-                icon: rowIcon(ListOrdered),
-                content: (
-                  <ol className="stepper stepper-vertical">
-                    {service.process.map((step, i) => (
-                      <li key={step.title} className="stepper-item">
-                        <span className="stepper-num" aria-hidden="true">
-                          {i + 1}
-                        </span>
-                        <div>
-                          <h3 className="font-display text-base font-medium text-ink">
-                            <span className="sr-only">Step {i + 1}: </span>
-                            {step.title}
-                          </h3>
-                          <p className="type-body mt-0.5">{step.body}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                ),
-              },
-              {
                 id: "what-to-prepare",
                 title: "What to have ready",
-                icon: rowIcon(ClipboardList),
                 content: (
                   <>
                     <CheckList items={service.prepare} />
@@ -311,44 +230,92 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
                   </>
                 ),
               },
-              { id: "whats-included", title: "What is included", icon: rowIcon(PackageCheck), content: <CheckList items={service.included} /> },
-              {
-                id: "outside-scope",
-                title: "What is outside the scope",
-                icon: rowIcon(Ban),
-                content: (
-                  <>
-                    <CheckList items={service.outsideScope} variant="cross" />
-                    <Note>{independenceStatement}</Note>
-                  </>
-                ),
-              },
-              {
-                id: "service-faqs",
-                title: `${service.title} FAQs`,
-                icon: rowIcon(CircleHelp),
-                content: <FaqList items={service.faqs} headingLevel="h3" />,
-              },
             ]}
           />
-
-          <OfficialSources service={service} lastChecked={lastChecked} />
+          <div className="lg:col-start-2">
+            <Link href={primaryHref} data-cta-location="service-mid" className="btn btn-dark">
+              <span className="btn-face">Get Assistance With This Service</span>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* 12 · Related services — compact tiles */}
+      {/* The five steps, phrased for this service. */}
+      <section aria-labelledby="service-process" className="section-tight">
+        <div className="container-site">
+          <h2 id="service-process" className="type-h2 max-w-[16ch]">
+            How the process works
+          </h2>
+          <ol className="process-rail mt-10">
+            {service.process.map((step, i) => (
+              <li key={step.title} className="process-rail-item">
+                <span className="process-rail-num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <h3 className="process-rail-title">
+                  <span className="sr-only">Step {i + 1}: </span>
+                  {step.title}
+                </h3>
+                <p className="process-rail-body">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Scope and limitations. */}
+      <section aria-labelledby="scope" className="section-tight">
+        <div className="container-site">
+          <h2 id="scope" className="type-h2 max-w-[18ch]">
+            Scope and limitations
+          </h2>
+          <div className="scope-grid mt-10">
+            <div className="scope-col paper">
+              <h3 className="type-card-title">What is included</h3>
+              <div className="mt-5">
+                <CheckList items={service.included} />
+              </div>
+            </div>
+            <div className="scope-col scope-col-out">
+              <h3 className="type-card-title">What is outside the scope</h3>
+              <div className="mt-5">
+                <CheckList items={service.outsideScope} variant="cross" />
+              </div>
+              <Note>{independenceStatement}</Note>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs and official sources. */}
+      <section aria-labelledby="service-faqs" className="section-tight">
+        <div className="container-site service-split">
+          <h2 id="service-faqs" className="type-h2 max-w-[12ch]">
+            {service.title} FAQs
+          </h2>
+          <div>
+            <FaqList items={service.faqs} />
+            <OfficialSources service={service} lastChecked={lastChecked} />
+          </div>
+        </div>
+      </section>
+
+      {/* Related services. */}
       {related.length > 0 && (
-        <section aria-labelledby="related-services" className="pb-[var(--section-y-compact)]">
+        <section aria-labelledby="related-services" className="section-tight">
           <div className="container-site">
-            <h2 id="related-services" className="type-card-title !text-[1.375rem]">
+            <h2 id="related-services" className="type-h2">
               Related services
             </h2>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+            <ul className="related-grid mt-8">
               {related.map((other) => (
                 <li key={other.slug}>
-                  <Link href={`/services/${other.slug}/`} className="related-tile">
-                    <IconTile name={other.icon} size="sm" />
-                    <span className="font-medium text-ink">{other.title}</span>
+                  <Link href={`/services/${other.slug}/`} className="related-card">
+                    <span className="related-card-stage" aria-hidden="true">
+                      <DocumentStage scene={other.scene.kind} ratio="1 / 0.7" />
+                    </span>
+                    <span className="related-card-title">{other.title}</span>
+                    <span className="related-card-summary">{other.summary}</span>
                   </Link>
                 </li>
               ))}
@@ -357,65 +324,60 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-        </>
-      )}
-
-      {/* 13 · Enquiry CTA (pre-selected form) */}
+      {/* Service-specific enquiry (pre-selected form). */}
       <FinalCta
         compact
         title={`Get assistance with ${service.title}`}
         lead="Send a short enquiry with this service pre-selected. A real person will get back to you."
         service={service}
-        primaryLabel={ctaLabel}
+        primaryLabel="Get Assistance With This Service"
         primaryHref={primaryHref}
       />
 
-      {/* 14 · Contact options (the owner-approved passport layout omits them) */}
-      {!service.visual && (
-        <section aria-labelledby="contact-options" className="pb-[var(--section-y-compact)]">
-          <div className="container-site flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <h2 id="contact-options" className="text-sm font-medium text-ink">
-              Other ways to reach us
-            </h2>
-            <ul className="flex flex-wrap justify-center gap-2">
-              <li>
-                <Link href={primaryHref} className="contact-pill">
-                  <Send aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                  Enquiry form
-                </Link>
-              </li>
+      {/* Contact options. */}
+      <section aria-labelledby="contact-options" className="pb-[var(--section-y-compact)]">
+        <div className="container-site flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <h2 id="contact-options" className="text-[0.9375rem] font-medium text-ink">
+            Other ways to reach us
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            <li>
+              <Link href={primaryHref} className="contact-pill">
+                <Send aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
+                Enquiry form
+              </Link>
+            </li>
+            <li>
+              <a
+                href={whatsappHref(service)}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cta="whatsapp"
+                data-cta-location="service-contact"
+                data-topic={service.slug}
+                className="contact-pill"
+              >
+                <MessageCircle aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
+                WhatsApp
+                <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+              </a>
+            </li>
+            {site.contact.email && (
               <li>
                 <a
-                  href={whatsappHref(service)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-cta="whatsapp"
+                  href={`mailto:${site.contact.email}?subject=${encodeURIComponent(`Enquiry — ${service.title}`)}`}
+                  data-cta="email"
                   data-cta-location="service-contact"
-                  data-topic={service.slug}
                   className="contact-pill"
                 >
-                  <MessageCircle aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                  WhatsApp
-                  <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+                  <Mail aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
+                  Email
                 </a>
               </li>
-              {site.contact.email && (
-                <li>
-                  <a
-                    href={`mailto:${site.contact.email}?subject=${encodeURIComponent(`Enquiry — ${service.title}`)}`}
-                    data-cta="email"
-                    data-cta-location="service-contact"
-                    className="contact-pill"
-                  >
-                    <Mail aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                    Email
-                  </a>
-                </li>
-              )}
-            </ul>
-          </div>
-        </section>
-      )}
+            )}
+          </ul>
+        </div>
+      </section>
 
       <JsonLd
         data={[

@@ -10,9 +10,12 @@ export function Wordmark({
   className,
   asLink = true,
   idSuffix = "main",
+  tone = "dark",
 }: {
   className?: string;
   asLink?: boolean;
+  /** "light" for use on the dark folder band (footer). */
+  tone?: "dark" | "light";
   /** Keeps the SVG gradient id unique when the mark appears more than once on a page. */
   idSuffix?: string;
 }) {
@@ -29,9 +32,9 @@ export function Wordmark({
         </defs>
         <path d="M2.5 12.5 11 21 29.5 2.5" fill="none" stroke={`url(#${gradientId})`} strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <span className="font-display text-[1.45rem] font-semibold leading-none tracking-[-0.03em] text-ink">
+      <span className={`font-display text-[1.45rem] font-semibold leading-none tracking-[-0.03em] ${tone === "light" ? "text-white" : "text-ink"}`}>
         {site.name}
-        <span className="text-accent-600">.</span>
+        <span className={tone === "light" ? "text-lime" : "text-accent-600"}>.</span>
       </span>
     </span>
   );

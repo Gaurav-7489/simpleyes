@@ -24,7 +24,7 @@ export default function ImpressumPage() {
     <>
       <PageHero badge="Legal" title="Impressum" lead="Legal notice in accordance with § 5 DDG." crumbs={[{ name: "Impressum", path: "/impressum/" }]} />
       <section className="pb-[var(--section-y)]">
-        <div className="container-site max-w-[760px]">
+        <div className="container-site"><div className="max-w-[760px]">
           {(!complete || !legal.reviewed) && (
             <PendingReview>
               The provider details below have not yet been supplied and verified by the business owner. This page must
@@ -84,6 +84,7 @@ export default function ImpressumPage() {
             </p>
           </div>
           </OwnerPolicy>
+        </div>
         </div>
       </section>
     </>

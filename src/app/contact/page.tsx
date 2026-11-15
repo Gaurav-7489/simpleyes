@@ -23,14 +23,13 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        badge="Contact"
         title="Get assistance"
         lead="Pick your service and problem, add a few details, and a real person will get back to you."
         crumbs={[{ name: "Contact Us", path: "/contact/" }]}
       />
 
       <section aria-label="Contact options" className="pb-[var(--section-y)]">
-        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+        <div className="container-site grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
           <EnquiryForm
             services={services.map((s) => ({ slug: s.slug, title: s.title, issues: s.issues }))}
             endpoint={site.enquiryEndpoint}
@@ -39,13 +38,13 @@ export default function ContactPage() {
             email={email}
           />
 
-          <div className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-h)+24px)]">
-            <div className="card flex flex-col gap-3">
-              <h2 className="type-card-title flex items-center gap-2">
+          <aside aria-label="Other ways to reach us" className="contact-aside lg:sticky lg:top-[calc(var(--header-h)+24px)]">
+            <div className="contact-aside-block">
+              <h2 className="type-card-title flex items-center gap-2.5">
                 <MessageCircle aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
                 WhatsApp
               </h2>
-              <p className="type-body">Prefer to chat? Message us with the service you need.</p>
+              <p className="mt-2 text-[0.9375rem] text-ink-2">Prefer to chat? Message us with the service you need.</p>
               <a
                 href={whatsappHref()}
                 target="_blank"
@@ -53,59 +52,64 @@ export default function ContactPage() {
                 data-cta="whatsapp"
                 data-cta-location="contact-aside"
                 data-topic="general"
-                className="font-display text-xl text-ink underline decoration-line underline-offset-[6px] hover:decoration-accent-700"
+                className="mt-3 inline-flex min-h-11 items-center font-display text-[1.375rem] text-ink underline decoration-line-strong decoration-1 underline-offset-[7px] hover:decoration-accent-700"
               >
                 {site.whatsapp.display}
                 <span className="sr-only"> (opens WhatsApp in a new tab)</span>
               </a>
-              {(hours || responseTime) && <p className="text-sm text-ink-2">{[hours, responseTime].filter(Boolean).join(" · ")}</p>}
+              {(hours || responseTime) && <p className="mt-1 text-sm text-ink-2">{[hours, responseTime].filter(Boolean).join(". ")}</p>}
             </div>
 
             {email && (
-              <div className="card flex flex-col gap-3">
-                <h2 className="type-card-title flex items-center gap-2">
+              <div className="contact-aside-block">
+                <h2 className="type-card-title flex items-center gap-2.5">
                   <Mail aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
                   Email
                 </h2>
-                <a href={`mailto:${email}`} data-cta="email" data-cta-location="contact-aside" className="text-[1.0625rem] text-accent-700 underline underline-offset-4">
+                <a
+                  href={`mailto:${email}`}
+                  data-cta="email"
+                  data-cta-location="contact-aside"
+                  className="mt-2 inline-flex min-h-11 items-center break-all text-[1.0625rem] text-accent-700 underline decoration-accent-300 underline-offset-4 hover:decoration-current"
+                >
                   {email}
                 </a>
               </div>
             )}
 
-            <div className="card flex flex-col gap-3">
-              <h2 className="type-card-title flex items-center gap-2">
+            <div className="contact-aside-block">
+              <h2 className="type-card-title flex items-center gap-2.5">
                 <Building2 aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
                 Corporate enquiry
               </h2>
-              <p className="type-body">
-                For employers, HR and relocation teams. The corporate option pre-selects Corporate Services and asks for your
-                company name and approximate team size.
+              <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+                For employers, HR and relocation teams. Pre-selects Corporate Services and asks for your company name and
+                approximate team size.
               </p>
-              <Link href={enquiryHref(getService("corporate-services"), "corporate")} className="link-tertiary">
+              <Link href={enquiryHref(getService("corporate-services"), "corporate")} className="link-tertiary mt-2">
                 Start a corporate enquiry
               </Link>
             </div>
 
-            <div className="card card-mint flex flex-col gap-3">
-              <h2 className="type-card-title flex items-center gap-2">
+            <div className="contact-aside-block">
+              <h2 className="type-card-title flex items-center gap-2.5">
                 <LockKeyhole aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
                 How we handle your details
               </h2>
-              <p className="type-body">
+              <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
                 We use the details you send only to respond to your enquiry, as explained in our{" "}
-                <Link href="/privacy/" className="text-accent-700 underline underline-offset-4">
+                <Link href="/privacy/" className="link-tertiary !min-h-0 !inline">
                   Privacy Policy
                 </Link>
                 . Please don&apos;t send identity documents or passport numbers through the form.
               </p>
             </div>
 
-            <p className="flex items-start gap-2 px-1 text-sm text-ink-2">
+            <p className="flex items-start gap-2 pt-5 text-sm text-ink-2">
               <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
               {site.coverageStatement}
             </p>
-          </div>
+          </aside>
         </div>
       </section>
 

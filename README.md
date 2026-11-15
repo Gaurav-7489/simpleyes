@@ -14,14 +14,14 @@ Everything the owners still have to supply or approve is tracked in
 
 - **Next.js (App Router)** + **React** + **TypeScript (strict)**, exported as a fully **static site** (`out/`)
 - **Tailwind CSS v4** with CSS-variable design tokens (`src/app/globals.css`)
-- **lucide-react** icons; original SVG/CSS illustrations (no stock or third-party imagery)
+- **lucide-react** icons; the **Living Document System**: original CSS 3D document scenes (no WebGL, no images, no stock or third-party imagery). See [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)
 - Fonts: Outfit (headings, buttons) + DM Sans (body) via `next/font/google`, self-hosted at build time (§16)
 - **Playwright** + **axe-core** for e2e, responsive, accessibility and SEO tests; **Lighthouse** in CI
 
 Client JavaScript is limited to navigation (Services dropdown, mobile menu), the FAQ accordion/filter, the
-enquiry form, consent-gated analytics, one shared scroll-reveal observer and a small motion layer (scroll
-progress, subtle spring hover on buttons/cards — `src/components/MotionLayer.tsx` — and gentle drag physics
-for the hero illustration chips on desktop, `src/components/home/HeroPhysics.tsx`). Native scrolling only
+enquiry form, consent-gated analytics, one shared scroll-reveal observer, the service-index and How It Works
+scene switchers, and a small motion layer (scroll progress and a gentle pointer tilt on 3D stages,
+`src/components/MotionLayer.tsx`). Native scrolling only
 (no scroll-jacking, §16); all motion is transform-only and disabled for reduced motion / touch. All content,
 FAQs and structured data are server-rendered HTML.
 
@@ -65,13 +65,13 @@ src/
   app/                 routes (home, services, services/[slug], how-it-works, about, faqs, pricing, contact,
                        thank-you, privacy, terms, disclaimer, impressum) + sitemap, robots, manifest, llms.txt
   components/
-    home/              homepage sections in §07 order (Hero, Services, WhySimplyes, FaqSection) — FinalCta is shared
+    home/              homepage sections (Hero, Services + ServiceIndex, WhySimplyes, SimpleProcess, FaqSection) — FinalCta is shared
+    scene/             Living Document System: DocumentStage, objects (sheet, booklet, card…), compositions (scenes.ts)
     layout/            Header, NavLinks (Services dropdown), MobileMenu, Footer, FloatingWhatsApp, BackToTop
     contact/           EnquiryForm, ThankYouTracker
     analytics/         Analytics (consent banner + GA4), TrackServiceView
-    service/           ServiceSection (titled list card for service pages)
-    illustrations/     original SVG art
-    ui/                Button, Badge, Icon, SectionHeading, Wordmark, JsonLd
+    service/           ProblemPicker (service + problem carried to Contact)
+    ui/                Button, Wordmark, JsonLd
   content/             ALL copy and business data (site.ts, services.ts, faqs.ts, home.ts)
   lib/                 seo.ts (metadata + JSON-LD), analytics.ts, whatsapp.ts, style.ts
 tests/e2e/             Playwright suites

@@ -12,12 +12,12 @@ export function Header() {
       {/* Desktop */}
       <div className="hidden h-[var(--header-h)] items-center lg:flex">
         <div className="container-site">
-          <div className="header-bar flex h-16 items-center justify-between gap-6 pl-6 pr-2.5">
+          <div className="header-bar header-bar-glass flex h-16 items-center justify-between gap-6 pl-6 pr-2.5">
             <Wordmark idSuffix="desktop" />
             <nav aria-label="Primary">
               <NavLinks items={primaryNav} />
             </nav>
-            <ButtonLink href={getAssistance.href} icon="up-right" size="sm" location="header">
+            <ButtonLink href={getAssistance.href} size="sm" location="header">
               {getAssistance.label}
             </ButtonLink>
           </div>

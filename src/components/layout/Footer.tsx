@@ -10,106 +10,109 @@ import { BackToTop } from "./BackToTop";
 import { ConsentSettingsButton } from "@/components/analytics/Analytics";
 
 const linkClass =
-  "inline-flex min-h-9 items-center text-sm leading-snug text-ink-2 lg:text-[0.9375rem] underline-offset-4 transition-colors hover:text-ink hover:underline";
+  "inline-flex min-h-9 items-center text-[0.9375rem] leading-snug text-white/75 underline-offset-4 transition-colors hover:text-white hover:underline";
 
 function Column({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h2 className="font-display text-sm font-semibold uppercase tracking-[0.06em] text-ink">{title}</h2>
-      <ul className="mt-2 flex flex-col">{children}</ul>
+      <h2 className="font-display text-[0.9375rem] font-medium text-lime">{title}</h2>
+      <ul className="mt-3 flex flex-col">{children}</ul>
     </div>
   );
 }
 
 /**
- * §07 section 11 footer: Company · Services · Information · Contact, independence disclaimer, copyright.
- * Phones use two columns (stacked columns per §07) so the footer stays short; every link stays visible.
+ * Footer on the dark folder band: Company · Services · Information · Contact, the independence statement and
+ * copyright. Phones use two columns so the footer stays short; every link stays visible.
  */
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-line bg-white" aria-label="Site footer">
-      <div className="container-site py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] lg:py-16">
-        <div className="grid grid-cols-2 gap-x-5 gap-y-7 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
-          <div className="col-span-2 sm:max-w-sm lg:col-span-1">
-            <Wordmark idSuffix="footer" />
-            <p className="mt-3 text-sm leading-relaxed text-ink-2">
-              Independent documentation assistance for Indians in Germany. {site.coverageStatement}
+    <footer className="folder-band" aria-label="Site footer">
+      <div className="container-site pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-14 lg:pt-20">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_2fr] lg:gap-16">
+          <div className="max-w-sm">
+            <Wordmark idSuffix="footer" tone="light" />
+            <p className="mt-5 font-display text-[1.375rem] font-light leading-snug tracking-[-0.015em] text-white">
+              Independent documentation assistance for Indians in Germany.
             </p>
+            <p className="mt-3 text-[0.9375rem] text-white/70">{site.coverageStatement}</p>
           </div>
 
-          <nav aria-label="Footer" className="contents">
-            <Column title="Company">
-              {companyNav.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className={linkClass}>
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </Column>
-            <Column title="Services">
-              {services.map((service) => (
-                <li key={service.slug}>
-                  <Link href={`/services/${service.slug}/`} className={linkClass}>
-                    {service.title}
-                  </Link>
-                </li>
-              ))}
-            </Column>
-            <Column title="Information">
-              {informationNav.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className={linkClass}>
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-              {site.gaMeasurementId && (
+          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-4">
+            <nav aria-label="Footer" className="contents">
+              <Column title="Company">
+                {companyNav.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className={linkClass}>
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </Column>
+              <Column title="Services">
+                {services.map((service) => (
+                  <li key={service.slug}>
+                    <Link href={`/services/${service.slug}/`} className={linkClass}>
+                      {service.title}
+                    </Link>
+                  </li>
+                ))}
+              </Column>
+              <Column title="Information">
+                {informationNav.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className={linkClass}>
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+                {site.gaMeasurementId && (
+                  <li>
+                    <ConsentSettingsButton className={linkClass} />
+                  </li>
+                )}
+              </Column>
+            </nav>
+
+            <Column title="Contact">
+              {site.contact.email && (
                 <li>
-                  <ConsentSettingsButton className={linkClass} />
+                  <a href={`mailto:${site.contact.email}`} data-cta="email" data-cta-location="footer" className={`${linkClass} gap-2 break-all`}>
+                    <Mail aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
+                    {site.contact.email}
+                  </a>
                 </li>
               )}
-            </Column>
-          </nav>
-
-          <Column title="Contact">
-            {site.contact.email && (
               <li>
-                <a href={`mailto:${site.contact.email}`} data-cta="email" data-cta-location="footer" className={`${linkClass} gap-2`}>
-                  <Mail aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
-                  {site.contact.email}
+                <a
+                  href={whatsappHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cta="whatsapp"
+                  data-cta-location="footer"
+                  data-topic="general"
+                  className={`${linkClass} gap-2`}
+                >
+                  <MessageCircle aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
+                  WhatsApp {site.whatsapp.display}
+                  <span className="sr-only"> (opens WhatsApp in a new tab)</span>
                 </a>
               </li>
-            )}
-            <li>
-              <a
-                href={whatsappHref()}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cta="whatsapp"
-                data-cta-location="footer"
-                data-topic="general"
-                className={`${linkClass} gap-2`}
-              >
-                <MessageCircle aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
-                WhatsApp {site.whatsapp.display}
-                <span className="sr-only"> (opens WhatsApp in a new tab)</span>
-              </a>
-            </li>
-            <li>
-              <Link href="/contact/" className={linkClass}>
-                Enquiry form
-              </Link>
-            </li>
-          </Column>
+              <li>
+                <Link href="/contact/" className={linkClass}>
+                  Enquiry form
+                </Link>
+              </li>
+            </Column>
+          </div>
         </div>
 
-        <p className="mt-8 rounded-[14px] border border-accent-100 bg-accent-50 px-5 py-4 text-sm leading-relaxed text-ink-2">
-          <strong className="font-medium text-ink">Independent service:</strong> {independenceStatement}
+        <p className="mt-12 max-w-[78ch] border-l-2 border-lime pl-4 text-[0.9375rem] leading-relaxed text-white/80">
+          <strong className="font-medium text-white">Independent service.</strong> {independenceStatement}
         </p>
 
-        <div className="mt-6 flex items-center justify-between gap-4 text-sm text-ink-2">
+        <div className="mt-10 flex items-center justify-between gap-4 border-t border-white/12 pt-6 text-sm text-white/70">
           <p>
             © {year} {site.name}. {site.tagline}
           </p>

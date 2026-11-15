@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CircleCheck, CircleX, MessagesSquare } from "lucide-react";
 import { doesDoesNot, journeySteps } from "@/content/home";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
+import { JourneyNarrative } from "@/components/JourneyNarrative";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
@@ -16,93 +16,79 @@ export const metadata: Metadata = pageMetadata({
   path: "/how-it-works/",
 });
 
-/** §09 — five steps, the role boundary, does / does not, and how to get started — in the owners' short layout. */
+/** Five steps, the role boundary, does / does not, and what to expect. */
 export default function HowItWorksPage() {
   return (
     <>
       <PageHero
-        badge="How it works"
         title="How It Works"
-        lead="A simple and guided process. Official processing, appointments and final decisions always remain with the relevant authorities."
+        lead="A simple, guided process in five steps. Official processing, appointments and final decisions always remain with the relevant authorities."
         crumbs={[{ name: "How It Works", path: "/how-it-works/" }]}
       />
 
-      <section aria-labelledby="steps-title" className="pb-[var(--section-y-compact)]">
-        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
-          <div>
-            <h2 id="steps-title" className="sr-only">
-              The five steps
-            </h2>
-            <ol className="step-list">
-              {journeySteps.map((step, i) => (
-                <li key={step.title} className="step-row">
-                  <span className="stepper-num" aria-hidden="true">
-                    {i + 1}
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="font-display text-[1.0625rem] font-medium leading-snug text-ink">
-                      <span className="sr-only">Step {i + 1}: </span>
-                      {step.title}
-                    </h3>
-                    <p className="mt-0.5 text-sm leading-snug text-ink-2">{step.body}</p>
-                  </div>
-                  <span className="step-who">{step.who}</span>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-3 rounded-[12px] border border-dashed border-line px-4 py-3 text-sm text-ink-2">
-              <span className="font-medium text-accent-900">Steps 1–5: documentation assistance by {site.name}.</span>{" "}
-              Official processing, appointments and final decisions: the relevant authority.
-            </p>
-          </div>
+      <section aria-labelledby="steps-title" className="pb-[var(--section-y)]">
+        <div className="container-site">
+          <h2 id="steps-title" className="sr-only">
+            The five steps
+          </h2>
+          <JourneyNarrative steps={journeySteps} />
+          <p className="boundary mt-12">
+            <span className="boundary-ours">Steps 1–5: documentation assistance by {site.name}.</span>
+            <span className="boundary-theirs">Official processing, appointments and final decisions: the relevant authority.</span>
+          </p>
+        </div>
+      </section>
 
-          <div className="grid gap-3">
-            <div className="card !p-5">
-              <h2 className="type-card-title">What {site.name} does</h2>
-              <ul className="mt-3 flex flex-col gap-2">
+      <section aria-labelledby="ledger-title" className="section-tight bg-canvas-alt">
+        <div className="container-site">
+          <h2 id="ledger-title" className="type-h2 max-w-[18ch]">
+            Where our help starts and stops
+          </h2>
+          <div className="scope-grid mt-10">
+            <div className="scope-col paper">
+              <h3 className="type-card-title">What {site.name} does</h3>
+              <ul className="check-list mt-5">
                 {doesDoesNot.does.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-[0.9375rem] leading-snug text-ink-2">
-                    <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-600" strokeWidth={1.75} />
-                    {item}
-                  </li>
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
-            <div className="card !p-5">
-              <h2 className="type-card-title">What {site.name} does not do</h2>
-              <ul className="mt-3 flex flex-col gap-2">
+            <div className="scope-col scope-col-out">
+              <h3 className="type-card-title">What {site.name} does not do</h3>
+              <ul className="check-list mt-5" data-variant="cross">
                 {doesDoesNot.doesNot.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-[0.9375rem] leading-snug text-ink-2">
-                    <CircleX aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-ink-3" strokeWidth={1.75} />
-                    {item}
-                  </li>
+                  <li key={item}>{item}</li>
                 ))}
-              </ul>
-            </div>
-            <div className="card card-mint !p-5">
-              <h2 className="type-card-title flex items-center gap-2">
-                <MessagesSquare aria-hidden="true" className="size-5 text-accent-700" strokeWidth={1.75} />
-                What to expect
-              </h2>
-              <ul className="mt-3 flex flex-col gap-2 text-[0.9375rem] leading-snug text-ink-2">
-                <li>
-                  <strong className="font-medium text-ink">Transparency:</strong> clear scope; any service fee explained before
-                  paid assistance begins.
-                </li>
-                <li>
-                  <strong className="font-medium text-ink">Communication:</strong> start by form, WhatsApp or email; how we
-                  stay in touch is agreed with you.
-                </li>
-                <li>
-                  <strong className="font-medium text-ink">Getting started:</strong>{" "}
-                  <Link href="/contact/" className="text-accent-700 underline underline-offset-4">
-                    send an enquiry
-                  </Link>{" "}
-                  — no documents needed at this stage.
-                </li>
               </ul>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="expect-title" className="section-tight">
+        <div className="container-site service-split">
+          <h2 id="expect-title" className="type-h2 max-w-[12ch]">
+            What to expect
+          </h2>
+          <dl className="expect-list">
+            <div>
+              <dt>Transparency</dt>
+              <dd>Clear scope, and any service fee explained before paid assistance begins.</dd>
+            </div>
+            <div>
+              <dt>Communication</dt>
+              <dd>Start by form, WhatsApp or email. How we stay in touch is agreed with you.</dd>
+            </div>
+            <div>
+              <dt>Getting started</dt>
+              <dd>
+                <Link href="/contact/" className="link-tertiary">
+                  Send an enquiry
+                </Link>{" "}
+                — no documents are needed at this stage.
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
 

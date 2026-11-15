@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ServiceFee } from "@/content/home";
 import { enquiryHref, getService } from "@/content/services";
-import { IconTile } from "@/components/ui/Icon";
 
 const euro = new Intl.NumberFormat("en-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
 
@@ -27,7 +26,7 @@ export function FeeTable({ fees }: { fees: ServiceFee[] }) {
   if (rows.length === 0) return null;
 
   return (
-    <section aria-labelledby="service-fees" className="section">
+    <section aria-labelledby="service-fees" className="section-tight">
       <div className="container-site">
         <h2 id="service-fees" className="type-h2 text-center">
           SimplYes service fees
@@ -38,7 +37,6 @@ export function FeeTable({ fees }: { fees: ServiceFee[] }) {
         <ul className="mx-auto mt-10 grid max-w-[960px] gap-3">
           {rows.map(({ entry, service }) => (
             <li key={service.slug} className="card flex flex-wrap items-center gap-4">
-              <IconTile name={service.icon} size="sm" />
               <div className="min-w-0 flex-1">
                 <Link href={`/services/${service.slug}/`} className="type-card-title underline-offset-4 hover:underline">
                   {service.title}

@@ -1,38 +1,37 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, FileSearch, MousePointerClick, Send } from "lucide-react";
+import { journeySteps } from "@/content/home";
 
-const steps = [
-  { icon: MousePointerClick, title: "Choose", body: "Pick your service and problem." },
-  { icon: Send, title: "Send", body: "Add a few details and send your enquiry." },
-  { icon: FileSearch, title: "Understand", body: "We explain what applies to you." },
-  { icon: ClipboardCheck, title: "Prepare", body: "We help you get your documents ready." },
-];
-
-/** §07 section 5 — the process in four steps. Official decisions always stay with the authorities. */
+/** Homepage preview of the five-step journey; the full version lives on /how-it-works/. */
 export function SimpleProcess() {
   return (
-    <section aria-labelledby="process-title" className="section-home">
+    <section aria-labelledby="process-title" className="section process-preview">
       <div className="container-site">
-        <h2 id="process-title" className="type-h2">
-          Simple process
-        </h2>
-        <ol className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-          {steps.map(({ icon: StepIcon, title, body }, i) => (
-            <li key={title} className="process-tile">
-              <span className="process-num" aria-hidden="true">
+        <div className="section-head">
+          <h2 id="process-title" className="type-h2 max-w-[18ch]">
+            Five clear steps, from first question to next step
+          </h2>
+          <p className="type-lead max-w-[34rem]">
+            No documents needed to start. Official processing, appointments and decisions always stay with the
+            authorities.
+          </p>
+        </div>
+        <ol className="process-rail">
+          {journeySteps.map((step, i) => (
+            <li key={step.title} className="process-rail-item">
+              <span className="process-rail-num" aria-hidden="true">
                 {i + 1}
               </span>
-              <StepIcon aria-hidden="true" className="size-7 text-accent-600" strokeWidth={1.6} />
-              <h3 className="font-display text-[1.0625rem] font-medium text-ink">{title}</h3>
-              <p className="text-sm leading-snug text-ink-2">{body}</p>
+              <h3 className="process-rail-title">
+                <span className="sr-only">Step {i + 1}: </span>
+                {step.title}
+              </h3>
+              <p className="process-rail-body">{step.body}</p>
             </li>
           ))}
         </ol>
-        <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-2">
-          Official processing and decisions always stay with the authorities.
+        <p className="mt-10">
           <Link href="/how-it-works/" className="link-tertiary">
-            See how it works
-            <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
+            See how it works in detail
           </Link>
         </p>
       </div>
