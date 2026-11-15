@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { ArrowRight, Check, MessageCircle } from "lucide-react";
 import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
-import { OTHER_ISSUE, OTHER_NOTE_KEY } from "@/lib/enquiry-keys";
+import { OTHER_ISSUE, OTHER_NOTE_KEY, readStored, SELECTION_PREFIX, writeStored } from "@/lib/enquiry-keys";
 import { useHydrated } from "@/lib/useHydrated";
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 
 const OTHER = OTHER_ISSUE;
 const NOTE_MAX = 600;
-const selectionKey = (slug: string) => `simplyes-selection-${slug}`;
+const selectionKey = (slug: string) => `${SELECTION_PREFIX}${slug}`;
 
 /**
  * "What do you need help with?" — the visitor picks one approved problem (or "Something else") and continues to
@@ -31,26 +31,16 @@ export function ProblemPicker({ slug, title, issues, corporate = false }: Props)
   const [note, setNote] = useState("");
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(window.sessionStorage.getItem(selectionKey(slug)) ?? "null") as { issue?: string; note?: string } | null;
-      const valid = saved?.issue === OTHER || issues.some((i) => i.id === saved?.issue);
-      if (saved && valid) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- restore after hydration (sessionStorage is client-only)
-        setSelected(saved.issue ?? "");
-        setNote(typeof saved.note === "string" ? saved.note.slice(0, NOTE_MAX) : "");
-      }
-    } catch {
-      /* storage unavailable */
+    const saved = readStored<{ issue?: string; note?: string }>(selectionKey(slug));
+    const valid = saved?.issue === OTHER || issues.some((i) => i.id === saved?.issue);
+    if (saved && valid) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restore after hydration (sessionStorage is client-only)
+      setSelected(saved.issue ?? "");
+      setNote(typeof saved.note === "string" ? saved.note.slice(0, NOTE_MAX) : "");
     }
   }, [slug, issues]);
 
-  const remember = (issue: string, text: string) => {
-    try {
-      window.sessionStorage.setItem(selectionKey(slug), JSON.stringify({ issue, note: text }));
-    } catch {
-      /* storage unavailable */
-    }
-  };
+  const remember = (issue: string, text: string) => writeStored(selectionKey(slug), { issue, note: text });
 
   const choose = (issue: string) => {
     setSelected(issue);
@@ -66,12 +56,14 @@ export function ProblemPicker({ slug, title, issues, corporate = false }: Props)
 
   const handOver = () => {
     if (selected !== OTHER) return;
-    try {
-      const text = note.trim();
-      if (text) window.sessionStorage.setItem(OTHER_NOTE_KEY, JSON.stringify({ service: slug, note: text }));
-      else window.sessionStorage.removeItem(OTHER_NOTE_KEY);
-    } catch {
-      /* storage unavailable: the visitor can type it on the form */
+    const text = note.trim();
+    if (text) writeStored(OTHER_NOTE_KEY, { service: slug, note: text });
+    else {
+      try {
+        window.sessionStorage.removeItem(OTHER_NOTE_KEY);
+      } catch {
+        /* storage unavailable: the visitor can type it on the form */
+      }
     }
   };
 
