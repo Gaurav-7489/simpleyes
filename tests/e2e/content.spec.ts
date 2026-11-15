@@ -79,11 +79,12 @@ test.describe("content rules", () => {
       "hero-title",
       "services-title",
       "why-title",
+      "process-title",
       "faq-title",
       "final-cta-title",
     ]);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
-    await expect(page.locator("#services .service-index > li")).toHaveCount(8);
+    await expect(page.locator("#services .service-tiles > li")).toHaveCount(8);
     await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
   });
@@ -93,11 +94,11 @@ test.describe("content rules", () => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
       const headings = service.visual
-        ? ["Which one is you?", `${service.title} FAQs`]
+        ? ["What do you need help with?", `${service.title} FAQs`]
         : [
+        "What do you need help with?",
         "About this service",
         "Who this service is for",
-        "Common situations",
         "What SimplYes can help with",
         "Possible document categories",
         "How the process works",
@@ -112,8 +113,10 @@ test.describe("content rules", () => {
         await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
       }
       if (!service.visual) await expect(page.getByText("subject to verification")).toBeVisible();
+      // The main action: the problem picker continues to a prefilled form; the closing band links there too.
+      await expect(page.getByRole("link", { name: "Continue to Contact" })).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
+      await expect(page.getByRole("radio")).toHaveCount(service.issues.length + 1);
       const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
-      expect(await ctas.count()).toBeGreaterThanOrEqual(3);
       await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
       if (!service.visual) for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
       await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
@@ -390,7 +393,7 @@ test.describe("enquiry form (§13)", () => {
     await form.getByLabel(/Full name/).fill("Test Person");
     await form.getByLabel(/Email address/).fill("test@example.com");
     await form.getByLabel(/Service category/).selectOption("passport-services");
-    await form.getByLabel(/Message/).fill("I would like help preparing my passport renewal.");
+    await form.getByLabel(/Describe your problem/).fill("I would like help preparing my passport renewal.");
     await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
     await form.getByRole("button", { name: "Send Enquiry" }).click();
     await expect(form.getByRole("alert")).toContainText("could not be sent");
@@ -408,12 +411,12 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
   test.skip(!endpoint, "needs a build with NEXT_PUBLIC_ENQUIRY_ENDPOINT");
 
   async function fillAndSend(page: import("@playwright/test").Page) {
-    await page.goto("/contact/?service=oci-services");
+    await page.goto("/contact/?service=oci-services&issue=new-oci");
     const form = page.locator("form#enquiry");
     await form.getByLabel(/Full name/).fill("Test Person");
     await form.getByLabel(/Email address/).fill("test@example.com");
     await form.getByLabel(/City in Germany/).fill("Frankfurt");
-    await form.getByLabel(/Message/).fill("I would like help preparing an OCI application for my family.");
+    await form.getByLabel(/Describe your problem/).fill("I would like help preparing an OCI application for my family.");
     await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
     await form.getByRole("button", { name: "Send Enquiry" }).click();
     return form;
@@ -432,8 +435,9 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     expect(headers["accept"]).toContain("application/json");
     expect(headers["content-type"]).toContain("application/json");
     expect(body[honeypot]).toBe("");
-    expect(body.subject).toBe("New enquiry — OCI Services — Frankfurt");
+    expect(body.subject).toBe("New SimplYes Enquiry — OCI Services — New OCI application");
     expect(body.service).toBe("OCI Services");
+    expect(body.issue).toBe("New OCI application");
     expect(body.email).toBe("test@example.com");
     expect(Object.keys(body)).not.toContain("passport_number");
   });
@@ -467,7 +471,7 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     });
     const form = await fillAndSend(page);
     await expect(form.getByRole("alert")).toContainText("could not be sent");
-    await expect(form.getByLabel(/Message/)).toHaveValue("I would like help preparing an OCI application for my family.");
+    await expect(form.getByLabel(/Describe your problem/)).toHaveValue("I would like help preparing an OCI application for my family.");
     await form.getByRole("button", { name: "Send Enquiry" }).click();
     await expect(page).toHaveURL(/\/thank-you\/$/);
     expect(requests).toBe(2);
@@ -535,5 +539,109 @@ test.describe("analytics (§18)", () => {
     await page.waitForLoadState("networkidle");
     expect(requests.filter((u) => /googletagmanager|google-analytics/.test(u))).toEqual([]);
     await expect(page.getByRole("dialog", { name: "Analytics cookies" })).toHaveCount(0);
+  });
+});
+
+test.describe("smart contact flow: service page → prefilled form", () => {
+  test("A: a chosen problem is carried to the form and shown as the selection", async ({ page }) => {
+    await page.goto("/services/passport-services/");
+    const option = page.getByRole("radio", { name: "Passport renewal" });
+    await option.check({ force: true });
+    await expect(page.locator(".problem-option[data-checked=true]")).toHaveText(/Passport renewal/);
+    await page.getByRole("link", { name: "Continue to Contact" }).click();
+    await expect(page).toHaveURL(/\/contact\/\?service=passport-services&issue=renewal/);
+    const form = page.locator("form#enquiry");
+    await expect(form.getByLabel(/Service category/)).toHaveValue("passport-services");
+    await expect(form.getByLabel(/Selected problem/)).toHaveValue("renewal");
+    await expect(form.locator(".selection-summary")).toContainText("Passport Services — Passport renewal");
+    // The description is the visitor's own: never prefilled with boilerplate.
+    await expect(form.getByLabel(/Describe your problem/)).toHaveValue("");
+  });
+
+  test("B: 'Something else' carries the note through sessionStorage, not the URL", async ({ page }) => {
+    await page.goto("/services/family-documentation/");
+    await page.getByRole("radio", { name: "Something else" }).check({ force: true });
+    await page.getByLabel(/Describe it briefly/).fill("My mother is visiting and needs help with paperwork.");
+    await page.getByRole("link", { name: "Continue to Contact" }).click();
+    await expect(page).toHaveURL(/service=family-documentation&issue=other/);
+    expect(page.url()).not.toContain("mother");
+    const form = page.locator("form#enquiry");
+    await expect(form.getByLabel(/Selected problem/)).toHaveValue("other");
+    await expect(form.getByLabel(/Describe your problem/)).toHaveValue("My mother is visiting and needs help with paperwork.");
+  });
+
+  test("C: opening Contact directly needs no previous selection", async ({ page }) => {
+    await page.goto("/contact/");
+    const form = page.locator("form#enquiry");
+    await expect(form.getByLabel(/Service category/)).toHaveValue("");
+    await expect(form.getByLabel(/Selected problem/)).toBeDisabled();
+    await form.getByLabel(/Service category/).selectOption("student-services");
+    await expect(form.getByLabel(/Selected problem/)).toBeEnabled();
+    await form.getByLabel(/Selected problem/).selectOption("degree-attestation");
+    await expect(form.locator(".selection-summary")).toContainText("Student Services — Degree attestation guidance");
+  });
+
+  test("D: changing the service resets only the problem; typed text stays", async ({ page }) => {
+    await page.goto("/contact/?service=oci-services&issue=new-oci");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Describe your problem/).fill("Two children also need help.");
+    await form.getByLabel(/Service category/).selectOption("family-documentation");
+    await expect(form.getByLabel(/Selected problem/)).toHaveValue("");
+    await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
+    await expect(form.getByLabel(/Describe your problem/)).toHaveValue("Two children also need help.");
+  });
+
+  test("E: Back and forward keep the selection and what was typed", async ({ page }) => {
+    await page.goto("/services/oci-services/");
+    await page.getByRole("radio", { name: "New OCI application" }).check({ force: true });
+    await page.getByRole("link", { name: "Continue to Contact" }).click();
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Describe your problem/).fill("Applying for the first time.");
+    await page.goBack();
+    await expect(page.locator(".problem-option[data-checked=true]")).toHaveText(/New OCI application/);
+    await page.goForward();
+    await expect(form.getByLabel(/Full name/)).toHaveValue("Test Person");
+    await expect(form.getByLabel(/Describe your problem/)).toHaveValue("Applying for the first time.");
+    await expect(form.getByLabel(/Selected problem/)).toHaveValue("new-oci");
+  });
+
+  test("F: WhatsApp messages carry the service and problem, never personal text", async ({ page }) => {
+    await page.goto("/services/passport-services/");
+    await page.getByRole("radio", { name: "Passport renewal" }).check({ force: true });
+    const pickerWa = await page.locator('a[data-cta-location="problem-picker"][data-cta="whatsapp"]').getAttribute("href");
+    expect(new URL(pickerWa!).searchParams.get("text")).toBe("Hello SimplYes, I need assistance with Passport Services — Passport renewal.");
+    await page.goto("/contact/?service=passport-services&issue=renewal");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Describe your problem/).fill("private details");
+    const formWa = await form.locator('a[data-cta-location="form"]').getAttribute("href");
+    const text = new URL(formWa!).searchParams.get("text") ?? "";
+    expect(text).toBe("Hello SimplYes, I need assistance with Passport Services — Passport renewal.");
+    expect(text).not.toContain("private");
+  });
+
+  test("invalid or mismatched URL values are ignored safely", async ({ page }) => {
+    await page.goto("/contact/?service=not-a-service&issue=%3Cscript%3E");
+    const form = page.locator("form#enquiry");
+    await expect(form.getByLabel(/Service category/)).toHaveValue("");
+    await expect(form.locator(".selection-summary")).toHaveCount(0);
+    // A real issue id, but from a different service, is not accepted.
+    await page.goto("/contact/?service=oci-services&issue=renewal");
+    await expect(form.getByLabel(/Service category/)).toHaveValue("oci-services");
+    await expect(form.getByLabel(/Selected problem/)).toHaveValue("");
+  });
+
+  test("with a specific problem the description is optional; without one it is required", async ({ page }) => {
+    await page.goto("/contact/?service=passport-services&issue=renewal");
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Email address/).fill("test@example.com");
+    await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    await expect(form.getByText(/tell us briefly what you need|describe what you need/i)).toHaveCount(0);
+    await form.getByLabel(/Selected problem/).selectOption("");
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    await expect(form.getByText("Please choose a problem above or tell us briefly what you need.")).toBeVisible();
   });
 });

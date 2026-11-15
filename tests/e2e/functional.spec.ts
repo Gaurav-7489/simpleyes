@@ -169,7 +169,7 @@ test.describe("content works without JavaScript", () => {
   test("home content is visible with JS disabled", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Eight ways we can help" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Choose your service" })).toBeVisible();
     // FAQ answers stay readable without JavaScript.
     await expect(page.getByText("Decisions rest with the relevant authorities.").first()).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
@@ -216,13 +216,14 @@ test.describe("redesign: bottom tab bar and service strip", () => {
     expect(lowest).toBeLessThanOrEqual(bar!.y);
   });
 
-  test("hero service strip links all eight services by their full names", async ({ page }) => {
+  test("homepage service tiles link all eight services by their full names", async ({ page }) => {
     await page.goto("/");
-    const strip = page.getByRole("navigation", { name: "Services", exact: true });
-    const names = await strip.getByRole("link").evaluateAll((links) => links.map((a) => (a.textContent ?? "").trim()));
-    expect(names).toHaveLength(8);
+    const tiles = page.locator("#services");
     for (const service of services) {
-      await expect(strip.getByRole("link", { name: service.title, exact: true })).toHaveAttribute("href", `/services/${service.slug}/`);
+      await expect(tiles.getByRole("link", { name: new RegExp(`^${service.title.replace(/[&]/g, "\\$&")}`) })).toHaveAttribute(
+        "href",
+        `/services/${service.slug}/`,
+      );
     }
   });
 });

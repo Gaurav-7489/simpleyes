@@ -25,14 +25,14 @@ export default function ContactPage() {
       <PageHero
         badge="Contact"
         title="Get assistance"
-        lead="Tell us what you need — a short description is enough. A real person will get back to you."
+        lead="Pick your service and problem, add a few details, and a real person will get back to you."
         crumbs={[{ name: "Contact Us", path: "/contact/" }]}
       />
 
       <section aria-label="Contact options" className="pb-[var(--section-y)]">
         <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
           <EnquiryForm
-            services={services.map((s) => ({ slug: s.slug, title: s.title }))}
+            services={services.map((s) => ({ slug: s.slug, title: s.title, issues: s.issues }))}
             endpoint={site.enquiryEndpoint}
             honeypotField={site.enquiryHoneypotField}
             whatsappHref={whatsappHref()}
