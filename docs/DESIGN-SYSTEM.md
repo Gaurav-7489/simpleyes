@@ -29,12 +29,30 @@ the one bold element. Everything around it stays quiet: editorial type, generous
 - **`scenes.ts`** holds the compositions: the hero, one per service, five How It Works stages, pricing layers, About, contact, thanks, 404 and legal. Each object has x/y (% of the stage), w (cqw), z (height above the table, cqw), rz/rx/ry, and a stagger index.
 - **`src/styles/scene.css`** does the rendering: a camera with perspective over a `preserve-3d` world, sized in container-query units so scenes scale fluidly. Each object casts a shadow onto the table that grows softer the higher it floats.
 
-**Why CSS 3D, not WebGL?** The objects are flat planes. CSS 3D renders them crisply with real perspective, at no dependency cost (Three.js/R3F would add about 150–250 KB gzipped), with no canvas and no hydration cost. It works in the static export and has no third-party requests.
+**CSS 3D and WebGL, each where it pays off.**
+
+- **CSS 3D** renders every scene server-side, with no dependency. It is always painted first.
+- **WebGL (React Three Fiber) is used only for the homepage hero** (`src/components/scene/webgl/HeroCanvas.tsx`). It is a real lit composition, built from procedural, original textures (`textures.ts`), with no downloaded assets.
+  - **Who gets it:** `HeroStage.tsx` loads it after the page is idle, and only at 768px and wider, with no reduced-motion or data-saver request and a hardware WebGL context (`failIfMajorPerformanceCaveat`). Otherwise the CSS scene stays.
+  - **Handover:** the canvas fades in over the CSS scene after its first frame. A failure or a lost context falls back to CSS.
+  - **Rendering:** `frameloop="demand"` draws frames only while something moves, never when idle or off screen.
+  - **QA:** `/?webgl=force` skips the hardware check in headless browsers.
+  - **Cost:** about 250 KB gzipped (all of three.js, plus R3F and drei's `RoundedBox`), never downloaded on phones.
+  - **Pin:** `three` is pinned to `~0.182` because r183+ deprecates `THREE.Clock`, which R3F 9.8 still uses (console warning). Lift the pin once R3F moves to `THREE.Timer`.
+  - **Don't add drei's `Environment`:** it bundles the HDR and EXR loaders (+25 KB). The hero uses a hemisphere light instead.
+- **Stills:** places that show a scene without interaction use pre-rendered images (`<SceneImage>`, `public/images/scenes/`). These are the gallery, related services and the mobile service list. They are AVIF with a WebP fallback, in 560, 840 and 1120 px, lazy-loaded with fixed dimensions.
+  - Regenerate after changing a composition: `npm run build && npm run preview`, then `npm run render:scenes`.
 
 ## Motion rules
 
 - **One directed sequence per page:** the documents settle onto the table on entry (`.stage[data-intro]`). Copy animates by transform only, so LCP is never delayed.
-- **Visitor-driven only:** the service index lifts the hovered or focused service's composition; How It Works follows the step nearest the middle of the viewport (IntersectionObserver, native scrolling); stages lean up to 5–6° toward a fine pointer (`MotionLayer`).
+- **Visitor-driven only:**
+  - the service index lifts the hovered or focused service's composition, and its lime tab glides between rows (Motion `layoutId`);
+  - How It Works follows the step nearest the middle of the viewport (IntersectionObserver, native scrolling);
+  - the hero drifts and scales slightly as it scrolls away (Motion `useScroll`);
+  - problem-picker ticks spring in;
+  - stages lean up to 5–6° toward a fine pointer (`MotionLayer`).
+- **Motion library:** `motion/react` through `<MotionProvider>`, which uses `LazyMotion` with `m` components (about 5 KB up front; features lazy-loaded after first render) and `MotionConfig reducedMotion="user"`. `LazyMotion strict` throws if a full `motion` component sneaks in. Springs use `bounce: 0`: no overshoot anywhere.
 - **No looping animation, no scroll-jacking, no custom cursor.** `prefers-reduced-motion` shows settled states with no transitions.
 - **Overflow:** `main { overflow-x: clip }` contains 3D overdraw without creating a scroll container (sticky still works).
 

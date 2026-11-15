@@ -11,9 +11,10 @@ import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { services } from "@/content/services";
 import { whatsappHref } from "@/lib/whatsapp";
 import { RevealObserver } from "@/components/RevealObserver";
-import { LazyMotion } from "@/components/LazyMotion";
+import { DeferredMotionLayer } from "@/components/DeferredMotionLayer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Analytics } from "@/components/analytics/Analytics";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 
 /** Headings and buttons (§16 recommendation). Self-hosted by next/font at build time — no runtime Google requests. */
 const outfit = Outfit({
@@ -64,19 +65,21 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <Header />
-        <main id="main" tabIndex={-1} className="outline-none">
-          {children}
-        </main>
-        <FloatingWhatsApp
-          generalHref={whatsappHref()}
-          serviceHrefs={Object.fromEntries(services.map((service) => [service.slug, whatsappHref(service)]))}
-        />
-        <Footer />
+        <MotionProvider>
+          <Header />
+          <main id="main" tabIndex={-1} className="outline-none">
+            {children}
+          </main>
+          <FloatingWhatsApp
+            generalHref={whatsappHref()}
+            serviceHrefs={Object.fromEntries(services.map((service) => [service.slug, whatsappHref(service)]))}
+          />
+          <Footer />
+        </MotionProvider>
         <MobileTabBar />
         {site.gaMeasurementId && <Analytics measurementId={site.gaMeasurementId} />}
         <RevealObserver />
-        <LazyMotion />
+        <DeferredMotionLayer />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </body>
     </html>

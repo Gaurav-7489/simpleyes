@@ -183,9 +183,8 @@
     display: none;
   }
 
-  /* An index tab slides in beside the active row. */
-  .svc-row::before {
-    content: "";
+  /* The active row's index tab: one element that glides between rows (Motion layoutId). */
+  .svc-row-tab {
     position: absolute;
     right: 0;
     top: 32px;
@@ -193,16 +192,6 @@
     height: 20px;
     border-radius: 4px 4px 0 0;
     background: var(--color-lime);
-    transform: translateX(12px);
-    opacity: 0;
-    transition:
-      opacity var(--dur-2) var(--ease-out),
-      transform var(--dur-3) var(--ease-out);
-  }
-
-  .svc-row[data-active="true"]::before {
-    opacity: 1;
-    transform: none;
   }
 
   .svc-row[data-active="true"] .svc-row-title {
@@ -232,9 +221,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .svc-row-title,
-  .svc-row::before {
+  .svc-row-title {
     transition: none;
+  }
+}
+
+.svc-row-tab {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .svc-row-tab {
+    display: block;
   }
 }
 
@@ -776,7 +774,9 @@
   align-items: center;
 }
 
+/* Phones: the service's name and text come first, its image second (the page title stays the LCP element). */
 .svc-gallery-stage {
+  order: 2;
   display: block;
   border-radius: var(--r-xl);
   background:
@@ -830,6 +830,10 @@
   .svc-gallery-item {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
     gap: 72px;
+  }
+
+  .svc-gallery-stage {
+    order: 0;
   }
 
   .svc-gallery-item[data-flip] .svc-gallery-stage {
@@ -1236,4 +1240,33 @@
 .contact-aside-block:first-child {
   border-top: 0;
   padding-top: 4px;
+}
+
+/* ----- WebGL hero: the CSS scene paints first; the canvas fades in over it once its first frame is ready -- */
+.hero-stage {
+  position: relative;
+  transform-origin: 50% 30%;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: -6% -4%;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+.hero-canvas canvas {
+  display: block;
+}
+
+.hero-stage-css {
+  transition: opacity 600ms var(--ease-out);
+}
+
+.hero-stage[data-mode="webgl"] .hero-canvas {
+  opacity: 1;
+}
+
+.hero-stage[data-mode="webgl"] .hero-stage-css {
+  opacity: 0;
 }

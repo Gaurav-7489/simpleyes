@@ -17,13 +17,18 @@
     "test:unit": "node --test tests/unit/*.test.mjs",
     "check": "npm run test:unit && npm run lint && npm run build && npm run typecheck && npm run test:e2e",
     "check:content": "node scripts/check-content.mjs",
-    "check:launch": "node scripts/check-launch.mjs --live"
+    "check:launch": "node scripts/check-launch.mjs --live",
+    "render:scenes": "node scripts/render-scenes.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "lucide-react": "^1.63.0",
+    "motion": "^14.14.0",
     "next": "^16.4.3",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "three": "~0.182.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -32,6 +37,7 @@
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/three": "~0.182.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.3",
     "tailwindcss": "^4.3.3",

@@ -14,7 +14,7 @@ Everything the owners still have to supply or approve is tracked in
 
 - **Next.js (App Router)** + **React** + **TypeScript (strict)**, exported as a fully **static site** (`out/`)
 - **Tailwind CSS v4** with CSS-variable design tokens (`src/app/globals.css`)
-- **lucide-react** icons; the **Living Document System**: original CSS 3D document scenes (no WebGL, no images, no stock or third-party imagery). See [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)
+- **lucide-react** icons; the **Living Document System**: original CSS 3D document scenes, a WebGL hero (**three**, **@react-three/fiber**, **@react-three/drei**) on capable tablets/desktops, pre-rendered scene stills, and **motion** for scroll and micro-interactions. No stock or third-party imagery. See [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)
 - Fonts: Outfit (headings, buttons) + DM Sans (body) via `next/font/google`, self-hosted at build time (§16)
 - **Playwright** + **axe-core** for e2e, responsive, accessibility and SEO tests; **Lighthouse** in CI
 
@@ -41,6 +41,7 @@ npm run dev        # http://localhost:3000
 | `npm run preview` | Serve `out/` on http://localhost:4173 (mirrors static hosting) |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm run test:unit` | Enquiry endpoint, CSP and honeypot configuration safety checks |
+| `npm run render:scenes` | Re-render the service scene stills to `public/images/scenes/` (needs `npm run preview` running) |
 | `npm run check:launch` | Owner inputs/approvals and live Contact activation check; expected to fail until owner setup is complete |
 | `npm run test:e2e` | Playwright suite (requires `npm run build` and `npx playwright install chromium`) |
 | `CROSS_BROWSER=1 npm run test:e2e` | Also run Firefox and iPhone/WebKit (install those browsers first) |
@@ -66,7 +67,8 @@ src/
                        thank-you, privacy, terms, disclaimer, impressum) + sitemap, robots, manifest, llms.txt
   components/
     home/              homepage sections (Hero, Services + ServiceIndex, WhySimplyes, SimpleProcess, FaqSection) — FinalCta is shared
-    scene/             Living Document System: DocumentStage, objects (sheet, booklet, card…), compositions (scenes.ts)
+    scene/             Living Document System: DocumentStage, objects, compositions (scenes.ts), SceneImage, webgl/ (hero)
+    motion/            MotionProvider (LazyMotion + reduced motion)
     layout/            Header, NavLinks (Services dropdown), MobileMenu, Footer, FloatingWhatsApp, BackToTop
     contact/           EnquiryForm, ThankYouTracker
     analytics/         Analytics (consent banner + GA4), TrackServiceView

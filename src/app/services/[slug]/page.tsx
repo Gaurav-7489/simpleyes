@@ -10,6 +10,7 @@ import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/
 import { whatsappHref } from "@/lib/whatsapp";
 import { revealDelay } from "@/lib/style";
 import { DocumentStage } from "@/components/scene/DocumentStage";
+import { SceneImage } from "@/components/scene/SceneImage";
 import { Breadcrumb } from "@/components/PageHero";
 import { DisclosureList } from "@/components/DisclosureList";
 import { ProblemPicker } from "@/components/service/ProblemPicker";
@@ -312,7 +313,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
                 <li key={other.slug}>
                   <Link href={`/services/${other.slug}/`} className="related-card">
                     <span className="related-card-stage" aria-hidden="true">
-                      <DocumentStage scene={other.scene.kind} ratio="1 / 0.7" />
+                      <SceneImage scene={other.scene.kind} alt="" sizes="(min-width: 768px) 400px, 100vw" />
                     </span>
                     <span className="related-card-title">{other.title}</span>
                     <span className="related-card-summary">{other.summary}</span>

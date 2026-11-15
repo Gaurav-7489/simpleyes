@@ -4,7 +4,7 @@ import { enquiryHref, services } from "@/content/services";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { DocumentStage } from "@/components/scene/DocumentStage";
+import { SceneImage } from "@/components/scene/SceneImage";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
@@ -33,9 +33,14 @@ export default function ServicesPage() {
               const href = `/services/${service.slug}/`;
               return (
                 <li key={service.slug} className="svc-gallery-item" data-flip={i % 2 === 1 ? "" : undefined}>
-                  <Link href={href} className="svc-gallery-stage" tabIndex={-1} aria-hidden="true">
-                    <DocumentStage scene={service.scene.kind} tilt ratio="1 / 0.74" />
-                  </Link>
+                  <figure className="svc-gallery-stage">
+                    <SceneImage
+                      scene={service.scene.kind}
+                      alt={service.scene.label}
+                      sizes="(min-width: 1024px) 560px, calc(100vw - 36px)"
+                      priority={i === 0}
+                    />
+                  </figure>
                   <div className="svc-gallery-copy">
                     <h2 className="type-h2">
                       <Link href={href} className="svc-gallery-title" data-cta-location="services-page">

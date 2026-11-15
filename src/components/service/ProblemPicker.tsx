@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { Check, MessageCircle } from "lucide-react";
+import * as m from "motion/react-m";
 import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
 import { OTHER_ISSUE, OTHER_NOTE_KEY } from "@/lib/enquiry-keys";
 import { useHydrated } from "@/lib/useHydrated";
@@ -96,7 +97,14 @@ export function ProblemPicker({ slug, title, issues, corporate = false }: Props)
                   className="sr-only"
                 />
                 <span className="problem-check" aria-hidden="true">
-                  <Check className="size-3.5" strokeWidth={2.5} />
+                  <m.span
+                    className="grid place-items-center"
+                    initial={false}
+                    animate={{ scale: checked ? 1 : 0.4, opacity: checked ? 1 : 0 }}
+                    transition={{ type: "spring", bounce: 0, visualDuration: 0.22 }}
+                  >
+                    <Check className="size-3.5" strokeWidth={2.5} />
+                  </m.span>
                 </span>
                 <span>{option.label}</span>
               </label>

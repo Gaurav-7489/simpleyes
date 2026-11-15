@@ -1,7 +1,7 @@
 import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
 import { ButtonLink } from "@/components/ui/Button";
-import { DocumentStage } from "@/components/scene/DocumentStage";
+import { HeroStage } from "@/components/home/HeroStage";
 
 /**
  * Homepage hero: the headline set large across a 3D composition of documents that settle into place on
@@ -34,7 +34,7 @@ export function Hero() {
           </p>
         </div>
         <div className="home-hero-stage">
-          <DocumentStage scene="hero" intro tilt ratio="1 / 0.86" />
+          <HeroStage />
         </div>
       </div>
     </section>
