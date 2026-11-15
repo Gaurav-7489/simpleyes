@@ -5,10 +5,13 @@ import { readFileSync } from "node:fs";
 const config = JSON.parse(readFileSync(new URL("../../vercel.json", import.meta.url), "utf8"));
 
 test("the default vercel.app host redirects permanently to the canonical domain", () => {
-  const rule = config.redirects.find((r) => r.has?.some((h) => h.type === "host" && h.value === "simpleyes.vercel.app"));
+  const rule = config.redirects.find((r) => r.has?.some((h) => h.type === "host"));
   assert.ok(rule, "missing simpleyes.vercel.app redirect");
-  assert.equal(rule.source, "/:path*");
-  assert.equal(rule.destination, "https://simplyes.de/:path*");
+  const host = new RegExp(`^${rule.has[0].value}$`);
+  assert.ok(host.test("simpleyes.vercel.app"));
+  assert.ok(!host.test("simplyes.de") && !host.test("simpleyes-git-main-x.vercel.app"));
+  assert.equal(rule.source, "/(.*)");
+  assert.equal(rule.destination, "https://simplyes.de/$1");
   assert.equal(rule.permanent, true);
   assert.equal(config.redirects[0], rule, "host redirect must come before path redirects");
 });

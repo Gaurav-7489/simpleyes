@@ -3,14 +3,14 @@
   "framework": "nextjs",
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
-          "value": "simpleyes.vercel.app"
+          "value": "simpleyes\\.vercel\\.app"
         }
       ],
-      "destination": "https://simplyes.de/:path*",
+      "destination": "https://simplyes.de/$1",
       "permanent": true
     },
     {
