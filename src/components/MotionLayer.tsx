@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Site-wide motion layer (one rAF budget, no layout reads during writes):
- *  - `--scroll` (0→1) on <html>, for the progress hairline and the back-to-top ring. Native scrolling only.
+ * Pointer tilt for 3D surfaces (one rAF budget, reads before writes, no scroll listener of its own — scroll
+ * progress lives in <ScrollProgress>, on Motion's shared listener):
  *  - `[data-tilt]` surfaces (3D document stages, the Why sheet) lean gently toward the pointer: spring
  *    physics write `--tilt-x` / `--tilt-y` (degrees) on the transformed element itself (registered as
  *    non-inheriting in scene.css, so only that element restyles), with will-change only while it moves.
@@ -44,29 +44,6 @@ export function MotionLayer() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const root = document.documentElement;
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const max = root.scrollHeight - window.innerHeight;
-      root.style.setProperty("--scroll", (max > 0 ? Math.min(1, window.scrollY / max) : 0).toFixed(4));
-    };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      root.style.removeProperty("--scroll");
-    };
-  }, []);
-
-  useEffect(() => {
     const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!canHover || reduced) return;
@@ -74,6 +51,7 @@ export function MotionLayer() {
     const bodies: Body[] = [];
     const byEl = new Map<HTMLElement, Body>();
     let dirty = true;
+    let lastScroll = window.scrollY;
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         const body = byEl.get(e.target as HTMLElement);
@@ -106,6 +84,11 @@ export function MotionLayer() {
     function tick(now: number) {
       const dt = Math.min((now - last) / 1000, 1 / 30);
       last = now;
+      // Read phase: cached rects go stale when the page scrolls or resizes.
+      if (window.scrollY !== lastScroll) {
+        lastScroll = window.scrollY;
+        dirty = true;
+      }
       if (dirty) {
         for (const b of bodies) b.rect = b.visible ? b.el.getBoundingClientRect() : null;
         dirty = false;
@@ -163,14 +146,12 @@ export function MotionLayer() {
       dirty = true;
     };
 
-    window.addEventListener("scroll", markDirty, { passive: true });
     window.addEventListener("resize", markDirty);
     document.addEventListener("pointermove", onMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      window.removeEventListener("scroll", markDirty);
       window.removeEventListener("resize", markDirty);
       document.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
@@ -182,5 +163,5 @@ export function MotionLayer() {
     };
   }, [pathname]);
 
-  return <div aria-hidden="true" className="scroll-progress" />;
+  return null;
 }

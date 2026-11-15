@@ -33,7 +33,7 @@ export default function ServicesPage() {
               const href = `/services/${service.slug}/`;
               return (
                 <li key={service.slug} className="svc-gallery-item" data-flip={i % 2 === 1 ? "" : undefined}>
-                  <figure className="svc-gallery-stage">
+                  <figure className="svc-gallery-stage" data-reveal="image">
                     <SceneImage
                       scene={service.scene.kind}
                       alt={service.scene.label}

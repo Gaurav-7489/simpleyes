@@ -12,7 +12,7 @@ export function Services() {
             Choose your service
           </h2>
           <p className="type-lead max-w-[36rem]">
-            Eight kinds of paperwork we help with. Open one to see the situations it covers and pick the problem you have.
+            Eight kinds of paperwork. Open one and pick the problem you have.
           </p>
         </div>
         <ServiceIndex

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { journeySteps } from "@/content/home";
+import { ProcessRail } from "@/components/ProcessRail";
 
 /** Homepage preview of the five-step journey; the full version lives on /how-it-works/. */
 export function SimpleProcess() {
@@ -15,20 +16,7 @@ export function SimpleProcess() {
             authorities.
           </p>
         </div>
-        <ol className="process-rail">
-          {journeySteps.map((step, i) => (
-            <li key={step.title} className="process-rail-item">
-              <span className="process-rail-num" aria-hidden="true">
-                {i + 1}
-              </span>
-              <h3 className="process-rail-title">
-                <span className="sr-only">Step {i + 1}: </span>
-                {step.title}
-              </h3>
-              <p className="process-rail-body">{step.body}</p>
-            </li>
-          ))}
-        </ol>
+        <ProcessRail steps={journeySteps} />
         <p className="mt-10">
           <Link href="/how-it-works/" className="link-tertiary">
             See how it works in detail

@@ -110,6 +110,6 @@
 @media (min-width: 1200px) {
   :root {
     --gutter: 40px;
-    --section-y: 120px;
+    --section-y: 104px;
   }
 }

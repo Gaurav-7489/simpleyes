@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useMotionValueEvent, useScroll } from "motion/react";
 import { MessageCircle } from "lucide-react";
 
 type Props = {
@@ -22,11 +23,13 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [anchorInView, setAnchorInView] = useState(false);
 
+  // Motion's shared scroll listener (one for the whole page), not a listener of our own.
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > window.innerHeight * 0.6));
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.6);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial position after hydration (a reload mid-page)
+    setScrolled(window.scrollY > window.innerHeight * 0.6);
 
     const visible = new Set<Element>();
     const io = new IntersectionObserver((entries) => {
@@ -39,8 +42,6 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
     document.querySelectorAll("footer, [data-wa-anchor]").forEach((el) => io.observe(el));
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
       io.disconnect();
     };
   }, [pathname]);

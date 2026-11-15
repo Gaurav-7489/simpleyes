@@ -79,6 +79,14 @@ export function ProblemPicker({ slug, title, issues, corporate = false }: Props)
             const checked = selected === option.id;
             return (
               <label key={option.id} className="problem-option" data-checked={checked}>
+                {checked && (
+                  <m.span
+                    layoutId={`${uid}-highlight`}
+                    className="problem-highlight"
+                    aria-hidden="true"
+                    transition={{ type: "spring", bounce: 0, visualDuration: 0.3 }}
+                  />
+                )}
                 <input
                   type="radio"
                   name={`${uid}-issue`}

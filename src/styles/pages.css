@@ -328,14 +328,40 @@
   padding-bottom: 28px;
 }
 
-.process-rail-item:not(:last-child)::before {
-  content: "";
+/* One track behind the numbers; its fill follows scroll (ProcessRail). */
+.process-rail-wrap {
+  position: relative;
+}
+
+.process-rail-track {
   position: absolute;
   left: 27px;
-  top: 58px;
-  bottom: 6px;
-  width: 1px;
-  background: var(--color-line-strong);
+  top: 28px;
+  bottom: 56px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--color-line);
+}
+
+.process-rail-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--color-lime), var(--color-accent-600));
+}
+
+.process-rail-fill-x {
+  display: none;
+  transform-origin: 0 50%;
+}
+
+.process-rail-fill-y {
+  transform-origin: 50% 0;
+}
+
+.process-rail-num {
+  position: relative;
+  z-index: 1;
 }
 
 .process-rail-num {
@@ -389,13 +415,25 @@
     padding-bottom: 0;
   }
 
-  .process-rail-item:not(:last-child)::before {
-    left: 68px;
-    right: -20px;
-    top: 28px;
+  .process-rail-track {
+    left: 28px;
+    right: calc(20% - 28px);
+    top: 27px;
     bottom: auto;
     width: auto;
-    height: 1px;
+    height: 2px;
+  }
+
+  .process-rail-fill {
+    background: linear-gradient(90deg, var(--color-lime), var(--color-accent-600));
+  }
+
+  .process-rail-fill-x {
+    display: block;
+  }
+
+  .process-rail-fill-y {
+    display: none;
   }
 
   .process-rail-num {
@@ -1269,4 +1307,87 @@
 
 .hero-stage[data-mode="webgl"] .hero-stage-css {
   opacity: 0;
+}
+
+/* ----- Image reveal: gallery stills open from a slightly inset frame as they scroll in ------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal="image"] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(7% 7% 7% 7% round var(--r-xl));
+    transition: clip-path 700ms var(--ease-out);
+  }
+
+  .js [data-reveal="image"] img {
+    transform: scale(1.06);
+    transition: transform 900ms var(--ease-out);
+  }
+
+  .js [data-reveal="image"].is-revealed {
+    clip-path: inset(0 0 0 0 round var(--r-xl));
+  }
+
+  .js [data-reveal="image"].is-revealed img {
+    transform: none;
+  }
+
+  /* Hover depth on images that lead somewhere. */
+  @media (hover: hover) {
+    .related-card img {
+      transition: transform var(--dur-3) var(--ease-out);
+    }
+
+    .related-card:hover img {
+      transform: scale(1.04) translateY(-4px);
+    }
+  }
+
+  /* Menus: items arrive in a quick cascade when a menu opens. */
+  .nav-panel li,
+  .mobile-panel nav > ul > li {
+    transition:
+      opacity var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
+  }
+
+  .nav-panel[data-open="false"] li,
+  .mobile-panel[data-open="false"] nav > ul > li {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  .nav-panel[data-open="true"] li:nth-child(2),
+  .mobile-panel[data-open="true"] nav > ul > li:nth-child(2) { transition-delay: 25ms; }
+  .nav-panel[data-open="true"] li:nth-child(3),
+  .mobile-panel[data-open="true"] nav > ul > li:nth-child(3) { transition-delay: 50ms; }
+  .nav-panel[data-open="true"] li:nth-child(4),
+  .mobile-panel[data-open="true"] nav > ul > li:nth-child(4) { transition-delay: 75ms; }
+  .nav-panel[data-open="true"] li:nth-child(5),
+  .mobile-panel[data-open="true"] nav > ul > li:nth-child(5) { transition-delay: 100ms; }
+  .nav-panel[data-open="true"] li:nth-child(6),
+  .mobile-panel[data-open="true"] nav > ul > li:nth-child(6) { transition-delay: 125ms; }
+  .nav-panel[data-open="true"] li:nth-child(n + 7) { transition-delay: 150ms; }
+}
+
+.journey-step-image {
+  display: block;
+  max-width: 320px;
+  margin: 12px 0 -8px -12px;
+}
+
+@media (min-width: 1024px) {
+  .journey-step-image {
+    display: none;
+  }
+}
+
+/* Narrow screens: the closing band's envelope stays a supporting image, not a second hero. */
+@media (max-width: 1023px) {
+  .final-cta-stage {
+    max-width: 340px;
+  }
+
+  .final-cta[data-compact="true"] .final-cta-stage {
+    max-width: 260px;
+  }
 }

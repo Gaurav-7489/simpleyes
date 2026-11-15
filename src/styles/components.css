@@ -295,6 +295,9 @@
 
   /* ----- Header ------------------------------------------------------------------------------------ */
   .header-bar {
+    transition:
+      box-shadow var(--dur-2) var(--ease-out),
+      background-color var(--dur-2) var(--ease-out);
     border-radius: var(--r-pill);
     background: rgb(255 255 255 / 0.9);
     box-shadow:
@@ -870,8 +873,6 @@ html[data-form-focus] .fab-wa {
 .to-top .bar {
   stroke: var(--color-lime);
   stroke-linecap: round;
-  stroke-dasharray: 163.4;
-  stroke-dashoffset: calc(163.4 * (1 - var(--scroll, 0)));
 }
 
 .to-top:focus-visible {
@@ -892,7 +893,7 @@ html[data-form-focus] .fab-wa {
   height: 2px;
   pointer-events: none;
   transform-origin: 0 50%;
-  transform: scaleX(var(--scroll, 0));
+  transform: scaleX(0);
   background: linear-gradient(90deg, var(--color-lime), var(--color-accent-500));
 }
 
@@ -956,11 +957,26 @@ html[data-form-focus] .fab-wa {
   outline-offset: 2px;
 }
 
-.problem-option[data-checked="true"] {
+/* The selected state is one element that slides between options (Motion layoutId). */
+.problem-highlight {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
   background: var(--color-accent-50);
   box-shadow:
     inset 0 0 0 2px var(--color-accent-700),
     0 14px 26px -18px rgb(0 92 69 / 0.6);
+  pointer-events: none;
+}
+
+.problem-option > :not(.problem-highlight, input) {
+  position: relative;
+  z-index: 1;
+}
+
+.problem-option[data-checked="true"] {
+  box-shadow: none;
 }
 
 .problem-check {
@@ -1022,5 +1038,19 @@ html[data-form-focus] .fab-wa {
   .btn:active,
   .problem-option:active {
     transform: none;
+  }
+}
+
+/* Once the page leaves the top, the floating header firms up (attribute set by <ScrollProgress>). */
+html[data-scrolled] .header-bar {
+  background-color: rgb(255 255 255 / 0.96);
+  box-shadow:
+    inset 0 0 0 1px rgb(217 229 222 / 0.95),
+    0 18px 40px -22px rgb(13 46 38 / 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-bar {
+    transition: none;
   }
 }

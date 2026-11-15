@@ -9,7 +9,8 @@ import { DocumentStage } from "@/components/scene/DocumentStage";
 const HeroCanvas = dynamic(() => import("@/components/scene/webgl/HeroCanvas"), { ssr: false });
 
 /**
- * Whether this visitor gets the WebGL hero: tablet/desktop width, no reduced-motion or data-saver request, and
+ * Whether this visitor gets the WebGL hero: tablet/desktop width, no reduced-motion or data-saver request, at
+ * least 4 CPU cores and 4 GB of memory (where reported), and
  * a hardware-accelerated WebGL context (software renderers report a "major performance caveat" and are
  * declined). Everyone else keeps the CSS 3D scene, which is always rendered first and never removed from flow.
  * `?webgl=force` skips the hardware check, for QA in headless browsers.
@@ -17,8 +18,10 @@ const HeroCanvas = dynamic(() => import("@/components/scene/webgl/HeroCanvas"), 
 function canUseWebGL(): boolean {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
   if (!window.matchMedia("(min-width: 768px)").matches) return false;
-  const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-  if (connection?.saveData) return false;
+  const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
+  if (nav.connection?.saveData) return false;
+  // Lower-end devices keep the CSS scene: few cores or little memory (where the browser reports it).
+  if ((nav.hardwareConcurrency ?? 8) < 4 || (nav.deviceMemory ?? 8) < 4) return false;
   const force = new URLSearchParams(window.location.search).get("webgl") === "force";
   try {
     const canvas = document.createElement("canvas");

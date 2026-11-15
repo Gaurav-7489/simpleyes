@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { DocumentStage } from "@/components/scene/DocumentStage";
+import { SceneImage } from "@/components/scene/SceneImage";
 import type { SceneKey } from "@/components/scene/scenes";
 
 type Step = { title: string; body: string; who: string };
@@ -58,6 +59,8 @@ export function JourneyNarrative({ steps }: { steps: Step[] }) {
                 <span className="sr-only">Who acts: </span>
                 {step.who}
               </p>
+              {/* Phones and tablets: each step shows its own still (the sticky stage is wide-screen only). */}
+              <SceneImage scene={stageKeys[i]!} alt="" sizes="(min-width: 1024px) 1px, 70vw" width={1120} height={963} className="journey-step-image" />
             </div>
           </li>
         ))}

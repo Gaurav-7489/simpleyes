@@ -15,6 +15,8 @@ import { Breadcrumb } from "@/components/PageHero";
 import { DisclosureList } from "@/components/DisclosureList";
 import { ProblemPicker } from "@/components/service/ProblemPicker";
 import { FaqList } from "@/components/FaqList";
+import { ProcessRail } from "@/components/ProcessRail";
+import { ScrollDepth } from "@/components/motion/ScrollDepth";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { TrackServiceView } from "@/components/analytics/TrackServiceView";
@@ -136,7 +138,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
           </div>
 
           <div className="service-hero-stage">
-            <DocumentStage scene={service.scene.kind} label={service.scene.label} intro tilt ratio="1 / 0.84" />
+            <ScrollDepth mode="drift">
+              <DocumentStage scene={service.scene.kind} label={service.scene.label} intro tilt ratio="1 / 0.84" />
+            </ScrollDepth>
           </div>
 
           <div id="choose-problem" className="service-hero-picker scroll-mt-[calc(var(--header-h)+16px)]">
@@ -195,14 +199,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
       {/* Details: tap to open (server-rendered, crawlable, visible without JavaScript). */}
       <section aria-label={`${service.title} details`} className="section-tight">
         <div className="container-site service-split">
-          <div>
-            <p className="max-w-[28ch] font-display text-[1.375rem] font-light leading-snug tracking-[-0.015em] text-ink">
-              The details, when you need them.
-            </p>
-            <p className="mt-3 max-w-[32ch] text-[0.9375rem] text-ink-2">
-              Tap a topic to open it. Document categories are indicative and subject to verification.
-            </p>
-          </div>
+          <p className="max-w-[30ch] text-[0.9375rem] leading-relaxed text-ink-2">
+            Tap a topic to open it. Document categories are indicative and subject to verification.
+          </p>
           <DisclosureList
             items={[
               { id: "who-its-for", title: "Who this service is for", content: <CheckList items={service.audience} /> },
@@ -246,20 +245,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
           <h2 id="service-process" className="type-h2 max-w-[16ch]">
             How the process works
           </h2>
-          <ol className="process-rail mt-10">
-            {service.process.map((step, i) => (
-              <li key={step.title} className="process-rail-item">
-                <span className="process-rail-num" aria-hidden="true">
-                  {i + 1}
-                </span>
-                <h3 className="process-rail-title">
-                  <span className="sr-only">Step {i + 1}: </span>
-                  {step.title}
-                </h3>
-                <p className="process-rail-body">{step.body}</p>
-              </li>
-            ))}
-          </ol>
+          <ProcessRail steps={service.process} className="mt-10" />
         </div>
       </section>
 

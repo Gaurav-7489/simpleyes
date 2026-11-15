@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { revealDelay } from "@/lib/style";
 import { DocumentStage } from "@/components/scene/DocumentStage";
 import type { SceneKey } from "@/components/scene/scenes";
+import { ScrollDepth } from "@/components/motion/ScrollDepth";
 
 type Crumb = { name: string; path: string };
 
@@ -45,7 +46,9 @@ export function PageHero({
         </div>
         {scene && (
           <div className="page-hero-stage" aria-hidden="true">
-            <DocumentStage scene={scene} intro tilt ratio="1 / 0.8" />
+            <ScrollDepth mode="drift">
+              <DocumentStage scene={scene} intro tilt ratio="1 / 0.8" />
+            </ScrollDepth>
           </div>
         )}
       </div>

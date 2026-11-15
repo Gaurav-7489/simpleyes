@@ -15,6 +15,7 @@ import { DeferredMotionLayer } from "@/components/DeferredMotionLayer";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Analytics } from "@/components/analytics/Analytics";
 import { MotionProvider } from "@/components/motion/MotionProvider";
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
 
 /** Headings and buttons (§16 recommendation). Self-hosted by next/font at build time — no runtime Google requests. */
 const outfit = Outfit({
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           Skip to content
         </a>
         <MotionProvider>
+          <ScrollProgress />
           <Header />
           <main id="main" tabIndex={-1} className="outline-none">
             {children}
