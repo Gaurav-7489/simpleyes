@@ -50,9 +50,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const service = getService(slug);
   if (!service) return {};
   // §17 pattern ("OCI Services — Documentation Assistance in Germany | SimplYes"), shortened for long names.
-  const full = `${service.title} — Documentation Assistance in Germany | ${site.name}`;
   return pageMetadata({
-    title: full.length <= 65 ? full : `${service.title} in Germany | ${site.name}`,
+    title: `${service.seoTitle} | ${site.name}`,
     absoluteTitle: true,
     description: service.metaDescription,
     path: `/services/${service.slug}/`,

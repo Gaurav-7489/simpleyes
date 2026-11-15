@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { allFaqs, homeFaqs } from "../../src/content/faqs";
+import { pageUpdated } from "../../src/content/page-dates";
+import { MODEL_TRAINING_AGENTS, SEARCH_AND_RETRIEVAL_AGENTS } from "../../src/lib/crawlers";
 import { services } from "../../src/content/services";
 import { site } from "../../src/content/site";
 import { indexableRoutes, routes } from "./routes";
@@ -36,7 +38,7 @@ test.describe("SEO", () => {
       await page.goto(route);
       const title = await page.title();
       expect(title.length).toBeGreaterThan(15);
-      expect(title.length).toBeLessThanOrEqual(70);
+      expect(title.length).toBeLessThanOrEqual(60);
       const description = await page.locator('meta[name="description"]').getAttribute("content");
       expect(description?.length ?? 0).toBeGreaterThan(70);
       expect(description?.length ?? 0).toBeLessThanOrEqual(170);
@@ -88,6 +90,13 @@ test.describe("SEO", () => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
     for (const route of indexableRoutes) expect(sitemap).toContain(`<loc>${SITE}${route}</loc>`);
     expect(sitemap).not.toContain("/thank-you/");
+    // Each page carries its own content date, never a build timestamp or a future date.
+    for (const route of indexableRoutes) {
+      const date = pageUpdated[route] ?? "";
+      expect(date, `page-dates.ts entry for ${route}`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(new Date(date).getTime()).toBeLessThanOrEqual(Date.now());
+      expect(sitemap).toContain(`<loc>${SITE}${route}</loc>\n<lastmod>${new Date(date).toISOString()}</lastmod>`);
+    }
     const robots = await (await request.get("/robots.txt")).text();
     if (process.env.NEXT_PUBLIC_SITE_ENV === "production") {
       expect(robots).toContain("Allow: /");
@@ -156,6 +165,10 @@ test.describe("GEO: AI answer-engine readiness", () => {
   test("robots.txt explicitly allows AI answer-engine crawlers in production", async ({ request }) => {
     test.skip(process.env.NEXT_PUBLIC_SITE_ENV !== "production", "production builds only");
     const txt = await (await request.get("/robots.txt")).text();
-    for (const bot of ["OAI-SearchBot", "PerplexityBot", "ClaudeBot", "Google-Extended"]) expect(txt).toContain(`User-Agent: ${bot}`);
+    for (const bot of [...SEARCH_AND_RETRIEVAL_AGENTS, ...MODEL_TRAINING_AGENTS]) expect(txt).toContain(`User-Agent: ${bot}`);
+    // Search and answer-engine crawlers are never blocked, whatever the training decision.
+    const searchGroup = txt.split("\n\n").find((g) => g.includes("User-Agent: OAI-SearchBot"))!;
+    expect(searchGroup).toContain("Allow: /");
+    expect(searchGroup).not.toMatch(/Disallow: \/$/m);
   });
 });
