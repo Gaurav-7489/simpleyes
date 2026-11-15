@@ -45,6 +45,5 @@ When 1–3 are done the form delivers enquiries; when 4–6 are done the site is
 (or the **Owner launch readiness** workflow) then reports the remaining items, if any.
 
 ## Not verified automatically
-Real iOS Safari / Android devices, desktop Safari/Firefox/Edge and a screen-reader spot check (Chromium and
-WebKit/Firefox engines are covered in CI where configured). Search Console verification and sitemap submission
+Real iOS Safari / Android devices, desktop Safari/Firefox/Edge and a screen-reader spot check. Search Console verification and sitemap submission
 need the owner's Google account.
