@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { homeFaqs } from "../../src/content/faqs";
+import { allFaqs, homeFaqs } from "../../src/content/faqs";
 import { services } from "../../src/content/services";
 import { site } from "../../src/content/site";
 import { indexableRoutes, routes } from "./routes";
@@ -117,5 +117,45 @@ test.describe("indexing rules", () => {
   test("thank-you page is noindex", async ({ page }) => {
     await page.goto("/thank-you/");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  });
+});
+
+test.describe("GEO: AI answer-engine readiness", () => {
+  test.skip(({ isMobile }) => isMobile, "file checks run once");
+
+  test("llms.txt lists every service's problems with prefilled contact links and key facts", async ({ request }) => {
+    const txt = await (await request.get("/llms.txt")).text();
+    expect(txt).toContain("## Key facts");
+    expect(txt).toMatch(/not an embassy, consulate, government authority/);
+    expect(txt).toContain(`${SITE}/llms-full.txt`);
+    for (const s of services) for (const issue of s.issues) expect(txt).toContain(`${SITE}/contact/?service=${s.slug}&issue=${issue.id}`);
+  });
+
+  test("llms-full.txt carries every FAQ answer and every service, from the site's own content", async ({ request }) => {
+    const res = await request.get("/llms-full.txt");
+    expect(res.headers()["content-type"]).toContain("text/plain");
+    const txt = await res.text();
+    for (const s of services) expect(txt).toContain(`## ${s.title}`);
+    for (const faq of allFaqs) expect(txt).toContain(`Q: ${faq.question}`);
+    expect(txt).toContain("SimplYes is an independent documentation assistance service.");
+    // Affirmative promises or prices only (the negatives "does not guarantee…" are required content).
+    expect(txt).not.toMatch(/€\s?\d|\d\s?€|\bwe guarantee|guaranteed (approval|appointment|visa)/i);
+  });
+
+  test("service structured data lists its problems and how to request it", async ({ page }) => {
+    for (const s of [services[0]!, services[7]!]) {
+      await page.goto(`/services/${s.slug}/`);
+      const blocks = await page.$$eval('script[type="application/ld+json"]', (els) => els.map((e) => JSON.parse(e.textContent ?? "null")));
+      const service = blocks.flat().find((b) => b?.["@type"] === "Service");
+      expect(service.availableChannel.serviceUrl).toBe(`${SITE}/contact/?service=${s.slug}`);
+      const offered = service.hasOfferCatalog.itemListElement.map((o: { itemOffered: { name: string } }) => o.itemOffered.name);
+      expect(offered).toEqual(s.issues.map((i) => i.label));
+    }
+  });
+
+  test("robots.txt explicitly allows AI answer-engine crawlers in production", async ({ request }) => {
+    test.skip(process.env.NEXT_PUBLIC_SITE_ENV !== "production", "production builds only");
+    const txt = await (await request.get("/robots.txt")).text();
+    for (const bot of ["OAI-SearchBot", "PerplexityBot", "ClaudeBot", "Google-Extended"]) expect(txt).toContain(`User-Agent: ${bot}`);
   });
 });

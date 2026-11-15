@@ -419,7 +419,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
 
       <JsonLd
         data={[
-          serviceJsonLd({ name: service.title, description: service.intro.join(" "), path }),
+          serviceJsonLd({ name: service.title, description: service.intro.join(" "), path, slug: service.slug, issues: service.issues }),
           breadcrumbJsonLd([
             { name: "Services", path: "/services/" },
             { name: service.title, path },

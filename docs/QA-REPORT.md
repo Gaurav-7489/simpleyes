@@ -190,6 +190,20 @@ Branch `claude/smart-enquiry-flow`.
   endpoint tests (dummy Formdall endpoint, intercepted) check the new subject and `issue` field. Full suite:
   194 passed, 0 failed; endpoint build: 53 passed.
 
+## GEO — AI answer-engine readiness (15 Nov 2026)
+
+- `llms.txt`: key facts (independent, what SimplYes does not do, quotation-based fees, how to start) and every
+  service's problem options with prefilled contact links; points to `llms-full.txt`.
+- `llms-full.txt` (new): plain-text reference of every service (outcome, intro, problems, who it is for, help,
+  indicative document categories, scope limits, FAQs) and all 28 FAQ answers, generated from the content modules.
+- Structured data: each Service lists its problems (`hasOfferCatalog`, no prices) and how to request it
+  (`availableChannel`: prefilled contact URL, phone); Organization adds the email contact point.
+- `robots.txt` explicitly allows AI answer-engine crawlers (OAI-SearchBot, ChatGPT-User, GPTBot, PerplexityBot,
+  ClaudeBot, Claude-SearchBot, Google-Extended, Applebot-Extended, Bingbot); sitemap `lastmod` uses
+  `site.contentUpdated`.
+- Tests: four GEO checks (llms links/facts, llms-full coverage and no promises/prices, Service JSON-LD problems,
+  robots crawlers). Full suite 200 passed, 0 failed.
+
 ## Deviations and decisions
 
 - **Platform:** custom build (§19 Option B: Next.js · React · TypeScript · Tailwind, static export on

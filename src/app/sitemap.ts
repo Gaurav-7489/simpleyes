@@ -6,8 +6,9 @@ import { absoluteUrl } from "@/lib/seo";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date(site.legal.lastUpdated);
-  const pages: { path: string; priority: number }[] = [
+  const lastModified = new Date(site.contentUpdated);
+  const legalModified = new Date(site.legal.lastUpdated);
+  const pages: { path: string; priority: number; legal?: boolean }[] = [
     { path: "/", priority: 1 },
     { path: "/services/", priority: 0.9 },
     ...services.map((s) => ({ path: `/services/${s.slug}/`, priority: 0.8 })),
@@ -21,16 +22,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Legal pages are only listed once reviewed and indexable. /thank-you/ is never listed (noindex).
   if (site.legal.reviewed) {
     pages.push(
-      { path: "/privacy/", priority: 0.2 },
-      { path: "/terms/", priority: 0.2 },
-      { path: "/disclaimer/", priority: 0.2 },
-      { path: "/impressum/", priority: 0.2 },
+      { path: "/privacy/", priority: 0.2, legal: true },
+      { path: "/terms/", priority: 0.2, legal: true },
+      { path: "/disclaimer/", priority: 0.2, legal: true },
+      { path: "/impressum/", priority: 0.2, legal: true },
     );
   }
 
-  return pages.map(({ path, priority }) => ({
+  return pages.map(({ path, priority, legal }) => ({
     url: absoluteUrl(path),
-    lastModified,
+    lastModified: legal ? legalModified : lastModified,
     changeFrequency: "monthly",
     priority,
   }));

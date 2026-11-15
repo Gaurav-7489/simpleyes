@@ -20,6 +20,8 @@ export const site = {
   wordmark: "simplyes",
   tagline: "Redefining Consular Services.",
   url: rawSiteUrl.replace(/\/+$/, ""),
+  /** Date of the last content change (sitemap lastmod, llms files). Update when page content changes. */
+  contentUpdated: "2026-11-15",
   locale: "en",
   language: "en-DE",
   areaServed: "Germany",
