@@ -7,7 +7,7 @@ import { ChatDemo } from "@/components/home/ChatDemo";
  */
 export function WhySimplyes() {
   return (
-    <section id="why-simplyes" aria-labelledby="why-title" className="section-home bg-white">
+    <section id="why-simplyes" aria-labelledby="why-title" className="section-home">
       <div className="container-site">
         <h2 id="why-title" className="sr-only">
           Why SimplYes — support that keeps things simple

@@ -16,7 +16,7 @@ export function SimpleProcess() {
         <h2 id="process-title" className="type-h2">
           Simple process
         </h2>
-        <ol className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <ol className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
           {steps.map(({ icon: StepIcon, title, body }, i) => (
             <li key={title} className="process-tile">
               <span className="process-num" aria-hidden="true">
@@ -28,7 +28,7 @@ export function SimpleProcess() {
             </li>
           ))}
         </ol>
-        <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-2">
+        <p className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-2">
           Official processing and decisions always stay with the authorities.
           <Link href="/how-it-works/" className="link-tertiary">
             See how it works

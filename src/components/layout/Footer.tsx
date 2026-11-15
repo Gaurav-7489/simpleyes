@@ -28,7 +28,7 @@ function Column({ title, children }: { title: string; children: ReactNode }) {
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-line bg-white" aria-label="Site footer">
+    <footer className="bg-canvas-alt" aria-label="Site footer">
       <div className="container-site py-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] lg:py-16">
         <div className="grid grid-cols-2 gap-x-5 gap-y-7 lg:grid-cols-[1.3fr_repeat(4,minmax(0,1fr))] lg:gap-8">
           <div className="col-span-2 sm:max-w-sm lg:col-span-1">

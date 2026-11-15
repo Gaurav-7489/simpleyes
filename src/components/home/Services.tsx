@@ -9,8 +9,8 @@ export function Services() {
         <h2 id="services-title" className="type-h2">
           Choose your service
         </h2>
-        <p className="type-lead mt-2">Pick one to see the problems we help with.</p>
-        <div className="mt-6 lg:mt-8">
+        <p className="type-lead mt-3">Pick one to see the problems we help with.</p>
+        <div className="mt-8 lg:mt-10">
           <ServiceTiles services={services} />
         </div>
       </div>

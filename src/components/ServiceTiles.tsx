@@ -7,7 +7,7 @@ import { IconTile } from "@/components/ui/Icon";
 export function ServiceTiles({ services, headingLevel = "h3" }: { services: Service[]; headingLevel?: "h2" | "h3" }) {
   const Heading = headingLevel;
   return (
-    <ul className="service-tiles grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+    <ul className="service-tiles grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
       {services.map((service) => (
         <li key={service.slug}>
           <Link href={`/services/${service.slug}/`} className="service-tile" data-cta-location="services-grid">
