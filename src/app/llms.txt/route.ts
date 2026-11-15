@@ -1,7 +1,7 @@
 import { allFaqs } from "@/content/faqs";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
-import { independenceStatement } from "@/content/home";
+import { doesDoesNot, independenceStatement } from "@/content/home";
 import { absoluteUrl } from "@/lib/seo";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -21,9 +21,20 @@ export function GET() {
     "",
     independenceStatement,
     "",
+    "## Key facts",
+    "",
+    `- ${site.name} is a private, independent service — not an embassy, consulate, government authority or application centre.`,
+    ...doesDoesNot.doesNot.map((item) => `- ${site.name} does not: ${item.charAt(0).toLowerCase()}${item.slice(1)}`),
+    "- Fees: quotation-based; official, consular and third-party fees are separate.",
+    "- How to start: choose a service and problem, then send the enquiry form (no documents at this stage), or message on WhatsApp.",
+    `- Last updated: ${site.contentUpdated}. Full text: ${absoluteUrl("/llms-full.txt")}`,
+    "",
     "## Services",
     "",
-    ...services.map((s) => `- [${s.title}](${absoluteUrl(`/services/${s.slug}/`)}): ${s.summary}`),
+    ...services.flatMap((s) => [
+      `- [${s.title}](${absoluteUrl(`/services/${s.slug}/`)}): ${s.summary}`,
+      ...s.issues.map((issue) => `  - ${issue.label}: ${absoluteUrl(`/contact/?service=${s.slug}&issue=${issue.id}`)}`),
+    ]),
     "",
     "## Pages",
     "",

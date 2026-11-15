@@ -10,7 +10,14 @@ export default function robots(): MetadataRoute.Robots {
     return { rules: [{ userAgent: "*", disallow: "/" }] };
   }
   return {
-    rules: [{ userAgent: "*", allow: "/" }],
+    // Everyone may crawl. AI answer-engine crawlers are listed explicitly so their access is unambiguous (GEO).
+    rules: [
+      { userAgent: "*", allow: "/" },
+      {
+        userAgent: ["OAI-SearchBot", "ChatGPT-User", "GPTBot", "PerplexityBot", "ClaudeBot", "Claude-SearchBot", "Google-Extended", "Applebot-Extended", "Bingbot"],
+        allow: "/",
+      },
+    ],
     sitemap: absoluteUrl("/sitemap.xml"),
     host: absoluteUrl("/").replace(/\/$/, ""),
   };

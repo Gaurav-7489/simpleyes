@@ -68,6 +68,9 @@ export function organizationJsonLd() {
         areaServed: "DE",
         availableLanguage: ["English"],
       },
+      ...(site.contact.email
+        ? [{ "@type": "ContactPoint", contactType: "customer support", email: site.contact.email, url: absoluteUrl("/contact/"), areaServed: "DE", availableLanguage: ["English"] }]
+        : []),
     ],
   };
 }
@@ -97,7 +100,13 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   };
 }
 
-export function serviceJsonLd(input: { name: string; description: string; path: string }) {
+export function serviceJsonLd(input: {
+  name: string;
+  description: string;
+  path: string;
+  slug?: string;
+  issues?: { id: string; label: string }[];
+}) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -108,6 +117,27 @@ export function serviceJsonLd(input: { name: string; description: string; path: 
     provider: { "@id": orgId },
     areaServed: { "@type": "Country", name: "Germany" },
     audience: { "@type": "Audience", audienceType: "Indian citizens and people of Indian origin living in Germany" },
+    // How to request it: the contact form (prefilled per problem), WhatsApp/phone and email.
+    availableChannel: {
+      "@type": "ServiceChannel",
+      serviceUrl: absoluteUrl(input.slug ? `/contact/?service=${input.slug}` : "/contact/"),
+      servicePhone: { "@type": "ContactPoint", telephone: `+${site.whatsapp.number}`, contactType: "customer support" },
+      availableLanguage: "English",
+    },
+    // The problems this service helps with (no prices: quotation-based).
+    ...(input.issues?.length
+      ? {
+          hasOfferCatalog: {
+            "@type": "OfferCatalog",
+            name: `${input.name} — what we help with`,
+            itemListElement: input.issues.map((issue) => ({
+              "@type": "Offer",
+              itemOffered: { "@type": "Service", name: issue.label },
+              url: absoluteUrl(`/contact/?service=${input.slug}&issue=${issue.id}`),
+            })),
+          },
+        }
+      : {}),
   };
 }
 
