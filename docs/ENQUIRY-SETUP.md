@@ -68,17 +68,24 @@ Content-Security-Policy and the Privacy Policy entry).
      **Check deliverability** (*Zustellbarkeit prüfen*) switched on.
      Set **Captcha** to **none**. The website does not include Formdall's captcha widget, so turning it on
      would reject every enquiry.
-3. **Field schema / server-side validation:** confirm the provider's current required-field and format
-   rules for name, email, service, message and consent before enabling the form. The development team has
-   not verified these settings in an owner-controlled Formdall account. Do not treat browser validation as
-   proof of backend validation, and do not mark activation complete until rejected/invalid submissions and
-   real inbox delivery have been tested. If the provider cannot enforce the required checks, keep backend
-   activation pending rather than bypassing them.
+3. **Field schema** tab (*Feldschema*) — this is the server-side validation:
+   - Mode: **reject** (*Ablehnen*). Invalid submissions are refused with an error, and the website shows the
+     visitor a failure message, never the thank-you page.
+   - Add every field listed in **https://simplyes.de/enquiry-schema.json** with the same name, type,
+     required flag, maximum length and allowed values. The file is generated from the website's own
+     service/problem list, so it always matches what the form sends. After a service or problem changes,
+     update the schema from the file again.
+   - What it enforces at Formdall: required name, valid email, known `service_id` (8 slugs) and `issue_id`
+     (approved problem ids + `other`), length limits, allowed contact-method, team-size and context values,
+     and no unknown fields. The rule "a problem **or** a description" is conditional and is enforced by
+     the browser only.
+   - Test it (step 5): an enquiry from the site goes through, while a request with an unknown `service_id` is
+     refused.
 4. **Actions** tab (*Aktionen*) → add an **Email** action:
    - Recipient: `Info@simplyes.de`
    - Subject: `{{subject}}` (the website sends a ready-made subject such as
-     "New SimplYes Enquiry — Passport Services — Passport renewal"; the email also lists the `service` and
-     `issue` fields)
+     "New SimplYes Enquiry — Passport Services — Passport renewal"; the email lists every filled-in field:
+     name, email, phone, city, service, problem, description, contact method, company details, time)
    - Formdall sets Reply-To to the customer's email, so "Reply" in your mail program answers them directly.
 5. Do **not** add an **Auto-reply** until its wording, including any promised response time, has been
    approved.

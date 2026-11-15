@@ -530,6 +530,95 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
   });
 });
 
+test.describe("enquiry contract: browser payload ↔ Formdall field schema", () => {
+  const endpoint = process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT;
+  const honeypot = process.env.NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD || "_gotcha";
+
+  type Field = { name: string; type: string; required: boolean; max_length?: number; allowed_values: string[] };
+
+  /** Mirrors Formdall's documented reject-mode checks: unknown field, required, type, max_length, allowed_values. */
+  function violations(body: Record<string, string>, fields: Field[]) {
+    const byName = new Map(fields.map((f) => [f.name, f]));
+    const out: string[] = [];
+    for (const [key, value] of Object.entries(body)) {
+      if (key === honeypot) continue; // control field, removed by Formdall before schema checks
+      const f = byName.get(key);
+      if (!f) {
+        out.push(`unknown_field:${key}`);
+        continue;
+      }
+      if (f.max_length && value.length > f.max_length) out.push(`field_too_long:${key}`);
+      if (f.type === "select" && !f.allowed_values.includes(value)) out.push(`value_not_allowed:${key}=${value}`);
+      if (f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) out.push(`invalid_field_value:${key}`);
+      if (f.type === "boolean" && !/^(1|0|true|false|on|off|yes|no)$/i.test(value)) out.push(`invalid_field_value:${key}`);
+    }
+    for (const f of fields) if (f.required && !body[f.name]) out.push(`required_field_missing:${f.name}`);
+    return out;
+  }
+
+  async function capture(page: import("@playwright/test").Page, url: string, fill: (form: import("@playwright/test").Locator) => Promise<void>) {
+    let body: Record<string, string> = {};
+    await page.route(endpoint!, async (route) => {
+      body = route.request().postDataJSON();
+      await route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true,"message":"Submission received."}' });
+    });
+    await page.goto(url);
+    const form = page.locator("form#enquiry");
+    await form.getByLabel(/Full name/).fill("Test Person");
+    await form.getByLabel(/Email address/).fill("test@example.com");
+    await fill(form);
+    await form.getByRole("checkbox", { name: /I have read the Privacy Policy/ }).check();
+    await form.getByRole("button", { name: "Send Enquiry" }).click();
+    await expect(page).toHaveURL(/\/thank-you\/$/);
+    return body;
+  }
+
+  test("every enquiry variant satisfies the published schema, with stable service/issue ids", async ({ page, request }) => {
+    test.skip(!endpoint, "needs a build with NEXT_PUBLIC_ENQUIRY_ENDPOINT");
+    const schema = (await (await request.get("/enquiry-schema.json")).json()) as { mode: string; fields: Field[] };
+    expect(schema.mode).toBe("reject");
+
+    const renewal = await capture(page, "/contact/?service=passport-services&issue=renewal", async () => {});
+    expect(renewal.service_id).toBe("passport-services");
+    expect(renewal.issue_id).toBe("renewal");
+    expect(renewal.issue).toBe("Passport renewal");
+    expect(renewal.subject).toBe("New SimplYes Enquiry — Passport Services — Passport renewal");
+    expect(renewal).not.toHaveProperty("phone"); // empty optional fields are not sent
+    expect(violations(renewal, schema.fields)).toEqual([]);
+
+    const corporate = await capture(page, "/contact/?service=corporate-services&issue=other", async (form) => {
+      await form.getByLabel(/Company name/).fill("Example GmbH");
+      await form.getByLabel(/Approximate number of employees/).selectOption("6–20");
+      await form.getByLabel(/Describe your problem/).fill("We are relocating three engineers and their families.");
+      await form.getByLabel(/Phone \(with country code\)/).fill("+49 30 1234567");
+      await form.getByLabel(/City in Germany/).fill("Berlin");
+      await form.getByText("WhatsApp", { exact: true }).click();
+    });
+    expect(corporate.issue_id).toBe("other");
+    expect(corporate.company).toBe("Example GmbH");
+    expect(corporate.preferred_contact).toBe("WhatsApp");
+    expect(violations(corporate, schema.fields)).toEqual([]);
+
+    const direct = await capture(page, "/contact/", async (form) => {
+      await form.getByLabel(/Service category/).selectOption("student-services");
+      await form.getByLabel(/Describe your problem/).fill("I need help organising my degree documents.");
+    });
+    expect(direct.service_id).toBe("student-services");
+    expect(direct).not.toHaveProperty("issue_id");
+    expect(violations(direct, schema.fields)).toEqual([]);
+  });
+
+  test("the schema allows exactly the approved service and issue ids", async ({ request }) => {
+    const schema = (await (await request.get("/enquiry-schema.json")).json()) as { fields: Field[] };
+    const field = (name: string) => schema.fields.find((f) => f.name === name)!;
+    expect(field("service_id").allowed_values).toEqual(services.map((s) => s.slug));
+    const ids = [...new Set([...services.flatMap((s) => s.issues.map((i) => i.id)), "other"])].sort();
+    expect(field("issue_id").allowed_values).toEqual(ids);
+    expect(field("email").type).toBe("email");
+    expect(field("message").max_length).toBe(2000);
+  });
+});
+
 test.describe("analytics (§18)", () => {
   test("no analytics code or consent banner without a measurement ID", async ({ page }) => {
     test.skip(Boolean(process.env.NEXT_PUBLIC_GA_ID), "only without GA configured");

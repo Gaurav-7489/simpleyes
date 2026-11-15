@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import nextEnv from "@next/env";
 
 const reserved = new Set([
-  "subject", "name", "email", "phone", "city", "service", "issue", "preferred_contact", "message", "corporate",
+  "subject", "name", "email", "phone", "city", "service", "service_id", "issue", "issue_id", "preferred_contact", "message", "corporate",
   "company", "employees", "consent", "context", "submitted_at", "source_page", "utm_source", "utm_medium",
   "utm_campaign", "contactMethod", "__proto__", "constructor", "prototype",
 ]);

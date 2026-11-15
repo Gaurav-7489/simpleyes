@@ -43,3 +43,8 @@ test("invalid spam-field names and malformed URLs are rejected", () => {
     assert.throws(() => validateEnquiryConfiguration({ ...configured, NEXT_PUBLIC_ENQUIRY_ENDPOINT: endpoint }, csp));
   }
 });
+test("the spam-field name can never overwrite the canonical service or problem ids", () => {
+  for (const name of ["service_id", "issue_id", "service", "issue", "subject"]) {
+    assert.throws(() => validateEnquiryConfiguration({ ...configured, NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD: name }, csp));
+  }
+});
