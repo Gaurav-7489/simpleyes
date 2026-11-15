@@ -1,23 +1,17 @@
 import { services } from "@/content/services";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { ServiceIndex } from "@/components/ServiceIndex";
+import { ServiceTiles } from "@/components/ServiceTiles";
 
-/** §07 section 3 — all eight services as an editorial index with a live preview (one column on phones). */
-export function Services({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
+/** §07 section 3 — choose your service: the eight services as tiles. */
+export function Services() {
   return (
-    <section id="services" aria-labelledby="services-title" className="section scroll-mt-[var(--header-h)]">
+    <section id="services" aria-labelledby="services-title" className="section-home scroll-mt-[var(--header-h)]">
       <div className="container-site">
-        <SectionHeading
-          as={headingLevel}
-          id="services-title"
-          index="02"
-          badge="Services"
-          align="left"
-          title="Eight ways we can help"
-          lead="Choose the service that matches your situation. Each page explains who it's for, how we help and what stays with the authorities."
-        />
-        <div className="mt-10 lg:mt-14" data-reveal>
-          <ServiceIndex services={services} />
+        <h2 id="services-title" className="type-h2">
+          Choose your service
+        </h2>
+        <p className="type-lead mt-2">Pick one to see the problems we help with.</p>
+        <div className="mt-6 lg:mt-8">
+          <ServiceTiles services={services} />
         </div>
       </div>
     </section>

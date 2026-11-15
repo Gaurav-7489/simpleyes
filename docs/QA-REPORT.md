@@ -165,6 +165,31 @@ section the spec requires is still on the page.
   CTA (which has its own WhatsApp button) is on screen almost at once and hides the floating button by design.
   Full suite: 178 passed, 0 failed.
 
+## Smart enquiry flow, full-screen hero, service visuals (Nov 2026)
+
+Branch `claude/smart-enquiry-flow`.
+
+- **Problem selection:** every service lists 4 approved problems from the §05 scope (stable ids, e.g.
+  `passport-services/renewal`) plus "Something else". The service page's "What do you need help with?" picker
+  shows a clear selected state and "Continue to Contact" opens `/contact/?service=<slug>&issue=<id>`.
+- **Prefilled contact form:** Service and Selected problem are filled from the URL after validation (unknown or
+  mismatched ids are ignored), with a visible "Your selection" summary. The description is optional once a
+  specific problem is chosen. A "Something else" note travels via sessionStorage, never the URL. A tab-only draft
+  keeps typed text across Back/forward and is cleared after a successful submission. WhatsApp links carry
+  "Hello SimplYes, I need assistance with <Service> — <Problem>." and never the visitor's own text.
+- **Enquiry payload:** adds `issue`; subject `New SimplYes Enquiry — <Service> — <Problem>`. The Formdall email
+  action should keep the subject `{{subject}}`. Reply-To is the customer's email (Formdall default).
+- **Homepage:** full-screen hero with the existing Berlin scene edge to edge, one short line, Get Assistance as
+  the primary action. Then Choose your service (tiles) → Why SimplYes (chat demo) → Simple process (4 steps) →
+  compact FAQs → closing band.
+- **Service visuals:** Passport keeps the owner-supplied photo. The other seven each have their own original SVG
+  illustration (one style), with a description for screen readers. Previously five generic drawings were shared.
+- **Accuracy fix:** OCI option reads "OCI reissue (where applicable)". The tests forbid "OCI renewal" because an
+  OCI card is reissued only in specific cases.
+- **Tests:** new end-to-end tests for scenarios A–F, invalid URL values and optional description. Configured-
+  endpoint tests (dummy Formdall endpoint, intercepted) check the new subject and `issue` field. Full suite:
+  194 passed, 0 failed; endpoint build: 53 passed.
+
 ## Deviations and decisions
 
 - **Platform:** custom build (§19 Option B: Next.js · React · TypeScript · Tailwind, static export on
@@ -177,7 +202,7 @@ section the spec requires is still on the page.
 ## Unverified — must be tested before sign-off
 
 1. A real enquiry (through Formdall, once set up) submitted on production reaches `Info@simplyes.de` with the subject
-   "New enquiry — <service> — <city>", and the page then shows `/thank-you/`.
+   "New SimplYes Enquiry — <service> — <problem>", and the page then shows `/thank-you/`.
 2. Spam filtering and duplicate handling at the chosen form service; acknowledgement email (if enabled).
 3. GA4: consent banner shown, events (`view_service`, `cta_click`, `whatsapp_click`, `email_click`,
    `form_start`, `form_error`, `generate_lead`) visible in DebugView only after "Accept".

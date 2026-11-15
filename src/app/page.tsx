@@ -4,6 +4,7 @@ import { site } from "@/content/site";
 import { Hero } from "@/components/home/Hero";
 import { Services } from "@/components/home/Services";
 import { WhySimplyes } from "@/components/home/WhySimplyes";
+import { SimpleProcess } from "@/components/home/SimpleProcess";
 import { FaqSection } from "@/components/home/FaqSection";
 import { FinalCta } from "@/components/FinalCta";
 
@@ -15,15 +16,16 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-/** Homepage sections in order (the footer closes the page, in the layout). */
+/** Homepage: Hero → Choose your service → Why SimplYes → Simple process → FAQs → Contact (footer in the layout). */
 export default function HomePage() {
   return (
     <>
       <Hero />
       <Services />
       <WhySimplyes />
+      <SimpleProcess />
       <FaqSection />
-      <FinalCta />
+      <FinalCta compact />
     </>
   );
 }

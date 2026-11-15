@@ -2177,34 +2177,197 @@ html[data-menu-open] .tabbar {
   }
 }
 
-/* ----- Visual service page (icons over paragraphs) ----------------------- */
-.visual-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: clamp(16px, 2.5vw, 28px);
-  border-radius: 22px;
-  border: 1px solid var(--color-line);
-  background: #fff;
-  box-shadow: 0 18px 40px -32px rgb(0 58 44 / 0.45);
-}
-
-.visual-icon {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 6px;
-  border-radius: 16px;
-  color: var(--color-accent-700);
-  background: var(--color-accent-50);
-}
-
 /* Photo variant of the service hero art panel. */
 .card-photo {
   position: relative;
   overflow: hidden;
   border-radius: 28px;
   box-shadow: 0 30px 60px -36px rgb(0 58 44 / 0.55);
+}
+
+/* Contact form: summary of the selection carried over from a service page. */
+.selection-summary {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  background: var(--color-accent-50);
+  box-shadow: inset 0 0 0 1px var(--color-accent-100);
+}
+
+/* Service-page problem picker: selectable cards with a clear checked state. */
+.problem-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-ink);
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 8px 18px -16px rgb(0 58 44 / 0.4);
+  transition:
+    background-color 0.18s,
+    box-shadow 0.18s,
+    transform 0.18s var(--ease-out-soft);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.problem-option:hover {
+  background: var(--color-accent-50);
+}
+
+.problem-option:active {
+  transform: scale(0.985);
+}
+
+.problem-option:has(:focus-visible) {
+  outline: 2px solid var(--color-accent-700);
+  outline-offset: 2px;
+}
+
+.problem-option[data-checked="true"] {
+  background: var(--color-accent-50);
+  box-shadow:
+    inset 0 0 0 2px var(--color-accent-600),
+    0 10px 22px -16px rgb(0 92 69 / 0.55);
+}
+
+.problem-check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: transparent;
+  box-shadow: inset 0 0 0 1.5px #7d978b;
+  transition:
+    background-color 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
+}
+
+.problem-option[data-checked="true"] .problem-check {
+  color: #fff;
+  background: var(--color-accent-700);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .problem-option,
+  .problem-check {
+    transition: none;
+  }
+
+  .problem-option:active {
+    transform: none;
+  }
+}
+
+/* =========================================================================
+ * Full-screen homepage hero: the Berlin scene edge to edge, text on a wash.
+ * ========================================================================= */
+.hero-full {
+  display: flex;
+  flex-direction: column;
+  min-height: max(640px, 100svh);
+  background: #f3f8f5;
+}
+
+.hero-full-copy {
+  padding-top: clamp(108px, 14vh, 168px);
+  padding-bottom: 8px;
+}
+
+/* Phones/tablets: the scene is a full-width band filling the rest of the first screen. */
+.hero-full-art {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: clamp(240px, 40vh, 480px);
+  margin-top: -24px;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 22%);
+}
+
+.hero-full-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-full-wash {
+  display: none;
+}
+
+/* From 1280px: text on the left, the scene fills the right side of the full first screen. */
+@media (min-width: 1280px) {
+  .hero-full {
+    justify-content: center;
+    min-height: max(680px, 100svh);
+  }
+
+  .hero-full-copy {
+    padding-top: var(--header-h);
+    padding-bottom: 0;
+  }
+
+  .hero-full-art {
+    position: absolute;
+    inset: 0 0 0 30%;
+    min-height: 0;
+    margin: 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 26%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 26%);
+  }
+
+  .hero-full-copy {
+    z-index: 1;
+  }
+}
+
+/* Homepage: four-step process tiles. */
+.process-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 18px 16px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--color-line),
+    0 12px 26px -22px rgb(0 58 44 / 0.45);
+}
+
+.process-num {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-accent-900);
+  background: var(--color-accent-100);
+}
+
+/* Homepage sections: enough air to separate them, no large empty gaps. */
+.section-home {
+  padding-block: clamp(44px, 6vw, 72px);
 }

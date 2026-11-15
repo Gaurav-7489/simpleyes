@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { CircleAlert, Loader2, MessageCircle, TriangleAlert } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
+import { DRAFT_KEY, OTHER_ISSUE, OTHER_NOTE_KEY } from "@/lib/enquiry-keys";
 import { useHydrated } from "@/lib/useHydrated";
 
-type ServiceOption = { slug: string; title: string };
+type ServiceOption = { slug: string; title: string; issues: { id: string; label: string }[] };
+
+/** "Something else": valid for every service; the visitor then describes the problem in the message. */
+const OTHER = OTHER_ISSUE;
 
 type Props = {
   services: ServiceOption[];
@@ -25,6 +30,8 @@ type Values = {
   city: string;
   /** null = not chosen yet, so the URL pre-selection applies. */
   service: string | null;
+  /** Selected problem id (validated against the service), "other", "" (none), or null = use the URL. */
+  issue: string | null;
   contactMethod: "" | "Email" | "Phone" | "WhatsApp";
   message: string;
   corporate: boolean | null;
@@ -33,7 +40,7 @@ type Values = {
   consent: boolean;
 };
 
-type Field = "name" | "email" | "phone" | "service" | "message" | "consent" | "company";
+type Field = "name" | "email" | "phone" | "service" | "issue" | "message" | "consent" | "company";
 type Errors = Partial<Record<Field, string>>;
 
 const MESSAGE_MIN = 20;
@@ -42,7 +49,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^[+()\d\s./-]{6,24}$/;
 export const LEAD_FLAG = "simplyes-lead";
 
-type Resolved = Omit<Values, "service" | "corporate"> & { service: string; corporate: boolean };
+type Resolved = Omit<Values, "service" | "issue" | "corporate"> & { service: string; issue: string; corporate: boolean };
 
 function validate(v: Resolved): Errors {
   const e: Errors = {};
@@ -53,15 +60,17 @@ function validate(v: Resolved): Errors {
   if (v.phone.trim() && !PHONE_RE.test(v.phone.trim())) e.phone = "Please enter a phone number with country code, e.g. +49 …";
   if (!v.service) e.service = "Please choose a service category.";
   const len = v.message.trim().length;
-  if (!len) e.message = "Please tell us briefly what you need.";
-  else if (len < MESSAGE_MIN) e.message = `Please add a little more detail (at least ${MESSAGE_MIN} characters).`;
+  // A specific problem already says what is needed, so the description is optional; otherwise ask for one.
+  const needsMessage = !v.issue || v.issue === OTHER;
+  if (needsMessage && !len) e.message = v.issue === OTHER ? "Please describe what you need help with." : "Please choose a problem above or tell us briefly what you need.";
+  else if (needsMessage && len < MESSAGE_MIN) e.message = `Please add a little more detail (at least ${MESSAGE_MIN} characters).`;
   else if (len > MESSAGE_MAX) e.message = `Please keep your message under ${MESSAGE_MAX} characters.`;
   if (v.corporate && !v.company.trim()) e.company = "Please enter your company name.";
   if (!v.consent) e.consent = "Please confirm you have read the Privacy Policy.";
   return e;
 }
 
-const order: Field[] = ["name", "email", "phone", "service", "company", "message", "consent"];
+const order: Field[] = ["name", "email", "service", "issue", "message", "phone", "company", "consent"];
 
 /**
  * §13 enquiry form: visible labels, inline errors (aria-describedby, not colour
@@ -83,6 +92,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     phone: "",
     city: "",
     service: null,
+    issue: null,
     contactMethod: "",
     message: "",
     corporate: null,
@@ -107,12 +117,73 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
   const ctxParam = params.get("context") ?? "";
   const context = ctxParam === "pricing" || ctxParam === "corporate" ? ctxParam : "";
   const slugParam = params.get("service") ?? "";
-  const preService = services.some((s) => s.slug === slugParam) ? slugParam : context === "corporate" ? "corporate-services" : "";
+  const urlService = services.find((s) => s.slug === slugParam);
+  const preService = urlService ? urlService.slug : context === "corporate" ? "corporate-services" : "";
+  // Only an issue that belongs to the URL's service is accepted; anything else is ignored.
+  const issueParam = params.get("issue") ?? "";
+  const preIssue = urlService && (issueParam === OTHER || urlService.issues.some((i) => i.id === issueParam)) ? issueParam : "";
+  const resolvedService = raw.service ?? preService;
+  const serviceOption = services.find((s) => s.slug === resolvedService);
+  const rawIssue = raw.issue ?? (resolvedService === preService ? preIssue : "");
   const values: Resolved = {
     ...raw,
-    service: raw.service ?? preService,
-    corporate: raw.corporate ?? (context === "corporate" || (raw.service ?? preService) === "corporate-services"),
+    service: resolvedService,
+    issue: rawIssue === OTHER || serviceOption?.issues.some((i) => i.id === rawIssue) ? rawIssue : "",
+    corporate: raw.corporate ?? (context === "corporate" || resolvedService === "corporate-services"),
   };
+  const issueLabel =
+    values.issue === OTHER ? "Something else" : serviceOption?.issues.find((i) => i.id === values.issue)?.label ?? "";
+  const selectionHref = serviceOption
+    ? whatsappHrefForMessage(selectionWhatsappMessage(serviceOption.title, values.issue && values.issue !== OTHER ? issueLabel : undefined))
+    : whatsappHref;
+
+  // Restore this tab's draft (e.g. after going Back to a service page) without overriding a fresh URL selection,
+  // and pick up a "Something else" note typed on a service page.
+  useEffect(() => {
+    let draft: Partial<Values> | null = null;
+    try {
+      draft = JSON.parse(window.sessionStorage.getItem(DRAFT_KEY) ?? "null");
+    } catch {
+      draft = null;
+    }
+    let note: { service?: string; note?: string } | null = null;
+    try {
+      note = JSON.parse(window.sessionStorage.getItem(OTHER_NOTE_KEY) ?? "null");
+      window.sessionStorage.removeItem(OTHER_NOTE_KEY);
+    } catch {
+      note = null;
+    }
+    const fromUrl = Boolean(new URLSearchParams(window.location.search).get("service"));
+    const text = (key: keyof Values) => (draft && typeof draft[key] === "string" ? (draft[key] as string).slice(0, 2200) : "");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time restore after hydration (sessionStorage is client-only)
+    setValues((v) => ({
+      ...v,
+      name: v.name || text("name"),
+      email: v.email || text("email"),
+      phone: v.phone || text("phone"),
+      city: v.city || text("city"),
+      company: v.company || text("company"),
+      message:
+        v.message ||
+        text("message") ||
+        (note && typeof note.note === "string" && note.service === new URLSearchParams(window.location.search).get("service") ? note.note.slice(0, MESSAGE_MAX) : ""),
+      // A new selection in the URL wins over the saved one.
+      service: v.service ?? (!fromUrl && draft?.service ? draft.service : null),
+      issue: v.issue ?? (!fromUrl && typeof draft?.issue === "string" ? draft.issue : null),
+    }));
+  }, []);
+
+  // Keep the draft in this tab only, so Back/forward navigation never loses what was typed.
+  useEffect(() => {
+    if (!started.current) return;
+    try {
+      const { consent: _consent, ...draft } = raw;
+      void _consent;
+      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      /* storage unavailable: nothing to restore later */
+    }
+  }, [raw]);
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) => {
     if (!started.current) {
@@ -121,8 +192,15 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     }
     setValues((v) => {
       const next = { ...v, [key]: value };
+      // Freeze the URL selection into state on first edit, so later changes start from what the visitor sees.
+      if (next.service === null) next.service = values.service;
+      if (next.issue === null) next.issue = values.issue;
       if (key === "corporate" && value === true) next.service = "corporate-services";
-      if (key === "corporate" && next.service === null) next.service = values.service;
+      // A different service has different problems: reset the problem, keep everything else typed.
+      if (key === "service" || (key === "corporate" && value === true)) {
+        const svc = services.find((s) => s.slug === next.service);
+        if (next.issue !== OTHER && !svc?.issues.some((i) => i.id === next.issue)) next.issue = "";
+      }
       return next;
     });
     if (key in errors) setErrors((e) => ({ ...e, [key]: undefined }));
@@ -162,12 +240,13 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     const service = services.find((s) => s.slug === values.service);
     // Field order matters: the form service lists fields in the notification email in this order.
     const payload = {
-      subject: `New enquiry — ${service?.title ?? "General"}${values.city.trim() ? ` — ${values.city.trim()}` : ""}`,
+      subject: `New SimplYes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`,
       name: values.name.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
       city: values.city.trim(),
       service: service?.title ?? values.service,
+      issue: issueLabel,
       preferred_contact: values.contactMethod,
       message: values.message.trim(),
       corporate: values.corporate ? "yes" : "no",
@@ -207,6 +286,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
             (reply.success !== true && reply.ok !== true)) throw new Error("rejected");
       }
       try {
+        window.sessionStorage.removeItem(DRAFT_KEY);
         window.sessionStorage.setItem(LEAD_FLAG, JSON.stringify({ service: service?.title ?? "", preferred_contact: values.contactMethod }));
       } catch {
         /* storage unavailable: the thank-you page simply won't fire the conversion event */
@@ -251,13 +331,25 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
         {context === "pricing" ? "Request a service quote" : context === "corporate" ? "Corporate enquiry" : "Get Assistance"}
       </h2>
       <p className="type-body mt-1">Tell us what you need and we&apos;ll get back to you. Fields marked * are required.</p>
+      {serviceOption && (
+        <p className="selection-summary mt-4" aria-live="polite">
+          <span className="text-ink-3">Your selection:</span>{" "}
+          <strong className="font-medium text-ink">{serviceOption.title}</strong>
+          {issueLabel && (
+            <>
+              {" "}— <strong className="font-medium text-ink">{issueLabel}</strong>
+            </>
+          )}
+          <span className="text-ink-3"> · you can change it below</span>
+        </p>
+      )}
 
       {!endpoint && (
         <p role="note" className="mt-4 flex items-start gap-2 rounded-[12px] border border-[#e8c46a] bg-[#fdf6e3] px-4 py-3 text-sm text-[#5c4510]">
           <TriangleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" strokeWidth={1.75} />
           <span>
             The online form is being connected. Until then, please reach us on{" "}
-            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" data-cta="whatsapp" className="font-medium underline underline-offset-4">
+            <a href={selectionHref} target="_blank" rel="noopener noreferrer" data-cta="whatsapp" className="font-medium underline underline-offset-4">
               WhatsApp<span className="sr-only"> (opens in a new tab)</span>
             </a>
             {email && (
@@ -278,7 +370,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
           <p className="font-medium">Your enquiry could not be sent.</p>
           <p className="mt-1">
             Your details are still here — please try again in a moment, or contact us on{" "}
-            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" data-cta="whatsapp" className="font-medium underline underline-offset-4">
+            <a href={selectionHref} target="_blank" rel="noopener noreferrer" data-cta="whatsapp" className="font-medium underline underline-offset-4">
               WhatsApp<span className="sr-only"> (opens in a new tab)</span>
             </a>
             {email && (
@@ -338,42 +430,6 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
           />
           {err("email")}
         </div>
-        <div>
-          <label htmlFor={id("phone")} className="field-label">
-            Phone (with country code)
-          </label>
-          <input
-            id={id("phone")}
-            name="phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            maxLength={24}
-            placeholder="+49 …"
-            value={values.phone}
-            onChange={(e) => set("phone", e.target.value)}
-            aria-invalid={Boolean(errors.phone)}
-            aria-describedby={describe("phone")}
-            className="field"
-          />
-          {err("phone")}
-        </div>
-        <div>
-          <label htmlFor={id("city")} className="field-label">
-            City in Germany
-          </label>
-          <input
-            id={id("city")}
-            name="city"
-            type="text"
-            autoComplete="address-level2"
-            maxLength={80}
-            placeholder="e.g. Frankfurt"
-            value={values.city}
-            onChange={(e) => set("city", e.target.value)}
-            className="field"
-          />
-        </div>
         <div className="sm:col-span-2">
           <label htmlFor={id("service")} className="field-label">
             Service category <span aria-hidden="true">*</span>
@@ -396,6 +452,32 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
             ))}
           </select>
           {err("service")}
+        </div>
+
+        <div className="sm:col-span-2">
+          <label htmlFor={id("issue")} className="field-label">
+            Selected problem
+          </label>
+          <select
+            id={id("issue")}
+            name="issue"
+            value={values.issue}
+            onChange={(e) => set("issue", e.target.value)}
+            disabled={!serviceOption}
+            aria-describedby={id("issue-hint")}
+            className="field"
+          >
+            <option value="">{serviceOption ? "Choose a problem (optional)" : "Choose a service first"}</option>
+            {serviceOption?.issues.map((i) => (
+              <option key={i.id} value={i.id}>
+                {i.label}
+              </option>
+            ))}
+            {serviceOption && <option value={OTHER}>Something else</option>}
+          </select>
+          <p id={id("issue-hint")} className="mt-1.5 text-sm text-ink-3">
+            Picking a problem is enough — the description below is then optional.
+          </p>
         </div>
 
         <div className="sm:col-span-2">
@@ -452,6 +534,73 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
           </>
         )}
 
+
+        <div className="sm:col-span-2">
+          <label htmlFor={id("message")} className="field-label">
+            Describe your problem{" "}
+            {values.issue && values.issue !== OTHER ? (
+              <span className="font-normal text-ink-3">(optional)</span>
+            ) : (
+              <span aria-hidden="true">*</span>
+            )}
+          </label>
+          <textarea
+            id={id("message")}
+            name="message"
+            required={!values.issue || values.issue === OTHER}
+            maxLength={MESSAGE_MAX + 200}
+            placeholder="Anything we should know — dates, family members, what you have tried…"
+            value={values.message}
+            onChange={(e) => set("message", e.target.value)}
+            aria-invalid={Boolean(errors.message)}
+            aria-describedby={describe("message", "hint")}
+            className="field"
+          />
+          <p id={id("message-hint")} className="mt-1.5 flex justify-between gap-3 text-sm text-ink-3">
+            <span>Please don&apos;t include passport numbers or other ID numbers.</span>
+            <span aria-hidden="true" className={messageLength > MESSAGE_MAX ? "text-[#b42318]" : ""}>
+              {messageLength}/{MESSAGE_MAX}
+            </span>
+          </p>
+          {err("message")}
+        </div>
+
+        <div>
+          <label htmlFor={id("phone")} className="field-label">
+            Phone (with country code)
+          </label>
+          <input
+            id={id("phone")}
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            maxLength={24}
+            placeholder="+49 …"
+            value={values.phone}
+            onChange={(e) => set("phone", e.target.value)}
+            aria-invalid={Boolean(errors.phone)}
+            aria-describedby={describe("phone")}
+            className="field"
+          />
+          {err("phone")}
+        </div>
+        <div>
+          <label htmlFor={id("city")} className="field-label">
+            City in Germany
+          </label>
+          <input
+            id={id("city")}
+            name="city"
+            type="text"
+            autoComplete="address-level2"
+            maxLength={80}
+            placeholder="e.g. Frankfurt"
+            value={values.city}
+            onChange={(e) => set("city", e.target.value)}
+            className="field"
+          />
+        </div>
         <fieldset className="sm:col-span-2">
           <legend className="field-label">Preferred contact method</legend>
           <div className="flex flex-wrap gap-2">
@@ -475,31 +624,6 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
             ))}
           </div>
         </fieldset>
-
-        <div className="sm:col-span-2">
-          <label htmlFor={id("message")} className="field-label">
-            Message <span aria-hidden="true">*</span>
-          </label>
-          <textarea
-            id={id("message")}
-            name="message"
-            required
-            maxLength={MESSAGE_MAX + 200}
-            placeholder="Tell us about your requirement…"
-            value={values.message}
-            onChange={(e) => set("message", e.target.value)}
-            aria-invalid={Boolean(errors.message)}
-            aria-describedby={describe("message", "hint")}
-            className="field"
-          />
-          <p id={id("message-hint")} className="mt-1.5 flex justify-between gap-3 text-sm text-ink-3">
-            <span>Please don&apos;t include passport numbers or other ID numbers.</span>
-            <span aria-hidden="true" className={messageLength > MESSAGE_MAX ? "text-[#b42318]" : ""}>
-              {messageLength}/{MESSAGE_MAX}
-            </span>
-          </p>
-          {err("message")}
-        </div>
 
         {/* Honeypot (spam protection): hidden from people and assistive tech. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
@@ -547,7 +671,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
         <MessageCircle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
         <span>
           Prefer WhatsApp?{" "}
-          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" data-cta="whatsapp" data-cta-location="form" className="text-accent-700 underline underline-offset-4">
+          <a href={selectionHref} target="_blank" rel="noopener noreferrer" data-cta="whatsapp" data-cta-location="form" className="text-accent-700 underline underline-offset-4">
             Chat with us<span className="sr-only"> (opens in a new tab)</span>
           </a>
         </span>

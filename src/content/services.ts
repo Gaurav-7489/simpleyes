@@ -1,3 +1,4 @@
+import type { SceneKind } from "@/components/illustrations/ServiceScene";
 import type { Faq } from "@/content/faqs";
 
 export type IllustrationKind = "documents" | "form" | "photo" | "appointment" | "process" | "personal";
@@ -53,17 +54,26 @@ export type Service = {
   /** Overrides the default prefilled WhatsApp text (still non-sensitive). */
   whatsappMessage?: string;
   illustration: IllustrationKind;
+  /**
+   * Problems a visitor can pick on the service page (stable ids, used in /contact/?service=&issue=).
+   * Taken from the approved scope (§05); "Something else" is added by the UI, never listed here.
+   */
+  issues: ServiceIssue[];
   /** Short, visual page layout (icons over paragraphs). When set, the service page uses it. */
   visual?: ServiceVisual;
+  /** Original illustration for the service page (used when there is no `visual` photo). */
+  scene?: { kind: SceneKind; label: string };
 };
 
-/** Icon names for the visual layout; mapped to outline icons in ServiceVisualBody. */
-export type VisualIcon = "calendar" | "alert" | "edit" | "new";
+/** One selectable problem on a service page. `id` is stable: it is used in URLs and enquiry emails. */
+export type ServiceIssue = { id: string; label: string };
+
+export { OTHER_ISSUE } from "@/lib/enquiry-keys";
+import { OTHER_ISSUE } from "@/lib/enquiry-keys";
 
 /** Short, visual service page: a hero photo and icon tiles instead of paragraphs. */
 export type ServiceVisual = {
   photo: { src: string; alt: string; width: number; height: number };
-  situations: { icon: VisualIcon; label: string; hint: string }[];
 };
 
 const CHECKED = "2026-10-30";
@@ -212,14 +222,14 @@ export const services: Service[] = [
     related: ["family-documentation", "oci-services", "affidavits-declarations"],
     sources: [sources.outsourcing],
     illustration: "documents",
+    issues: [
+      { id: "renewal", label: "Passport renewal" },
+      { id: "new-passport", label: "New passport application" },
+      { id: "lost-damaged", label: "Lost or damaged passport" },
+      { id: "correction", label: "Correct personal details" },
+    ],
     visual: {
       photo: { src: "/images/passport-services.webp", alt: "An Indian passport on a wooden desk", width: 1200, height: 796 },
-      situations: [
-        { icon: "calendar", label: "Expiring soon", hint: "Renewal" },
-        { icon: "alert", label: "Lost or damaged", hint: "Reissue" },
-        { icon: "edit", label: "Details to correct", hint: "Name, address and more" },
-        { icon: "new", label: "First adult passport", hint: "New application" },
-      ],
     },
   },
   {
@@ -332,6 +342,13 @@ export const services: Service[] = [
     related: ["passport-services", "family-documentation"],
     sources: [sources.ociPortal, sources.embassyOci, sources.outsourcing],
     illustration: "form",
+    scene: { kind: "oci", label: "Illustration of an identity card for OCI documentation" },
+    issues: [
+      { id: "new-oci", label: "New OCI application" },
+      { id: "reissue", label: "OCI reissue (where applicable)" },
+      { id: "update-correction", label: "Update or correct OCI details" },
+      { id: "family-oci", label: "OCI for several family members" },
+    ],
   },
   {
     slug: "attestation-legalisation",
@@ -433,6 +450,13 @@ export const services: Service[] = [
     related: ["student-services", "affidavits-declarations"],
     sources: [sources.attestationFaq, sources.meaApostille, sources.outsourcing],
     illustration: "process",
+    scene: { kind: "attestation", label: "Illustration of a certificate with a seal and a stamp" },
+    issues: [
+      { id: "apostille", label: "Apostille guidance" },
+      { id: "educational", label: "Educational document attestation" },
+      { id: "personal-certificates", label: "Personal or civil certificates" },
+      { id: "translation-notarisation", label: "Translation or notarisation guidance" },
+    ],
   },
   {
     slug: "affidavits-declarations",
@@ -530,6 +554,13 @@ export const services: Service[] = [
     related: ["passport-services", "attestation-legalisation"],
     sources: [sources.attestationFaq, sources.outsourcing],
     illustration: "form",
+    scene: { kind: "affidavit", label: "Illustration of a signed declaration and a pen" },
+    issues: [
+      { id: "name-discrepancy", label: "Name discrepancy declaration" },
+      { id: "personal-declaration", label: "Personal declaration or affidavit" },
+      { id: "power-of-attorney", label: "Power of Attorney guidance" },
+      { id: "notarisation", label: "Notarisation guidance" },
+    ],
   },
   {
     slug: "visa-documentation-support",
@@ -629,6 +660,13 @@ export const services: Service[] = [
     related: ["attestation-legalisation", "family-documentation"],
     sources: [sources.outsourcing],
     illustration: "appointment",
+    scene: { kind: "visa", label: "Illustration of a document folder and an aeroplane on a dotted route" },
+    issues: [
+      { id: "requirements", label: "Understand document requirements" },
+      { id: "application-preparation", label: "Prepare my application" },
+      { id: "completeness-check", label: "Check my documents are complete" },
+      { id: "appointment-preparation", label: "Prepare for an appointment" },
+    ],
   },
   {
     slug: "family-documentation",
@@ -718,6 +756,13 @@ export const services: Service[] = [
     related: ["passport-services", "oci-services", "corporate-services"],
     sources: [sources.outsourcing, sources.ociPortal],
     illustration: "personal",
+    scene: { kind: "family", label: "Illustration of a family of three next to a document" },
+    issues: [
+      { id: "spouse", label: "Spouse documentation" },
+      { id: "children", label: "Children or newborn documentation" },
+      { id: "marriage", label: "Marriage-related documents" },
+      { id: "household", label: "Several family members together" },
+    ],
   },
   {
     slug: "student-services",
@@ -806,6 +851,13 @@ export const services: Service[] = [
     related: ["attestation-legalisation", "passport-services"],
     sources: [sources.attestationFaq, sources.meaApostille],
     illustration: "documents",
+    scene: { kind: "student", label: "Illustration of a graduation cap and a certificate" },
+    issues: [
+      { id: "certificates", label: "Educational certificates" },
+      { id: "degree-attestation", label: "Degree attestation guidance" },
+      { id: "academic-documents", label: "Organise academic documents" },
+      { id: "student-paperwork", label: "Other student paperwork" },
+    ],
   },
   {
     slug: "corporate-services",
@@ -894,6 +946,13 @@ export const services: Service[] = [
     sources: [sources.outsourcing],
     whatsappMessage: "Hello SimplYes, I would like to discuss Corporate Services for our team. Could you explain the next steps?",
     illustration: "process",
+    scene: { kind: "corporate", label: "Illustration of an office building, a briefcase and a document" },
+    issues: [
+      { id: "employee-documentation", label: "Employee documentation" },
+      { id: "relocation", label: "Relocation documentation" },
+      { id: "onboarding", label: "New employee onboarding" },
+      { id: "employee-families", label: "Support for employees' families" },
+    ],
   },
 ];
 
@@ -906,10 +965,18 @@ export function relatedServices(service: Service): Service[] {
 }
 
 /** Contact link with the service pre-selected in the enquiry form (§08 conversion rule). */
-export function enquiryHref(service?: Pick<Service, "slug">, context?: "pricing" | "corporate"): string {
+export function enquiryHref(service?: Pick<Service, "slug">, context?: "pricing" | "corporate", issueId?: string): string {
   const params = new URLSearchParams();
   if (service) params.set("service", service.slug);
+  if (service && issueId) params.set("issue", issueId);
   if (context) params.set("context", context);
   const query = params.toString();
   return `/contact/${query ? `?${query}` : ""}#enquiry`;
+}
+
+/** Validated lookup: returns the issue only if it belongs to the service (never trust URL values). */
+export function getIssue(service: Pick<Service, "issues"> | undefined, issueId: string | null | undefined): ServiceIssue | undefined {
+  if (!service || !issueId) return undefined;
+  if (issueId === OTHER_ISSUE) return { id: OTHER_ISSUE, label: "Something else" };
+  return service.issues.find((issue) => issue.id === issueId);
 }

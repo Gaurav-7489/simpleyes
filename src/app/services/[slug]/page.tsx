@@ -17,7 +17,6 @@ import {
   ListOrdered,
   Mail,
   MessageCircle,
-  MessageSquareQuote,
   PackageCheck,
   Send,
   Users,
@@ -28,11 +27,11 @@ import { site } from "@/content/site";
 import { independenceStatement } from "@/content/home";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { whatsappHref } from "@/lib/whatsapp";
-import { ButtonLink, WhatsAppButton } from "@/components/ui/Button";
 import { IconTile } from "@/components/ui/Icon";
 import { ServiceArt } from "@/components/illustrations/ServiceArt";
+import { ServiceScene } from "@/components/illustrations/ServiceScene";
 import { DisclosureList } from "@/components/DisclosureList";
-import { ServiceVisualBody } from "@/components/service/ServiceVisualBody";
+import { ProblemPicker } from "@/components/service/ProblemPicker";
 import { FaqList } from "@/components/FaqList";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -149,7 +148,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
 
       {/* 1 · Service-specific hero */}
       <section className="hero-mint relative isolate overflow-hidden pb-[var(--section-y-compact)] pt-[clamp(92px,9vw,120px)]">
-        <div className="container-site grid items-center gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12">
+        <div className="container-site grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12">
           <div className="flex flex-col items-start">
             <nav aria-label="Breadcrumb" className="hero-intro mb-4">
               <ol className="flex flex-wrap items-center gap-1 text-sm text-ink-2">
@@ -176,23 +175,18 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
               <IconTile name={service.icon} />
               <h1 className="type-page-title">{service.title}</h1>
             </div>
-            {!service.visual && (
-              <>
-                <p className="type-lead hero-intro mt-3 max-w-[40rem]">{service.outcome}</p>
-                <p className="hero-intro mt-1.5 text-sm text-ink-3">Mainly for: {service.mainlyFor}</p>
-              </>
-            )}
-            <div className="hero-intro mt-5 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <ButtonLink href={primaryHref} location="service-hero">
-                {ctaLabel}
-              </ButtonLink>
-              <WhatsAppButton service={service} variant="light" location="service-hero">
-                Ask on WhatsApp
-              </WhatsAppButton>
+            <p className="type-lead hero-intro mt-3 max-w-[40rem]">{service.outcome}</p>
+
+            {/* The main action: pick the problem, continue to a prefilled contact form. */}
+            <div id="choose-problem" className="mt-6 w-full scroll-mt-[calc(var(--header-h)+16px)]">
+              <h2 className="font-display text-[1.25rem] font-medium text-ink">What do you need help with?</h2>
+              <div className="mt-3">
+                <ProblemPicker slug={service.slug} title={service.title} issues={service.issues} corporate={corporate} />
+              </div>
             </div>
           </div>
           {service.visual ? (
-            <div className="card-art card-photo hero-intro aspect-[4/3] w-full">
+            <div className="card-art card-photo hero-intro order-first aspect-[16/9] w-full sm:aspect-[4/3] lg:order-none lg:sticky lg:top-[calc(var(--header-h)+16px)]">
               <Image
                 src={service.visual.photo.src}
                 alt={service.visual.photo.alt}
@@ -204,8 +198,12 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
               />
             </div>
           ) : (
-            <div className="card-art hero-intro hidden aspect-[16/10] w-full sm:block" aria-hidden="true">
-              <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
+            <div className="card-art hero-intro order-first aspect-[16/9] w-full sm:aspect-[4/3] lg:order-none lg:sticky lg:top-[calc(var(--header-h)+16px)]">
+              {service.scene ? (
+                <ServiceScene kind={service.scene.kind} uid={service.slug} label={service.scene.label} className="absolute inset-0 h-full w-full" />
+              ) : (
+                <ServiceArt kind={service.illustration} uid={service.slug} className="absolute inset-0 h-full w-full" />
+              )}
             </div>
           )}
         </div>
@@ -213,10 +211,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
 
       {service.visual ? (
         <>
-          {/* Owner-approved short layout (passport): situation tiles + one CTA, then FAQs and sources. */}
-          <ServiceVisualBody service={service} ctaHref={primaryHref} ctaLabel={ctaLabel} />
+          {/* Owner-approved short layout (passport): the picker above, then only FAQs and sources. */}
           <section aria-labelledby="service-faqs" className="pb-[var(--section-y-compact)]">
-            <div className="container-site max-w-[860px]">
+            <div className="container-site">
               <h2 id="service-faqs" className="type-card-title !text-[1.375rem]">
                 {service.title} FAQs
               </h2>
@@ -229,42 +226,9 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         </>
       ) : (
         <>
-      {/* 4 · Common customer situations — tiles, as in the mockup */}
-      <section aria-labelledby="situations" className="pb-[var(--section-y-compact)]">
-        <div className="container-site">
-          <h2 id="situations" className="type-card-title !text-[1.375rem]">
-            Common situations
-          </h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {service.situations.map((s) => (
-              <li key={s.situation} className="situation-tile">
-                <span className="icon-tile grid size-10 shrink-0 place-items-center rounded-[12px] text-accent-600" aria-hidden="true">
-                  <MessageSquareQuote className="size-5" strokeWidth={1.75} />
-                </span>
-                <div>
-                  <p className="font-display text-[1rem] font-medium leading-snug text-ink">{s.situation}</p>
-                  <p className="mt-1 text-sm leading-snug text-ink-2">
-                    <span className="font-medium text-accent-700">How we help:</span> {s.howWeHelp}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-          {/* Mid-page CTA (§08 conversion rule) */}
-          <div className="mt-5 flex justify-center">
-            <div className="cta-strip">
-              <p className="text-[0.9375rem] text-ink-2">Ready to get started with {service.title}?</p>
-              <ButtonLink href={primaryHref} size="sm" location="service-mid">
-                {ctaLabel}
-              </ButtonLink>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 2, 3, 5–11 · Details: tap to open */}
       <section aria-label={`${service.title} details`} className="pb-[var(--section-y-compact)]">
-        <div className="container-site max-w-[920px]">
+        <div className="container-site">
           <p className="mb-3 text-sm text-ink-2">
             Tap a topic to open it. Document categories on this page are indicative and subject to verification.
           </p>
@@ -375,7 +339,7 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
       {/* 12 · Related services — compact tiles */}
       {related.length > 0 && (
         <section aria-labelledby="related-services" className="pb-[var(--section-y-compact)]">
-          <div className="container-site max-w-[920px]">
+          <div className="container-site">
             <h2 id="related-services" className="type-card-title !text-[1.375rem]">
               Related services
             </h2>

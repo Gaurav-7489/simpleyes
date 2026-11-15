@@ -77,7 +77,8 @@ Content-Security-Policy and the Privacy Policy entry).
 4. **Actions** tab (*Aktionen*) → add an **Email** action:
    - Recipient: `Info@simplyes.de`
    - Subject: `{{subject}}` (the website sends a ready-made subject such as
-     "New enquiry — OCI Services — Frankfurt")
+     "New SimplYes Enquiry — Passport Services — Passport renewal"; the email also lists the `service` and
+     `issue` fields)
    - Formdall sets Reply-To to the customer's email, so "Reply" in your mail program answers them directly.
 5. Do **not** add an **Auto-reply** until its wording, including any promised response time, has been
    approved.
@@ -101,7 +102,7 @@ Content-Security-Policy and the Privacy Policy entry).
 ### 5. Test on production
 1. On `https://simplyes.de/contact/`, send a real test enquiry with your own email address and a city.
 2. Expect: the page moves to `/thank-you/`; an email arrives at `Info@simplyes.de` with the subject
-   "New enquiry — <service> — <city>", all fields listed, and Reply-To set to the test address. Check the spam
+   "New SimplYes Enquiry — <service> — <problem>", all fields listed, and Reply-To set to the test address. Check the spam
    folder too.
 3. In Formdall, the email action's delivery status should be **success**.
 4. Important: Formdall answers *silently rejected* spam with the same "success" response, so the
