@@ -7,6 +7,7 @@ import { CircleAlert, Loader2, MessageCircle, TriangleAlert } from "lucide-react
 import { track } from "@/lib/analytics";
 import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
 import { DRAFT_KEY, OTHER_ISSUE, OTHER_NOTE_KEY } from "@/lib/enquiry-keys";
+import { ENQUIRY_LIMITS } from "@/lib/enquiry-schema";
 import { useHydrated } from "@/lib/useHydrated";
 
 type ServiceOption = { slug: string; title: string; issues: { id: string; label: string }[] };
@@ -44,7 +45,7 @@ type Field = "name" | "email" | "phone" | "service" | "issue" | "message" | "con
 type Errors = Partial<Record<Field, string>>;
 
 const MESSAGE_MIN = 20;
-const MESSAGE_MAX = 2000;
+const MESSAGE_MAX = ENQUIRY_LIMITS.message;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^[+()\d\s./-]{6,24}$/;
 export const LEAD_FLAG = "simplyes-lead";
@@ -54,9 +55,9 @@ type Resolved = Omit<Values, "service" | "issue" | "corporate"> & { service: str
 function validate(v: Resolved): Errors {
   const e: Errors = {};
   if (!v.name.trim()) e.name = "Please enter your full name.";
-  else if (v.name.trim().length > 100) e.name = "Please keep your name under 100 characters.";
+  else if (v.name.trim().length > ENQUIRY_LIMITS.name) e.name = `Please keep your name under ${ENQUIRY_LIMITS.name} characters.`;
   if (!v.email.trim()) e.email = "Please enter your email address.";
-  else if (!EMAIL_RE.test(v.email.trim())) e.email = "Please enter a valid email address.";
+  else if (!EMAIL_RE.test(v.email.trim()) || v.email.trim().length > ENQUIRY_LIMITS.email) e.email = "Please enter a valid email address.";
   if (v.phone.trim() && !PHONE_RE.test(v.phone.trim())) e.phone = "Please enter a phone number with country code, e.g. +49 …";
   if (!v.service) e.service = "Please choose a service category.";
   const len = v.message.trim().length;
@@ -66,6 +67,7 @@ function validate(v: Resolved): Errors {
   else if (needsMessage && len < MESSAGE_MIN) e.message = `Please add a little more detail (at least ${MESSAGE_MIN} characters).`;
   else if (len > MESSAGE_MAX) e.message = `Please keep your message under ${MESSAGE_MAX} characters.`;
   if (v.corporate && !v.company.trim()) e.company = "Please enter your company name.";
+  else if (v.corporate && v.company.trim().length > ENQUIRY_LIMITS.company) e.company = `Please keep the company name under ${ENQUIRY_LIMITS.company} characters.`;
   if (!v.consent) e.consent = "Please confirm you have read the Privacy Policy.";
   return e;
 }
@@ -239,30 +241,38 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     const params = new URLSearchParams(window.location.search);
     const service = services.find((s) => s.slug === values.service);
     // Field order matters: the form service lists fields in the notification email in this order.
-    const payload = {
-      subject: `New SimplYes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`,
-      name: values.name.trim(),
-      email: values.email.trim(),
-      phone: values.phone.trim(),
-      city: values.city.trim(),
-      service: service?.title ?? values.service,
-      issue: issueLabel,
-      preferred_contact: values.contactMethod,
-      message: values.message.trim(),
-      corporate: values.corporate ? "yes" : "no",
-      company: values.corporate ? values.company.trim() : "",
-      employees: values.corporate ? values.employees.trim() : "",
-      consent: "yes",
-      context,
+    const clip = (value: string, max: number) => value.trim().slice(0, max);
+    const sourcePage = document.referrer ? new URL(document.referrer, window.location.href).pathname : window.location.pathname;
+    // Field order matters: the form service lists fields in the notification email in this order. The contract
+    // (names, types, limits, allowed ids) is src/lib/enquiry-schema.ts, enforced again by the Formdall field schema.
+    // Optional fields are sent only when filled in, so nothing empty reaches the provider or the inbox.
+    const fields: [string, string][] = [
+      ["subject", clip(`New SimplYes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`, ENQUIRY_LIMITS.subject)],
+      ["name", values.name.trim()],
+      ["email", values.email.trim()],
+      ["phone", values.phone.trim()],
+      ["city", clip(values.city, ENQUIRY_LIMITS.city)],
+      ["service", service?.title ?? ""],
+      ["service_id", service?.slug ?? ""],
+      ["issue", issueLabel],
+      ["issue_id", values.issue],
+      ["preferred_contact", values.contactMethod],
+      ["message", values.message.trim()],
+      ["corporate", values.corporate ? "yes" : "no"],
+      ["company", values.corporate ? values.company.trim() : ""],
+      ["employees", values.corporate ? values.employees : ""],
+      ["consent", "yes"],
+      ["context", context],
       // Hidden metadata (§13): timestamp, source page, lead source.
-      submitted_at: new Date().toISOString(),
-      source_page: document.referrer ? new URL(document.referrer, window.location.href).pathname : window.location.pathname,
-      utm_source: params.get("utm_source") ?? "",
-      utm_medium: params.get("utm_medium") ?? "",
-      utm_campaign: params.get("utm_campaign") ?? "",
-      // The service's honeypot must be present (and empty) or a JSON submission is rejected.
-      [honeypotField]: "",
-    };
+      ["submitted_at", new Date().toISOString()],
+      ["source_page", clip(sourcePage, ENQUIRY_LIMITS.sourcePage)],
+      ["utm_source", clip(params.get("utm_source") ?? "", ENQUIRY_LIMITS.utm)],
+      ["utm_medium", clip(params.get("utm_medium") ?? "", ENQUIRY_LIMITS.utm)],
+      ["utm_campaign", clip(params.get("utm_campaign") ?? "", ENQUIRY_LIMITS.utm)],
+    ];
+    const payload: Record<string, string> = Object.fromEntries(fields.filter(([, value]) => value !== ""));
+    // The service's honeypot must be present (and empty) or a JSON submission is rejected.
+    payload[honeypotField] = "";
 
     const controller = new AbortController();
     requestRef.current = controller;
