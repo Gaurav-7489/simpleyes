@@ -90,8 +90,9 @@ needs to edit frequently without GitHub.
 | Wordmark (typographic stand-in) | `src/components/ui/Wordmark.tsx` | Replace with the official SVG when supplied |
 | Favicon / app icons | `src/app/icon.svg`, `src/app/apple-icon.png`, `public/icon-192.png`, `public/icon-512.png` | Derive from the official logo when supplied |
 | Social sharing image | `public/og-image.png` (1200×630) | Derive from the official logo when supplied |
-| Illustrations | `src/components/illustrations/ServiceArt.tsx` and homepage SVG | Original SVG, no licensed or stock imagery |
-| Colours, type, spacing tokens | `src/app/globals.css` | Teal `#0B7F8C` applied; logo gradient stops still approximate |
+| Illustrations | `BerlinScene.tsx` (homepage hero), `ServiceScene.tsx` (seven service pages) | Original SVG, no licensed or stock imagery |
+| Passport photo | `public/images/passport-services.webp` | Owner-supplied; shows the Indian State Emblem — owner to confirm approval (see OWNER-REGISTER) |
+| Colours, type, spacing tokens | `src/app/globals.css` | Green palette confirmed 12 Nov 2026 (`#005C45` / `#00905A` / `#E2F4E6`); logo gradient stops still approximate |
 
 ## 6. Technical documentation
 
@@ -118,7 +119,7 @@ Launch-blocking items are owner inputs, tracked in OWNER-REGISTER.md. The techni
 3. **Legal pages** are structured drafts and stay `noindex` until reviewed (`site.legal.reviewed`). The
    Impressum is publicly reachable with placeholder fields; fill it in first.
 4. **Brand assets.** The wordmark, favicon and social image are stand-ins until the official logo file is
-   supplied. The teal is final (`#0B7F8C`).
+   supplied. The green palette is final (`#005C45`, `#00905A`).
 5. **Not yet verified on real devices or browsers:** iOS Safari, Android Chrome, desktop Safari, Firefox and
    Edge, plus a screen-reader spot check (§23). Automated testing covers Chromium only.
 6. **Production checks still open:** real enquiry reaching the inbox, notifications, GA4 events, Search
