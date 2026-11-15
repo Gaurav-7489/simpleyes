@@ -6,6 +6,7 @@ placeholder values on the live site. **●** = blocks launch.
 | | Item | What is needed | Where it plugs in | Status |
 |---|---|---|---|---|
 | ● | Official logo asset | SVG/PNG "simplyes." wordmark with exact gradient stops; favicon and social image source | `src/components/ui/Wordmark.tsx` (stand-in drawn after the mockup: green check + "SimplYes."), `src/app/icon.svg`, `public/og-image.png` | Open |
+| ● | Passport page photo | Approval of `public/images/passport-services.webp` | Passport Services hero | **Confirm:** it shows the Indian State Emblem; the spec (§07/§08/§16) excludes official seals and Indian law restricts the emblem's use. Approve explicitly or replace with a neutral image |
 | ● | Primary colour | Full hex and any supporting palette | `--color-accent-*`, `--color-teal` in `src/app/globals.css` | Done — green confirmed by the owners on 12 Nov 2026 (from the UI mockup): actions `#005C45`, highlight `#00905A`, mint `#E2F4E6`. Replaces the earlier teal `#0B7F8C` |
 | ● | Business email address | Public contact address and enquiry notification inbox | `NEXT_PUBLIC_CONTACT_EMAIL`; form service notification settings | Done — `Info@simplyes.de` |
 | ● | WhatsApp number | Approved number and pre-filled message text | `NEXT_PUBLIC_WHATSAPP_NUMBER`, `src/lib/whatsapp.ts` | Done — `+49 1521 6627596` |
