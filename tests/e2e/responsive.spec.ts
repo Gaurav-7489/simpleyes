@@ -57,8 +57,8 @@ test.describe("responsive layout", () => {
 
   test("fixed header never covers the focused/anchored heading", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/#why-simplyes");
-    const top = await page.locator("#why-title").evaluate((el) => el.getBoundingClientRect().top);
+    await page.goto("/services/passport-services/#choose-problem");
+    const top = await page.locator("#choose-problem-title").evaluate((el) => el.getBoundingClientRect().top);
     expect(top).toBeGreaterThan(80);
   });
 });

@@ -14,7 +14,7 @@
 .home-hero-grid {
   display: grid;
   gap: 8px;
-  padding-top: calc(var(--header-h) + clamp(24px, 6vw, 56px));
+  padding-top: clamp(24px, 6vw, 56px);
   padding-bottom: clamp(24px, 5vw, 48px);
 }
 
@@ -263,7 +263,7 @@
   }
 }
 
-/* ----- Why SimplYes ---------------------------------------------------------------------------------- */
+/* ----- Why Simplyes ---------------------------------------------------------------------------------- */
 .why {
   background: linear-gradient(180deg, var(--color-canvas) 0%, var(--color-canvas-alt) 100%);
 }
@@ -576,7 +576,7 @@
 .page-hero-grid {
   display: grid;
   gap: 8px;
-  padding-top: calc(var(--header-h) + clamp(28px, 5vw, 56px));
+  padding-top: clamp(28px, 5vw, 56px);
   padding-bottom: clamp(36px, 6vw, 72px);
 }
 
@@ -627,7 +627,7 @@
     "stage"
     "picker";
   gap: 4px;
-  padding-top: calc(var(--header-h) + clamp(28px, 5vw, 56px));
+  padding-top: clamp(28px, 5vw, 56px);
   padding-bottom: clamp(40px, 6vw, 80px);
 }
 

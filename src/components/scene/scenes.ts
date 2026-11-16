@@ -171,7 +171,7 @@ export const compositions: Record<SceneKey, Composition> = {
     ],
   },
 
-  /* Pricing — four kinds of cost as four layers; the SimplYes fee is the top sheet. */
+  /* Pricing — four kinds of cost as four layers; the Simplyes fee is the top sheet. */
   pricing: {
     camera: { rx: 54, rz: -32 },
     items: [

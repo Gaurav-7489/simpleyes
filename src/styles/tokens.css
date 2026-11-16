@@ -1,5 +1,5 @@
 /*
- * SimplYes design tokens — "The Living Document System" (3D editorial, Nov 2026).
+ * Simplyes design tokens — "The Living Document System" (3D editorial, Nov 2026).
  *
  * Palette: the owner-confirmed green palette (12 Nov 2026) on the approved background #F6F9F5 and ink #13211D.
  * Contrast on the canvas: #005C45 7.6:1 (actions, links), #007A4E 5.1:1 (small text OK), #00905A 3.9:1 —
@@ -35,14 +35,14 @@
   --radius-frame: 20px;
   --radius-frame-inner: 16px;
 
-  --container-site: 1240px;
+  --container-site: 1140px;
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root {
   /* Layout */
-  --header-h: 80px;
+  --header-h: 76px;
   --gutter: 18px;
   --section-y: 72px;
   --section-y-compact: 40px;

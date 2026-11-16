@@ -24,26 +24,26 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "what-is-simplyes",
-        question: "What is SimplYes?",
+        question: "What is Simplyes?",
         answer:
-          "SimplYes is an independent documentation assistance service that helps Indian nationals living in Germany understand, prepare and organise documentation for administrative processes.",
+          "Simplyes is an independent documentation assistance service that helps Indian nationals living in Germany understand, prepare and organise documentation for administrative processes.",
       },
       {
         id: "who-can-use",
-        question: "Who can use SimplYes?",
+        question: "Who can use Simplyes?",
         answer:
           "Individuals, families, students and employers — including working professionals, long-term residents, new arrivals and HR teams supporting Indian employees in Germany.",
       },
       {
         id: "official-service",
-        question: "Is SimplYes an official government service?",
+        question: "Is Simplyes an official government service?",
         answer:
-          "No. SimplYes is an independent documentation assistance service. We are not an embassy, consulate or government authority, and we are not affiliated with any of them.",
+          "No. Simplyes is an independent documentation assistance service. We are not an embassy, consulate or government authority, and we are not affiliated with any of them.",
       },
       {
         id: "independent",
-        question: "Does SimplYes operate independently?",
-        answer: "Yes. SimplYes operates independently and has no affiliation with any government authority, embassy or consulate.",
+        question: "Does Simplyes operate independently?",
+        answer: "Yes. Simplyes operates independently and has no affiliation with any government authority, embassy or consulate.",
       },
       {
         id: "cities",
@@ -52,7 +52,7 @@ export const faqCategories: FaqCategory[] = [
       },
       {
         id: "contact",
-        question: "How can I contact SimplYes?",
+        question: "How can I contact Simplyes?",
         answer: site.contact.email
           ? `Use the enquiry form on our Contact page, message us on WhatsApp or email us at ${site.contact.email}. All three routes are shown on every page.`
           : "Use the enquiry form on our Contact page or message us on WhatsApp. Both routes are shown on every page.",
@@ -67,7 +67,7 @@ export const faqCategories: FaqCategory[] = [
         id: "which-services",
         question: "What documentation services do you offer?",
         answer:
-          "Eight categories: Passport Services, OCI Services, Attestation & Legalisation, Affidavits & Declarations, Visa & Documentation Support, Family Documentation, Student Services and Corporate Services. Each has its own page with full details.",
+          "Six services: Passport Services, e-OCI Services, Attestation & Affidavits, Visa Services, Family Documentation and Student Services. Every service includes document checking, form filling, appointment booking help and photo help, and each has its own page.",
       },
       {
         id: "passport",
@@ -77,13 +77,13 @@ export const faqCategories: FaqCategory[] = [
       {
         id: "oci",
         question: "Do you assist with OCI documentation?",
-        answer: "Yes — new OCI applications, reissues where applicable, updates, corrections and family OCI coordination. See OCI Services.",
+        answer: "Yes — new OCI applications, reissues where applicable, updates, corrections and family OCI coordination. See e-OCI Services.",
       },
       {
         id: "attestation",
         question: "Do you help with document attestation?",
         answer:
-          "Yes. Requirements vary by document type, issuing authority and destination authority. See Attestation & Legalisation.",
+          "Yes. Requirements vary by document type, issuing authority and destination authority. See Attestation & Affidavits.",
       },
       {
         id: "family",
@@ -98,7 +98,7 @@ export const faqCategories: FaqCategory[] = [
       {
         id: "corporate",
         question: "Do you provide corporate documentation assistance?",
-        answer: "Yes — through a separate corporate enquiry route for employers and HR teams. See Corporate Services.",
+        answer: "Yes — employers and HR teams can use the corporate enquiry option on our contact page.",
       },
     ],
   },
@@ -138,7 +138,7 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "how-much",
-        question: "How much does SimplYes charge?",
+        question: "How much does Simplyes charge?",
         answer:
           "Our fees depend on the service and your situation. We explain the fee and what it covers before any paid assistance begins. See our Pricing page for what affects a quote.",
       },
@@ -146,7 +146,7 @@ export const faqCategories: FaqCategory[] = [
         id: "official-fees",
         question: "Are official fees included?",
         answer:
-          "No. Government or consular fees are set and collected by the relevant authority and are separate from SimplYes service fees.",
+          "No. Government or consular fees are set and collected by the relevant authority and are separate from Simplyes service fees.",
       },
       {
         id: "quotation",
@@ -161,14 +161,14 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "personal-documents",
-        question: "How does SimplYes handle personal documents?",
+        question: "How does Simplyes handle personal documents?",
         answer:
           "As described in our Privacy Policy. Personal documents are never requested or accepted through the public enquiry form.",
       },
       {
         id: "who-accesses",
         question: "Who can access my information?",
-        answer: "Only the authorised SimplYes team and the service providers named in our Privacy Policy.",
+        answer: "Only the authorised Simplyes team and the service providers named in our Privacy Policy.",
       },
       {
         id: "retention",
@@ -188,17 +188,17 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "guarantee",
-        question: "Can SimplYes guarantee approval?",
+        question: "Can Simplyes guarantee approval?",
         answer: "No. Decisions rest with the relevant authorities. We help you prepare; we cannot influence the outcome.",
       },
       {
         id: "represent",
-        question: "Does SimplYes represent customers before government authorities?",
+        question: "Does Simplyes represent customers before government authorities?",
         answer: "No. You remain in control of your application and submit it through the official channel.",
       },
       {
         id: "legal-advice",
-        question: "Does SimplYes provide legal advice?",
+        question: "Does Simplyes provide legal advice?",
         answer: "No — documentation assistance only. Where a matter needs legal advice, we will tell you to consult a qualified professional.",
       },
       {
@@ -212,9 +212,3 @@ export const faqCategories: FaqCategory[] = [
 
 export const allFaqs: Faq[] = faqCategories.flatMap((category) => category.items);
 
-function pick(ids: string[]): Faq[] {
-  return ids.map((id) => allFaqs.find((faq) => faq.id === id)).filter((faq): faq is Faq => faq !== undefined);
-}
-
-/** Homepage selection (§07 section 9): includes the two required questions. */
-export const homeFaqs: Faq[] = pick(["official-service", "guarantee", "which-services", "get-started", "official-fees", "cities"]);

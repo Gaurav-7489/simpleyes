@@ -1,31 +1,36 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/seo";
-import { site } from "@/content/site";
-import { Hero } from "@/components/home/Hero";
-import { Services } from "@/components/home/Services";
-import { WhySimplyes } from "@/components/home/WhySimplyes";
-import { SimpleProcess } from "@/components/home/SimpleProcess";
-import { FaqSection } from "@/components/home/FaqSection";
+import { faqJsonLd, pageMetadata, videoJsonLd } from "@/lib/seo";
+import { homeFaqs } from "@/content/home";
+import { videos } from "@/content/videos";
+import { AssistCards } from "@/components/redesign/AssistCards";
+import { ChooseService, FaqPreview, FiveSteps, GuidesSection, HomeHero, WhySection } from "@/components/redesign/HomeSections";
 import { FinalCta } from "@/components/FinalCta";
+import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = pageMetadata({
-  title: `Documentation Assistance for Indians in Germany | ${site.name}`,
+  title: "Indian Passport, e-OCI & Visa Help in Germany | Simplyes",
   absoluteTitle: true,
   description:
-    "SimplYes helps Indians in Germany understand and prepare passport, OCI, attestation, family and other documentation. Independent service — get assistance today.",
+    "Indian passport, e-OCI and visa help in Germany: document checks, form filling and appointments at the Embassy in Berlin and Consulates in Frankfurt, Munich, Hamburg.",
   path: "/",
 });
 
-/** Homepage: Hero → Choose your service → Why SimplYes → Five steps → FAQs → Contact (footer in the layout). */
+/**
+ * Homepage (redesign, Nov 2026): hero → appointment & emergency → choose your service → why Simplyes → five
+ * steps with the video → guides and missions → FAQs → closing invitation.
+ */
 export default function HomePage() {
   return (
     <>
-      <Hero />
-      <Services />
-      <WhySimplyes />
-      <SimpleProcess />
-      <FaqSection />
+      <HomeHero />
+      <AssistCards />
+      <ChooseService />
+      <WhySection />
+      <FiveSteps />
+      <GuidesSection />
+      <FaqPreview />
       <FinalCta />
+      <JsonLd data={[faqJsonLd(homeFaqs), ...videoJsonLd([videos["how-it-works"]])]} />
     </>
   );
 }

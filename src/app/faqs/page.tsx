@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMetadata({
   title: `FAQs — Documentation Assistance Questions | ${site.name}`,
   absoluteTitle: true,
   description:
-    "Answers about SimplYes: what we do, independence, services, process, pricing, privacy and service limitations. We are not a government service.",
+    "Answers about Simplyes: what we do, independence, services, process, pricing, privacy and service limitations. We are not a government service.",
   path: "/faqs/",
 });
 

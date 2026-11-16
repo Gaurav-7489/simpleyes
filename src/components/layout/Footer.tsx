@@ -1,61 +1,55 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Mail, MessageCircle } from "lucide-react";
-import { companyNav, informationNav, site } from "@/content/site";
+import { helpNav, informationNav, site } from "@/content/site";
 import { services } from "@/content/services";
-import { independenceStatement } from "@/content/home";
 import { whatsappHref } from "@/lib/whatsapp";
 import { Wordmark } from "@/components/ui/Wordmark";
-import { YouTubeIcon } from "@/components/ui/YouTubeLink";
 import { BackToTop } from "./BackToTop";
 import { ConsentSettingsButton } from "@/components/analytics/Analytics";
 
-const linkClass =
-  "inline-flex min-h-9 items-center text-[0.9375rem] leading-snug text-white/75 underline-offset-4 transition-colors hover:text-white hover:underline";
+const linkClass = "footer-link";
 
-function Column({ title, children }: { title: string; children: ReactNode }) {
+function Column({ title, children, className }: { title: string; children: ReactNode; className?: string }) {
   return (
-    <div>
-      <h2 className="font-display text-[0.9375rem] font-medium text-lime">{title}</h2>
-      <ul className="mt-3 flex flex-col">{children}</ul>
+    <div className={className}>
+      <h2 className="footer-heading">{title}</h2>
+      <ul className="mt-3 flex flex-col gap-1">{children}</ul>
     </div>
   );
 }
 
 /**
- * Footer on the dark folder band: Company · Services · Information · Contact, the independence statement and
- * copyright. Phones use two columns so the footer stays short; every link stays visible.
+ * Footer on the dark folder band (redesign, Nov 2026): wordmark and tagline, then Services · Help ·
+ * Information · Contact, and the independence line with the copyright.
  */
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="folder-band" aria-label="Site footer">
-      <div className="container-site pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-14 lg:pt-20">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_2fr] lg:gap-16">
+    <footer className="folder-band site-footer" aria-label="Site footer">
+      <div className="container-site pb-[max(2rem,env(safe-area-inset-bottom))] pt-14 lg:pt-16">
+        <div className="grid gap-10 lg:grid-cols-[1.25fr_3fr] lg:gap-10">
           <div className="max-w-sm">
-            <Wordmark idSuffix="footer" tone="light" />
-            <p className="mt-5 font-display text-[1.375rem] font-light leading-snug tracking-[-0.015em] text-white">
-              Independent documentation assistance for Indians in Germany.
-            </p>
-            <p className="mt-3 text-[0.9375rem] text-white/70">{site.coverageStatement}</p>
+            <Wordmark tone="light" size="lg" />
+            <p className="mt-4 font-display text-[1.3125rem] font-medium leading-snug tracking-[-0.015em] text-white">{site.tagline}</p>
+            <p className="mt-3 text-[0.9375rem] text-white/75">{site.coverageStatement}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-[1fr_1fr_1fr_1.3fr]">
             <nav aria-label="Footer" className="contents">
-              <Column title="Company">
-                {companyNav.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className={linkClass}>
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </Column>
               <Column title="Services">
                 {services.map((service) => (
                   <li key={service.slug}>
                     <Link href={`/services/${service.slug}/`} className={linkClass}>
                       {service.title}
+                    </Link>
+                  </li>
+                ))}
+              </Column>
+              <Column title="Help">
+                {helpNav.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className={linkClass}>
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -76,12 +70,11 @@ export function Footer() {
               </Column>
             </nav>
 
-            <Column title="Contact">
+            <Column title="Contact" className="col-span-2 sm:col-span-1">
               {site.contact.email && (
                 <li>
-                  <a href={`mailto:${site.contact.email}`} data-cta="email" data-cta-location="footer" className={`${linkClass} gap-2 break-all`}>
-                    <Mail aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
-                    {site.contact.email}
+                  <a href={`mailto:${site.contact.email.toLowerCase()}`} data-cta="email" data-cta-location="footer" className={`${linkClass} break-all`}>
+                    {site.contact.email.toLowerCase()}
                   </a>
                 </li>
               )}
@@ -93,10 +86,9 @@ export function Footer() {
                   data-cta="whatsapp"
                   data-cta-location="footer"
                   data-topic="general"
-                  className={`${linkClass} gap-2`}
+                  className={linkClass}
                 >
-                  <MessageCircle aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
-                  WhatsApp {site.whatsapp.display}
+                  WhatsApp <span className="xl:whitespace-nowrap">{site.whatsapp.display}</span>
                   <span className="sr-only"> (opens WhatsApp in a new tab)</span>
                 </a>
               </li>
@@ -107,29 +99,19 @@ export function Footer() {
                   rel="noopener noreferrer"
                   data-cta="youtube"
                   data-cta-location="footer"
-                  className={`${linkClass} gap-2`}
+                  className={linkClass}
                 >
-                  <YouTubeIcon className="size-4 shrink-0" />
                   YouTube {site.youtube.handle}
-                  <span className="sr-only"> (opens the SimplYes YouTube channel in a new tab)</span>
+                  <span className="sr-only"> (opens the Simplyes YouTube channel in a new tab)</span>
                 </a>
-              </li>
-              <li>
-                <Link href="/contact/" className={linkClass}>
-                  Enquiry form
-                </Link>
               </li>
             </Column>
           </div>
         </div>
 
-        <p className="mt-12 max-w-[78ch] border-l-2 border-lime pl-4 text-[0.9375rem] leading-relaxed text-white/80">
-          <strong className="font-medium text-white">Independent service.</strong> {independenceStatement}
-        </p>
-
-        <div className="mt-10 flex items-center justify-between gap-4 border-t border-white/12 pt-6 text-sm text-white/70">
-          <p>
-            © {year} {site.name}. {site.tagline}
+        <div className="mt-12 flex items-center justify-between gap-4 border-t border-white/12 pt-6">
+          <p className="text-[0.875rem] leading-relaxed text-white/75">
+            {site.footerDisclosure} © {year} {site.name}
           </p>
           <BackToTop />
         </div>

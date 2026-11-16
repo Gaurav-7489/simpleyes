@@ -87,7 +87,7 @@ export function MobileMenu({ items, services, cta }: Props) {
       }
     };
 
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    const desktop = window.matchMedia("(min-width: 1280px)");
     const onDesktop = (e: MediaQueryListEvent) => e.matches && close(false);
 
     document.addEventListener("keydown", onKeyDown);

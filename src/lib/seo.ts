@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { services } from "@/content/services";
 import { isProductionBuild, site } from "@/content/site";
+import { missions, missionPath, type Mission } from "@/content/missions";
+import { youtubeThumbnail, youtubeWatchUrl, type Video } from "@/content/videos";
 
 export function absoluteUrl(path = "/"): string {
   return `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
@@ -10,13 +12,21 @@ type PageMetaInput = {
   title: string;
   description: string;
   path: string;
-  /** Use the title as-is instead of applying the "| SimplYes" template. */
+  /** Use the title as-is instead of applying the "| Simplyes" template. */
   absoluteTitle?: boolean;
   noindex?: boolean;
+  /** Extra <meta name> tags, e.g. geo.region / geo.placename on mission pages. */
+  other?: Record<string, string>;
 };
 
+/** "<title> | Simplyes" when that stays within 60 characters, otherwise the title alone. */
+export function withBrand(title: string): string {
+  const branded = `${title} | ${site.name}`;
+  return branded.length <= 60 ? branded : title;
+}
+
 /** Per-page metadata with canonical URL, Open Graph and Twitter cards. */
-export function pageMetadata({ title, description, path, absoluteTitle, noindex }: PageMetaInput): Metadata {
+export function pageMetadata({ title, description, path, absoluteTitle, noindex, other }: PageMetaInput): Metadata {
   const url = absoluteUrl(path);
   const index = isProductionBuild && !noindex;
   return {
@@ -39,6 +49,7 @@ export function pageMetadata({ title, description, path, absoluteTitle, noindex 
       images: [absoluteUrl("/og-image.png")],
     },
     robots: index ? { index: true, follow: true } : { index: false, follow: false },
+    ...(other ? { other } : {}),
   };
 }
 
@@ -57,8 +68,17 @@ export function organizationJsonLd() {
     logo: absoluteUrl("/icon-512.png"),
     slogan: site.tagline,
     description: site.description,
-    areaServed: { "@type": "Country", name: "Germany" },
-    knowsAbout: services.map((service) => service.title),
+    areaServed: [
+      { "@type": "Country", name: "Germany" },
+      ...["Berlin", "Frankfurt am Main", "Munich", "Hamburg"].map((name) => ({ "@type": "City", name })),
+    ],
+    knowsAbout: [
+      ...services.map((service) => service.title),
+      "Indian passport renewal in Germany",
+      "e-OCI card",
+      "Indian e-Visa",
+      ...missions.map((mission) => mission.name),
+    ],
     sameAs: [site.youtube.url],
     contactPoint: [
       {
@@ -161,5 +181,80 @@ export function contactPageJsonLd() {
     name: `Contact ${site.name}`,
     url: absoluteUrl("/contact/"),
     about: { "@id": orgId },
+  };
+}
+
+/** VideoObject for each video that has a YouTube id (videos without one publish nothing). */
+export function videoJsonLd(list: Video[]) {
+  return list
+    .filter((video) => video.youtubeId)
+    .map((video) => ({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: video.title,
+      description: video.description,
+      thumbnailUrl: [youtubeThumbnail(video)],
+      uploadDate: video.uploadDate,
+      duration: video.duration,
+      contentUrl: youtubeWatchUrl(video),
+      embedUrl: `https://www.youtube-nocookie.com/embed/${video.youtubeId}`,
+      publisher: { "@id": orgId },
+    }));
+}
+
+/**
+ * A mission page: a WebPage about the mission (an Embassy / GovernmentOffice that Simplyes is NOT part of),
+ * with Simplyes's service offered to the people that mission serves.
+ */
+export function missionJsonLd(mission: Mission) {
+  const url = absoluteUrl(missionPath(mission));
+  const office = {
+    "@type": mission.kind === "Embassy" ? "Embassy" : "GovernmentOffice",
+    name: mission.name,
+    alternateName: mission.alsoKnownAs,
+    url: mission.website,
+    address: { "@type": "PostalAddress", addressLocality: mission.city, addressCountry: "DE" },
+    geo: { "@type": "GeoCoordinates", latitude: mission.geo.lat, longitude: mission.geo.lng },
+    areaServed: mission.states.map((name) => ({ "@type": "State", name })),
+  };
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: mission.h1,
+      description: mission.metaDescription,
+      inLanguage: "en",
+      isPartOf: { "@id": websiteId },
+      about: office,
+      publisher: { "@id": orgId },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: `Passport, e-OCI and visa application help for the ${mission.name}`,
+      serviceType: "Indian consular documentation assistance",
+      url,
+      provider: { "@id": orgId },
+      areaServed: mission.states.map((name) => ({ "@type": "State", name })),
+      audience: { "@type": "Audience", audienceType: `Indians and people of Indian origin applying to the ${mission.name}` },
+    },
+  ];
+}
+
+/** A step-by-step guide as HowTo (with its video when published). */
+export function guideJsonLd(guide: { title: string; summary: string; path: string; steps: { title: string; body: string }[]; updated: string }, video?: Video) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: guide.title,
+    description: guide.summary,
+    url: absoluteUrl(guide.path),
+    dateModified: guide.updated,
+    inLanguage: "en",
+    publisher: { "@id": orgId },
+    step: guide.steps.map((step, i) => ({ "@type": "HowToStep", position: i + 1, name: step.title, text: step.body })),
+    ...(video?.youtubeId ? { video: videoJsonLd([video])[0] } : {}),
   };
 }

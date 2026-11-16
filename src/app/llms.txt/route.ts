@@ -1,5 +1,8 @@
 import { allFaqs } from "@/content/faqs";
 import { services } from "@/content/services";
+import { guides } from "@/content/guides";
+import { missions } from "@/content/missions";
+import { videoList, youtubeWatchUrl } from "@/content/videos";
 import { site } from "@/content/site";
 import { doesDoesNot, independenceStatement } from "@/content/home";
 import { absoluteUrl } from "@/lib/seo";
@@ -45,6 +48,23 @@ export function GET() {
     `- [FAQs](${absoluteUrl("/faqs/")}): ${allFaqs.length} answers in six categories`,
     `- [Pricing](${absoluteUrl("/pricing/")}): how service fees work (quotation-based)`,
     `- [Contact](${absoluteUrl("/contact/")}): enquiry form, WhatsApp and corporate enquiries`,
+    `- [Appointments](${absoluteUrl("/appointments/")}): help booking appointments at the Embassy of India, Berlin and the Consulates General of India in Frankfurt, Munich and Hamburg`,
+    `- [Emergency help](${absoluteUrl("/emergency-help/")}): lost or stolen passport, Emergency Certificate, urgent travel to India (WhatsApp, start with URGENT)`,
+    `- [Guides](${absoluteUrl("/guides/")}): step-by-step guides and videos`,
+    "",
+    "## Indian missions in Germany (Simplyes is independent of all of them)",
+    "",
+    ...missions.map(
+      (m) => `- [${m.name}](${absoluteUrl(`/missions/${m.slug}/`)}): serves ${m.states.join(", ")}. Official website: ${m.website}. Also known as: ${m.alsoKnownAs.join(", ")}.`,
+    ),
+    "",
+    "## Guides",
+    "",
+    ...guides.map((g) => `- [${g.title}](${absoluteUrl(`/guides/${g.slug}/`)}): ${g.summary}`),
+    "",
+    "## Videos (YouTube @simplyesde)",
+    "",
+    ...videoList.map((v) => `- ${v.title} (${v.durationLabel})${youtubeWatchUrl(v) ? `: ${youtubeWatchUrl(v)}` : ""}`),
     "",
     "## Official source",
     "",

@@ -19,7 +19,7 @@ const linkClass = () => "nav-link";
 /**
  * Services dropdown (§14): a disclosure button with aria-expanded/aria-controls.
  * Keyboard: Enter/Space toggles, Esc closes and returns focus, Tab moves through
- * the eight service links. Opens on hover for mouse users too.
+ * the six service links. Opens on hover for mouse users too.
  */
 function ServicesMenu({ active }: { active: boolean }) {
   const hydrated = useHydrated();
@@ -113,7 +113,7 @@ function ServicesMenu({ active }: { active: boolean }) {
       <div
         id={panelId}
         data-open={open}
-        className="nav-panel absolute left-1/2 top-[calc(100%+14px)] w-[min(720px,90vw)] -translate-x-1/2 rounded-[24px] bg-white p-3 shadow-[inset_0_0_0_1px_var(--color-line),0_30px_60px_-30px_rgb(13_46_38/0.45)]"
+        className="nav-panel absolute left-1/2 top-[calc(100%+14px)] w-[min(680px,90vw)] -translate-x-1/2 rounded-[24px] bg-white p-3 shadow-[inset_0_0_0_1px_var(--color-line),0_30px_60px_-30px_rgb(13_46_38/0.45)]"
       >
         <ul className="grid grid-cols-2 gap-1">
           {services.map((service) => {
@@ -142,7 +142,7 @@ function ServicesMenu({ active }: { active: boolean }) {
           onClick={close}
           className="mt-2 flex min-h-12 items-center justify-between rounded-[16px] bg-canvas-alt px-4 text-[0.9375rem] font-medium text-accent-700 hover:bg-accent-50"
         >
-          View all eight services
+          View all six services
           <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
         </Link>
       </div>
@@ -154,7 +154,7 @@ function ServicesMenu({ active }: { active: boolean }) {
 export function NavLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname() ?? "/";
   return (
-    <ul className="flex items-center gap-0.5">
+    <ul className="flex items-center">
       {items.map((item) => {
         const active = isActive(pathname, item.href);
         if (item.href === "/services/") {
@@ -168,7 +168,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
           <li key={item.href}>
             <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass()}>
               {item.label}
-                  </Link>
+            </Link>
           </li>
         );
       })}

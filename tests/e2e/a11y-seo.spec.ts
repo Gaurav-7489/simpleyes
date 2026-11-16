@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { allFaqs, homeFaqs } from "../../src/content/faqs";
+import { allFaqs } from "../../src/content/faqs";
+import { homeFaqs } from "../../src/content/home";
 import { pageUpdated } from "../../src/content/page-dates";
 import { MODEL_TRAINING_AGENTS, SEARCH_AND_RETRIEVAL_AGENTS } from "../../src/lib/crawlers";
 import { services } from "../../src/content/services";
@@ -109,7 +110,8 @@ test.describe("SEO", () => {
   test("important content is server-rendered", async ({ request }) => {
     const html = await (await request.get("/")).text();
     for (const phrase of [
-      "Your Documentation Journey,",
+      "visa help in Germany",
+      "Consulate Frankfurt",
       site.coverageStatement,
       "not affiliated with",
       ...services.map((s) => s.title.replace("&", "&amp;")),
@@ -146,13 +148,13 @@ test.describe("GEO: AI answer-engine readiness", () => {
     const txt = await res.text();
     for (const s of services) expect(txt).toContain(`## ${s.title}`);
     for (const faq of allFaqs) expect(txt).toContain(`Q: ${faq.question}`);
-    expect(txt).toContain("SimplYes is an independent documentation assistance service.");
+    expect(txt).toContain("Simplyes is an independent documentation assistance service.");
     // Affirmative promises or prices only (the negatives "does not guarantee…" are required content).
     expect(txt).not.toMatch(/€\s?\d|\d\s?€|\bwe guarantee|guaranteed (approval|appointment|visa)/i);
   });
 
   test("service structured data lists its problems and how to request it", async ({ page }) => {
-    for (const s of [services[0]!, services[7]!]) {
+    for (const s of [services[0]!, services[5]!]) {
       await page.goto(`/services/${s.slug}/`);
       const blocks = await page.$$eval('script[type="application/ld+json"]', (els) => els.map((e) => JSON.parse(e.textContent ?? "null")));
       const service = blocks.flat().find((b) => b?.["@type"] === "Service");

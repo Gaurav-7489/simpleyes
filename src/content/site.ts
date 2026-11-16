@@ -15,31 +15,31 @@ const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://simplyes.de";
 const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "4915216627596").replace(/\D/g, "");
 
 export const site = {
-  name: "SimplYes",
+  name: "Simplyes",
   /** Lower-case wordmark with period, as written in the brand brief. */
   wordmark: "simplyes",
-  tagline: "Redefining Consular Services.",
+  tagline: "Built to simplify what matters most.",
   url: rawSiteUrl.replace(/\/+$/, ""),
   /** Date of the last content change (sitemap lastmod, llms files). Update when page content changes. */
-  contentUpdated: "2026-11-15",
+  contentUpdated: "2026-11-16",
   locale: "en",
   language: "en-DE",
   areaServed: "Germany",
   /** Approved geographic statement. */
-  coverageStatement: "We assist customers across Germany.",
+  coverageStatement: "We help customers across Germany.",
   shortDescription:
     "Independent documentation assistance for Indians in Germany with Indian consular and administrative paperwork.",
   description:
-    "SimplYes is an independent private documentation-assistance service helping Indians living in Germany understand requirements, prepare paperwork, organise supporting documents and receive human guidance for Indian consular and administrative processes.",
+    "Simplyes is an independent private documentation-assistance service helping Indians living in Germany understand requirements, prepare paperwork, organise supporting documents and receive human guidance for Indian consular and administrative processes.",
   /** Short approved disclosure (footer, service pages, contact). Pending legal review (B3). */
   shortDisclosure:
-    "SimplYes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities.",
+    "Simplyes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities.",
   /** Full approved disclosure (About, FAQs, Impressum). Pending legal review (B3). */
   disclosure:
-    "SimplYes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities. SimplYes does not issue passports, approve visas or grant OCI status, does not guarantee outcomes or processing times, and does not itself perform official attestation, notarisation or certification. Where your matter requires legal advice, notarisation or another regulated service, we will tell you so and you should consult an appropriately qualified professional.",
+    "Simplyes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities. Simplyes does not issue passports, approve visas or grant OCI status, does not guarantee outcomes or processing times, and does not itself perform official attestation, notarisation or certification. Where your matter requires legal advice, notarisation or another regulated service, we will tell you so and you should consult an appropriately qualified professional.",
   /** One-line hero note. */
   heroNote: "Independent private service — not a government authority or application centre.",
-  /** Official YouTube channel, supplied by SimplYes (16 Nov 2026). Tracking parameters (`si=`) removed. */
+  /** Official YouTube channel, supplied by Simplyes (16 Nov 2026). Tracking parameters (`si=`) removed. */
   youtube: {
     url: "https://www.youtube.com/@simplyesde",
     handle: "@simplyesde",
@@ -83,6 +83,8 @@ export const site = {
   enquiryHoneypotField: (process.env.NEXT_PUBLIC_ENQUIRY_HONEYPOT_FIELD || "_gotcha") as string,
   /** GA4 measurement ID (§18). Unset → no analytics code and no consent banner. */
   gaMeasurementId: (process.env.NEXT_PUBLIC_GA_ID || null) as string | null,
+  /** Short footer disclosure (Nov 2026 redesign). */
+  footerDisclosure: "Simplyes is an independent service, not affiliated with the Embassy of India or the Consulates General of India.",
   official: {
     embassy: {
       label: "Embassy of India, Berlin",
@@ -117,29 +119,32 @@ export const enquiryService = (() => {
 
 export type NavItem = { label: string; href: string };
 
-/** §06 desktop navigation: Home · Services ▾ · How It Works · About Us · FAQs · Contact Us · [Get Assistance]. */
+/** Desktop navigation (Nov 2026 redesign): Services ▾ · Appointments · Emergency help · How It Works · Guides · FAQs · Contact · [Get Assistance]. */
 export const primaryNav: NavItem[] = [
-  { label: "Home", href: "/" },
   { label: "Services", href: "/services/" },
+  { label: "Appointments", href: "/appointments/" },
+  { label: "Emergency help", href: "/emergency-help/" },
   { label: "How It Works", href: "/how-it-works/" },
-  { label: "About Us", href: "/about/" },
+  { label: "Guides", href: "/guides/" },
   { label: "FAQs", href: "/faqs/" },
-  { label: "Contact Us", href: "/contact/" },
+  { label: "Contact", href: "/contact/" },
 ];
 
 /** Primary CTA in the header and across the site. */
 export const getAssistance: NavItem = { label: "Get Assistance", href: "/contact/" };
 
-/** Footer "Company" column. */
-export const companyNav: NavItem[] = [
-  { label: "About SimplYes", href: "/about/" },
+/** Footer "Help" column. */
+export const helpNav: NavItem[] = [
+  { label: "Appointment booking", href: "/appointments/" },
+  { label: "Emergency help", href: "/emergency-help/" },
+  { label: "Guides", href: "/guides/" },
   { label: "How It Works", href: "/how-it-works/" },
-  { label: "Contact", href: "/contact/" },
+  { label: "FAQs", href: "/faqs/" },
 ];
 
 /** Footer "Information" column. */
 export const informationNav: NavItem[] = [
-  { label: "FAQs", href: "/faqs/" },
+  { label: "About Simplyes", href: "/about/" },
   { label: "Pricing", href: "/pricing/" },
   { label: "Privacy Policy", href: "/privacy/" },
   { label: "Terms & Conditions", href: "/terms/" },

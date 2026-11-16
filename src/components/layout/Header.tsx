@@ -4,41 +4,48 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { MobileMenu } from "./MobileMenu";
 import { NavLinks } from "./NavLinks";
+import { UrgentBar } from "./UrgentBar";
 
-/** §14 header: logo → home, primary nav with Services dropdown, Get Assistance button; sticky. */
+/**
+ * Urgent strip, then the sticky header: wordmark, primary navigation with the Services dropdown and the
+ * Get Assistance button (redesign, Nov 2026). The full navigation shows from 1280px; below that a menu.
+ */
 export function Header() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
-      {/* Desktop */}
-      <div className="hidden h-[var(--header-h)] items-center lg:flex">
-        <div className="container-site">
-          <div className="header-bar header-bar-glass flex h-16 items-center justify-between gap-6 pl-6 pr-2.5">
-            <Wordmark idSuffix="desktop" />
-            <nav aria-label="Primary">
-              <NavLinks items={primaryNav} />
-            </nav>
-            <ButtonLink href={getAssistance.href} size="sm" location="header">
-              {getAssistance.label}
-            </ButtonLink>
+    <>
+      <UrgentBar />
+      <header className="site-header">
+        {/* Desktop */}
+        <div className="hidden h-[var(--header-h)] items-center xl:flex">
+          <div className="container-site">
+            <div className="header-bar header-bar-glass flex h-[60px] items-center justify-between gap-6 pl-6 pr-2.5">
+              <Wordmark />
+              <nav aria-label="Primary">
+                <NavLinks items={primaryNav} />
+              </nav>
+              <ButtonLink href={getAssistance.href} size="sm" location="header">
+                {getAssistance.label}
+              </ButtonLink>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile & tablet */}
-      <div className="px-2.5 pt-2.5 lg:hidden">
-        <div
-          data-menu-scope
-          className="header-bar relative mx-auto flex h-14 max-w-[720px] items-center justify-between pl-4 pr-1.5"
-          // No backdrop-filter here: it would become the containing block of the fixed menu backdrop.
-        >
-          <Wordmark idSuffix="mobile" />
-          <MobileMenu
-            items={primaryNav}
-            services={services.map((s) => ({ label: s.title, href: `/services/${s.slug}/` }))}
-            cta={getAssistance}
-          />
+        {/* Mobile & tablet */}
+        <div className="px-2.5 pt-2.5 xl:hidden">
+          <div
+            data-menu-scope
+            className="header-bar relative mx-auto flex h-14 max-w-[720px] items-center justify-between pl-4 pr-1.5"
+            // No backdrop-filter here: it would become the containing block of the fixed menu backdrop.
+          >
+            <Wordmark />
+            <MobileMenu
+              items={primaryNav}
+              services={services.map((s) => ({ label: s.title, href: `/services/${s.slug}/` }))}
+              cta={getAssistance}
+            />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

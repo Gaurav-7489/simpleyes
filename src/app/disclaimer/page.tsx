@@ -8,7 +8,7 @@ import { OwnerPolicy, PendingReview } from "@/components/LegalNotice";
 
 export const metadata: Metadata = pageMetadata({
   title: "Disclaimer & Service Limitations",
-  description: "SimplYes is an independent documentation assistance service, not affiliated with any government authority, embassy or consulate.",
+  description: "Simplyes is an independent documentation assistance service, not affiliated with any government authority, embassy or consulate.",
   path: "/disclaimer/",
   noindex: !site.legal.reviewed,
 });

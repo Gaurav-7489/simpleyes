@@ -12,7 +12,7 @@ export function YouTubeIcon({ className = "size-5" }: { className?: string }) {
 }
 
 /**
- * Link to the official SimplYes YouTube channel. Opens in a new tab. It is a plain link rather than an embedded
+ * Link to the official Simplyes YouTube channel. Opens in a new tab. It is a plain link rather than an embedded
  * player, so no YouTube scripts or cookies load on simplyes.de.
  */
 export function YouTubeLink({
@@ -35,7 +35,7 @@ export function YouTubeLink({
     >
       <YouTubeIcon className="size-5 shrink-0" />
       <span>{children}</span>
-      <span className="sr-only"> (opens the SimplYes YouTube channel in a new tab)</span>
+      <span className="sr-only"> (opens the Simplyes YouTube channel in a new tab)</span>
     </a>
   );
 }

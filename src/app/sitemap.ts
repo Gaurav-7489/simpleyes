@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { pageUpdated } from "@/content/page-dates";
 import { services } from "@/content/services";
+import { guides } from "@/content/guides";
+import { missions } from "@/content/missions";
 import { site } from "@/content/site";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -12,6 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/", priority: 1 },
     { path: "/services/", priority: 0.9 },
     ...services.map((s) => ({ path: `/services/${s.slug}/`, priority: 0.8 })),
+    { path: "/appointments/", priority: 0.8 },
+    { path: "/emergency-help/", priority: 0.8 },
+    { path: "/missions/", priority: 0.7 },
+    ...missions.map((m) => ({ path: `/missions/${m.slug}/`, priority: 0.8 })),
+    { path: "/guides/", priority: 0.7 },
+    ...guides.map((g) => ({ path: `/guides/${g.slug}/`, priority: 0.6 })),
     { path: "/how-it-works/", priority: 0.7 },
     { path: "/about/", priority: 0.6 },
     { path: "/faqs/", priority: 0.7 },
@@ -31,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return pages.map(({ path, priority, legal }) => ({
     url: absoluteUrl(path),
-    lastModified: legal ? legalModified : new Date(pageUpdated[path] ?? site.contentUpdated),
+    lastModified: legal ? legalModified : new Date(pageUpdated[path] ?? guides.find((g) => path === `/guides/${g.slug}/`)?.updated ?? site.contentUpdated),
     changeFrequency: "monthly",
     priority,
   }));

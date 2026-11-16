@@ -22,6 +22,8 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
   const pathname = usePathname() ?? "/";
   const [scrolled, setScrolled] = useState(false);
   const [anchorInView, setAnchorInView] = useState(false);
+  // Desktop (≥ 1280px): the redesign pins the pill top-right, always shown.
+  const [desktop, setDesktop] = useState(false);
 
   // Motion's shared scroll listener (one for the whole page), not a listener of our own.
   const { scrollY } = useScroll();
@@ -41,14 +43,20 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
     });
     document.querySelectorAll("footer, [data-wa-anchor]").forEach((el) => io.observe(el));
 
+    const mq = window.matchMedia("(min-width: 1280px)");
+    const onMq = () => setDesktop(mq.matches);
+    onMq();
+    mq.addEventListener("change", onMq);
+
     return () => {
       io.disconnect();
+      mq.removeEventListener("change", onMq);
     };
   }, [pathname]);
 
   const slug = /^\/services\/([^/]+)\/?$/.exec(pathname)?.[1];
   const href = (slug && serviceHrefs[slug]) || generalHref;
-  const shown = scrolled && !anchorInView;
+  const shown = desktop || (scrolled && !anchorInView);
 
   return (
     <a
@@ -59,7 +67,7 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
       data-topic={slug && serviceHrefs[slug] ? slug : "general"}
       data-floating-wa
       data-visible={shown}
-      aria-label="Chat with SimplYes on WhatsApp (opens in a new tab)"
+      aria-label="Chat with Simplyes on WhatsApp (opens in a new tab)"
       // Hidden state uses visibility:hidden, which also removes it from the tab order and accessibility tree.
       className="fab-wa btn btn-dark"
     >

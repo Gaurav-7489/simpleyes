@@ -2,7 +2,7 @@
 
 /**
  * Crawlers used to show pages in search and AI-answer results, and to fetch a page a user asked about.
- * Blocking these would remove SimplYes from those results, so they are always allowed in production.
+ * Blocking these would remove Simplyes from those results, so they are always allowed in production.
  */
 export const SEARCH_AND_RETRIEVAL_AGENTS = [
   "Googlebot",

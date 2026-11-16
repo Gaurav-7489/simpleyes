@@ -120,7 +120,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
   const context = ctxParam === "pricing" || ctxParam === "corporate" ? ctxParam : "";
   const slugParam = params.get("service") ?? "";
   const urlService = services.find((s) => s.slug === slugParam);
-  const preService = urlService ? urlService.slug : context === "corporate" ? "corporate-services" : "";
+  const preService = urlService ? urlService.slug : "";
   // Only an issue that belongs to the URL's service is accepted; anything else is ignored.
   const issueParam = params.get("issue") ?? "";
   const preIssue = urlService && (issueParam === OTHER || urlService.issues.some((i) => i.id === issueParam)) ? issueParam : "";
@@ -131,7 +131,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     ...raw,
     service: resolvedService,
     issue: rawIssue === OTHER || serviceOption?.issues.some((i) => i.id === rawIssue) ? rawIssue : "",
-    corporate: raw.corporate ?? (context === "corporate" || resolvedService === "corporate-services"),
+    corporate: raw.corporate ?? context === "corporate",
   };
   const issueLabel =
     values.issue === OTHER ? "Something else" : serviceOption?.issues.find((i) => i.id === values.issue)?.label ?? "";
@@ -188,9 +188,8 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       // Freeze the URL selection into state on first edit, so later changes start from what the visitor sees.
       if (next.service === null) next.service = values.service;
       if (next.issue === null) next.issue = values.issue;
-      if (key === "corporate" && value === true) next.service = "corporate-services";
       // A different service has different problems: reset the problem, keep everything else typed.
-      if (key === "service" || (key === "corporate" && value === true)) {
+      if (key === "service") {
         const svc = services.find((s) => s.slug === next.service);
         if (next.issue !== OTHER && !svc?.issues.some((i) => i.id === next.issue)) next.issue = "";
       }
@@ -238,7 +237,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     // (names, types, limits, allowed ids) is src/lib/enquiry-schema.ts, enforced again by the Formdall field schema.
     // Optional fields are sent only when filled in, so nothing empty reaches the provider or the inbox.
     const fields: [string, string][] = [
-      ["subject", clip(`New SimplYes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`, ENQUIRY_LIMITS.subject)],
+      ["subject", clip(`New Simplyes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`, ENQUIRY_LIMITS.subject)],
       ["name", values.name.trim()],
       ["email", values.email.trim()],
       ["phone", values.phone.trim()],
@@ -648,7 +647,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
               <Link href="/privacy/" className="text-accent-700 underline underline-offset-4">
                 Privacy Policy
               </Link>{" "}
-              and agree to SimplYes processing my details to respond to this enquiry. <span aria-hidden="true">*</span>
+              and agree to Simplyes processing my details to respond to this enquiry. <span aria-hidden="true">*</span>
             </span>
           </label>
           {err("consent")}

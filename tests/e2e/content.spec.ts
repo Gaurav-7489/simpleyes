@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { services } from "../../src/content/services";
+import { missions } from "../../src/content/missions";
 import { indexableRoutes, routes, WHATSAPP_NUMBER } from "./routes";
 
 const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
@@ -19,114 +20,132 @@ async function bodyText(page: import("@playwright/test").Page) {
 test.describe("content rules", () => {
   test.skip(({ isMobile }) => isMobile, "content checks run once");
 
-  test("exactly the eight approved services with the confirmed slugs (§05 scope lock)", () => {
+  test("exactly the six services of the redesign, with stable slugs", () => {
     expect(services.map((s) => s.slug)).toEqual([
       "passport-services",
       "oci-services",
       "attestation-legalisation",
-      "affidavits-declarations",
       "visa-documentation-support",
       "family-documentation",
       "student-services",
-      "corporate-services",
+    ]);
+    expect(services.map((s) => s.title)).toEqual([
+      "Passport Services",
+      "e-OCI Services",
+      "Attestation & Affidavits",
+      "Visa Services",
+      "Family Documentation",
+      "Student Services",
     ]);
   });
 
-  test("sitemap lists all eight services and no retired slugs", async ({ request }) => {
+  test("sitemap lists all services, missions and guides, and no retired slugs", async ({ request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
     for (const s of services) expect(sitemap).toContain(`/services/${s.slug}/`);
-    for (const slug of retiredSlugs) expect(sitemap).not.toContain(slug);
-    expect(sitemap).toContain("/pricing/");
-    expect(sitemap).not.toMatch(/\bPCC\b|police clearance/i);
+    for (const slug of [...retiredSlugs, "affidavits-declarations", "corporate-services"]) expect(sitemap).not.toContain(slug);
+    for (const path of ["/pricing/", "/appointments/", "/emergency-help/", "/guides/", "/missions/consulate-general-of-india-frankfurt/", "/missions/embassy-of-india-berlin/"]) {
+      expect(sitemap).toContain(path);
+    }
   });
 
-  test("llms.txt lists exactly the eight services", async ({ request }) => {
+  test("llms.txt lists exactly the six services and the missions", async ({ request }) => {
     const txt = await (await request.get("/llms.txt")).text();
     for (const s of services) expect(txt).toContain(`/services/${s.slug}/`);
     expect(txt.match(/\/services\/[a-z-]+\//g)?.length).toBe(services.length);
+    expect(txt).toContain("Consulate General of India, Frankfurt");
+    expect(txt).toContain("Embassy of India, Berlin");
   });
 
-  test("header: Home · Services ▾ · How It Works · About Us · FAQs · Contact Us + Get Assistance", async ({ page }) => {
-    await page.goto("/about/");
+  test("header: Services ▾ · Appointments · Emergency help · How It Works · Guides · FAQs · Contact + Get Assistance", async ({ page }) => {
+    await page.goto("/appointments/");
     const nav = page.getByRole("navigation", { name: "Primary" });
     const items = await nav.locator(":scope > ul > li").evaluateAll((lis) =>
       lis.map((li) => (li.querySelector(":scope > a, :scope > div > button")?.textContent ?? "").trim()),
     );
-    expect(items).toEqual(["Home", "Services", "How It Works", "About Us", "FAQs", "Contact Us"]);
-    await expect(nav.getByRole("link", { name: "About Us" })).toHaveAttribute("aria-current", "page");
+    expect(items).toEqual(["Services", "Appointments", "Emergency help", "How It Works", "Guides", "FAQs", "Contact"]);
+    await expect(nav.getByRole("link", { name: "Appointments" })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("banner").getByRole("link", { name: "Get Assistance" })).toHaveAttribute("href", "/contact/");
-    // Dropdown lists all eight services.
+    // Dropdown lists all six services.
     await nav.getByRole("button", { name: "Services" }).click();
     for (const s of services) await expect(nav.getByRole("link", { name: new RegExp(s.title.replace(/[&]/g, "\\$&")) })).toBeVisible();
   });
 
-  test("footer has Company, Services (all eight), Information and Contact columns", async ({ page }) => {
+  test("urgent bar sits above the header on every page", async ({ page }) => {
+    await page.goto("/about/");
+    const bar = page.locator(".urgent-bar");
+    await expect(bar).toContainText("Lost your passport or need to travel urgently?");
+    await expect(bar).toContainText("and start with URGENT.");
+  });
+
+  test("footer has Services, Help, Information and Contact columns", async ({ page }) => {
     await page.goto("/");
     const footer = page.locator("footer");
-    for (const title of ["Company", "Services", "Information", "Contact"]) {
+    for (const title of ["Services", "Help", "Information", "Contact"]) {
       await expect(footer.getByRole("heading", { name: title, exact: true })).toBeVisible();
     }
     for (const s of services) await expect(footer.getByRole("link", { name: s.title, exact: true })).toBeVisible();
-    for (const label of ["FAQs", "Pricing", "Privacy Policy", "Terms & Conditions", "Disclaimer"]) {
+    for (const label of ["Appointment booking", "Emergency help", "Guides", "About Simplyes", "Pricing", "Privacy Policy", "Terms & Conditions", "Disclaimer", "Impressum"]) {
       await expect(footer.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
+    await expect(footer).toContainText("not affiliated with the Embassy of India or the Consulates General of India");
   });
 
-  test("homepage has its sections in the confirmed order", async ({ page }) => {
+  test("homepage has its sections in the redesign's order", async ({ page }) => {
     await page.goto("/");
-    const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? ""));
+    const ids = await page.$$eval("main > section", (els) => els.map((el) => el.getAttribute("aria-labelledby") ?? el.getAttribute("aria-label") ?? ""));
     expect(ids).toEqual([
-      "hero-title",
-      "services-title",
-      "why-title",
-      "process-title",
-      "faq-title",
+      "home-title",
+      "Appointments and emergencies",
+      "choose-service",
+      "why-simplyes",
+      "five-steps",
+      "home-guides",
+      "home-faqs",
       "final-cta-title",
     ]);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your Documentation Journey, Made Simpler.");
-    await expect(page.locator("#services .service-tiles > li")).toHaveCount(8);
-    await expect(page.getByRole("button", { name: "Is SimplYes an official government service?" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Can SimplYes guarantee approval?" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Indian passport, e-OCI and visa help in Germany, made simpler.");
+    await expect(page.locator(".service-list > li")).toHaveCount(6);
+    await expect(page.locator(".guide-grid > li")).toHaveCount(4);
+    for (const chip of ["Embassy of India, Berlin", "Consulate Frankfurt", "Consulate Munich", "Consulate Hamburg"]) {
+      await expect(page.locator(".mission-chips").getByRole("link", { name: chip })).toBeVisible();
+    }
+    await expect(page.getByText("Can you book my consulate appointment?")).toBeVisible();
+    await expect(page.getByText("Are you part of the Embassy or a Consulate?")).toBeVisible();
   });
 
   for (const service of services) {
     test(`${service.slug} has every section and a service-specific WhatsApp link`, async ({ page }) => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
-      const headings = [
-        "What do you need help with?",
-        "About this service",
-        "Who this service is for",
-        "What SimplYes can help with",
-        "Possible document categories",
-        "How the process works",
-        "What to have ready",
-        "What is included",
-        "What is outside the scope",
-        `${service.title} FAQs`,
-        "Related services",
-        "Other ways to reach us",
-      ];
-      for (const heading of headings) {
-        await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
+      for (const heading of ["We help with", "Appointment booking", "Emergency assistance", "What do you need help with?", "Related guides"]) {
+        await expect(page.getByRole("heading", { name: heading, exact: true }).or(page.getByText(heading, { exact: true })).first()).toBeVisible();
       }
-      await expect(page.getByText("subject to verification")).toBeVisible();
-      await expect(page.getByRole("heading", { name: "Sound familiar?" })).toBeVisible();
-      for (const s of service.situations) await expect(page.getByText(s.situation, { exact: true })).toBeVisible();
-      // The main action: the problem picker continues to a prefilled form; the closing band links there too.
+      await expect(page.getByRole("heading", { name: /^Documents usually needed/ })).toBeVisible();
+      await expect(page.getByText("Requirements differ between missions and can change.")).toBeVisible();
+      // The problem picker continues to a prefilled form.
       await expect(page.getByRole("link", { name: "Continue to Contact" })).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
       await expect(page.getByRole("radio")).toHaveCount(service.issues.length + 1);
-      const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
-      await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
-      for (const slug of service.related) await expect(page.locator(`main a[href="/services/${slug}/"]`).first()).toBeVisible();
-      await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Book an appointment" })).toHaveAttribute("href", "/appointments/");
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");
       expect(texts.some((t) => t.includes(service.title))).toBe(true);
+      expect(texts.some((t) => t.startsWith("URGENT"))).toBe(true);
       const floating = await page.locator("[data-floating-wa]").getAttribute("href");
       expect(new URL(floating ?? "").searchParams.get("text")).toContain(service.title);
     });
   }
+
+  test("mission pages target their mission, say Simplyes is independent and link the official site", async ({ page }) => {
+    for (const m of missions) {
+      await page.goto(`/missions/${m.slug}/`);
+      expect(await page.title()).toContain(m.name.replace(",", ""));
+      await expect(page.getByRole("heading", { level: 1 })).toContainText(m.name);
+      await expect(page.locator(".mission-disclosure")).toContainText(`not the ${m.name}`);
+      await expect(page.locator(`.mission-disclosure a[href="${m.website}"]`)).toHaveAttribute("rel", /noopener/);
+      await expect(page.locator('meta[name="geo.placename"]')).toHaveAttribute("content", m.city);
+      for (const state of m.states) await expect(page.locator(".state-chips")).toContainText(state);
+    }
+  });
 
   test("all WhatsApp links are encoded, non-sensitive and open safely", async ({ page }) => {
     for (const route of routes) {
@@ -139,7 +158,7 @@ test.describe("content rules", () => {
         const url = new URL(href);
         expect(url.origin + url.pathname).toBe(`https://wa.me/${WHATSAPP_NUMBER}`);
         const text = url.searchParams.get("text") ?? "";
-        expect(text).toMatch(/^Hello SimplYes/);
+        expect(text).toMatch(/^(URGENT: )?Hello Simplyes/);
         expect(text).not.toMatch(/\d/);
         expect(href).not.toMatch(/\s/);
         expect(target).toBe("_blank");
@@ -148,13 +167,12 @@ test.describe("content rules", () => {
     }
   });
 
-  test("one enquiry form (contact only), no uploads, roadmap UI, PCC, fabricated claims or prices", async ({ page }) => {
+  test("one enquiry form (contact only), no uploads, roadmap UI, fabricated claims or prices", async ({ page }) => {
     for (const route of routes) {
       await page.goto(route);
       await expect(page.locator("form"), route).toHaveCount(route === "/contact/" ? 1 : 0);
       await expect(page.locator('input[type="file"], input[type="password"]'), route).toHaveCount(0);
       const text = await bodyText(page);
-      expect(text, route).not.toMatch(/\bPCC\b|police clearance/i);
       // Affirmative promises only: the FAQ legitimately asks "Can you guarantee approval?" and answers "No".
       expect(text, route).not.toMatch(/\bwe guarantee|guaranteed (approval|appointment|visa)/i);
       expect(text, route).not.toMatch(/official partner|authori[sz]ed by the embassy/i);
@@ -177,6 +195,7 @@ test.describe("content rules", () => {
   });
 
   test("zero console errors and warnings on every route", async ({ page }) => {
+    test.setTimeout(180_000);
     const messages: string[] = [];
     page.on("console", (msg) => ["error", "warning"].includes(msg.type()) && messages.push(`${page.url()}: ${msg.text()}`));
     page.on("pageerror", (err) => messages.push(err.message));
@@ -198,7 +217,7 @@ test.describe("floating WhatsApp button", () => {
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
     await expect(fab).toHaveAttribute("data-visible", "true");
     await expect(fab).toBeVisible();
-    await expect(fab).toHaveAccessibleName("Chat with SimplYes on WhatsApp (opens in a new tab)");
+    await expect(fab).toHaveAccessibleName("Chat with Simplyes on WhatsApp (opens in a new tab)");
     const box = await fab.boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(44);
     expect(box!.x + box!.width).toBeLessThanOrEqual(390);
@@ -361,7 +380,7 @@ test.describe("enquiry form (§13)", () => {
     await form.getByLabel(/Email address/).fill("not-an-email");
     await form.getByRole("button", { name: "Send Enquiry" }).click();
     await expect(form.getByText("Please enter a valid email address.")).toBeVisible();
-    // Consent is unticked by default; the dropdown holds exactly the eight services.
+    // Consent is unticked by default; the dropdown holds exactly the six services.
     await expect(form.getByRole("checkbox", { name: /I have read the Privacy Policy/ })).not.toBeChecked();
     const options = await form.getByLabel(/Service category/).locator("option").allInnerTexts();
     expect(options.slice(1)).toEqual(services.map((s) => s.title));
@@ -370,20 +389,19 @@ test.describe("enquiry form (§13)", () => {
 
   test("service pages pre-select their service; corporate reveals company fields", async ({ page }) => {
     await page.goto("/services/oci-services/");
-    await page.getByRole("link", { name: "Get Assistance With This Service" }).first().click();
+    await page.getByRole("link", { name: "Continue to Contact" }).click();
     await expect(page).toHaveURL(/\/contact\/\?service=oci-services/);
     await expect(page.getByLabel(/Service category/)).toHaveValue("oci-services");
     await page.goto("/contact/?context=corporate");
-    await expect(page.getByLabel(/Service category/)).toHaveValue("corporate-services");
+    await expect(page.getByLabel(/Service category/)).toHaveValue("");
     await expect(page.getByLabel(/Company name/)).toBeVisible();
     await expect(page.getByLabel(/Approximate number of employees/)).toBeVisible();
   });
 
-  test("choosing Corporate Services in the form reveals the company fields", async ({ page }) => {
+  test("ticking the corporate option in the form reveals the company fields", async ({ page }) => {
     await page.goto("/contact/");
-    await page.getByLabel(/Service category/).selectOption("corporate-services");
+    await page.getByRole("checkbox", { name: /This is a corporate enquiry/ }).check();
     await expect(page.getByLabel(/Company name/)).toBeVisible();
-    await expect(page.getByRole("checkbox", { name: /This is a corporate enquiry/ })).toBeChecked();
   });
 
   test("never shows success unless an endpoint accepted the enquiry", async ({ page }) => {
@@ -438,7 +456,7 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     expect(headers["accept"]).toContain("application/json");
     expect(headers["content-type"]).toContain("application/json");
     expect(body[honeypot]).toBe("");
-    expect(body.subject).toBe("New SimplYes Enquiry — OCI Services — New OCI application");
+    expect(body.subject).toBe("New Simplyes Enquiry — OCI Services — New OCI application");
     expect(body.service).toBe("OCI Services");
     expect(body.issue).toBe("New OCI application");
     expect(body.email).toBe("test@example.com");
@@ -585,11 +603,11 @@ test.describe("enquiry contract: browser payload ↔ Formdall field schema", () 
     expect(renewal.service_id).toBe("passport-services");
     expect(renewal.issue_id).toBe("renewal");
     expect(renewal.issue).toBe("Passport renewal");
-    expect(renewal.subject).toBe("New SimplYes Enquiry — Passport Services — Passport renewal");
+    expect(renewal.subject).toBe("New Simplyes Enquiry — Passport Services — Passport renewal");
     expect(renewal).not.toHaveProperty("phone"); // empty optional fields are not sent
     expect(violations(renewal, schema.fields)).toEqual([]);
 
-    const corporate = await capture(page, "/contact/?service=corporate-services&issue=other", async (form) => {
+    const corporate = await capture(page, "/contact/?service=family-documentation&issue=other&context=corporate", async (form) => {
       await form.getByLabel(/Company name/).fill("Example GmbH");
       await form.getByLabel(/Approximate number of employees/).selectOption("6–20");
       await form.getByLabel(/Describe your problem/).fill("We are relocating three engineers and their families.");
@@ -703,13 +721,13 @@ test.describe("smart contact flow: service page → prefilled form", () => {
     await page.goto("/services/passport-services/");
     await page.getByRole("radio", { name: "Passport renewal" }).check({ force: true });
     const pickerWa = await page.locator('a[data-cta-location="problem-picker"][data-cta="whatsapp"]').getAttribute("href");
-    expect(new URL(pickerWa!).searchParams.get("text")).toBe("Hello SimplYes, I need assistance with Passport Services — Passport renewal.");
+    expect(new URL(pickerWa!).searchParams.get("text")).toBe("Hello Simplyes, I need assistance with Passport Services — Passport renewal.");
     await page.goto("/contact/?service=passport-services&issue=renewal");
     const form = page.locator("form#enquiry");
     await form.getByLabel(/Describe your problem/).fill("private details");
     const formWa = await form.locator('a[data-cta-location="form"]').getAttribute("href");
     const text = new URL(formWa!).searchParams.get("text") ?? "";
-    expect(text).toBe("Hello SimplYes, I need assistance with Passport Services — Passport renewal.");
+    expect(text).toBe("Hello Simplyes, I need assistance with Passport Services — Passport renewal.");
     expect(text).not.toContain("private");
   });
 

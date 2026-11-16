@@ -16,7 +16,7 @@ export type IconKey =
   | "residents"
   | "corporate";
 
-/** §07 section 4 — Why SimplYes? */
+/** §07 section 4 — Why Simplyes? */
 export const whyItems: { icon: IconKey; title: string; body: string }[] = [
   { icon: "personal", title: "Personalised assistance", body: "Guidance shaped around your situation, not a generic checklist." },
   { icon: "guidance", title: "Clear guidance", body: "Requirements explained in plain language, without jargon." },
@@ -44,18 +44,18 @@ export const journeySteps: { title: string; body: string; who: string }[] = [
   },
   {
     title: "Understand the requirements",
-    body: "SimplYes understands your situation and identifies the relevant service and next steps.",
-    who: "SimplYes",
+    body: "Simplyes understands your situation and identifies the relevant service and next steps.",
+    who: "Simplyes",
   },
   {
     title: "Prepare the documents",
     body: "You receive guidance on document preparation and the information required.",
-    who: "Customer + SimplYes",
+    who: "Customer + Simplyes",
   },
   {
     title: "Assistance & review",
-    body: "Where agreed, SimplYes helps review and organise your documentation.",
-    who: "SimplYes",
+    body: "Where agreed, Simplyes helps review and organise your documentation.",
+    who: "Simplyes",
   },
   {
     title: "Understand the next steps",
@@ -64,7 +64,7 @@ export const journeySteps: { title: string; body: string; who: string }[] = [
   },
 ];
 
-/** §09 — what SimplYes does / does not do. */
+/** §09 — what Simplyes does / does not do. */
 export const doesDoesNot = {
   does: [
     "Explains processes in plain language.",
@@ -127,14 +127,14 @@ export const approach: string[] = [
 
 /** §20 — draft independence statement (subject to owner/legal review). */
 export const independenceStatement =
-  "SimplYes is an independent documentation assistance service. We are not affiliated with any government authority, embassy or consulate. Official applications and decisions remain subject to the relevant authorities.";
+  "Simplyes is an independent documentation assistance service. We are not affiliated with any government authority, embassy or consulate. Official applications and decisions remain subject to the relevant authorities.";
 
 /** §10 — About page. */
 export const about = {
   intro:
-    "SimplYes is an independent documentation assistance service for Indian nationals living in Germany. We help individuals, families, students and employers understand, prepare and organise documentation for administrative processes.",
+    "Simplyes is an independent documentation assistance service for Indian nationals living in Germany. We help individuals, families, students and employers understand, prepare and organise documentation for administrative processes.",
   story:
-    "Documentation processes can be confusing and time-consuming. Requirements vary by document type and authority, information is scattered, and people often do not know where to start. SimplYes exists to make them easier to understand and manage.",
+    "Documentation processes can be confusing and time-consuming. Requirements vary by document type and authority, information is scattered, and people often do not know where to start. Simplyes exists to make them easier to understand and manage.",
   mission: "Make complex documentation processes simpler, clearer and more accessible.",
   vision: "Build a trusted documentation assistance ecosystem that combines personal service, structured processes and technology.",
   values: [
@@ -153,11 +153,11 @@ export const about = {
 };
 
 /**
- * §11 fee table entry. `from` = fixed starting price in EUR (SimplYes service
+ * §11 fee table entry. `from` = fixed starting price in EUR (Simplyes service
  * fee only, never official or third-party costs); `quote` = priced per quotation.
  */
 export type ServiceFee = {
-  /** One of the eight service slugs in services.ts. */
+  /** One of the six service slugs in services.ts. */
   slug: string;
   fee: { kind: "from"; amountEur: number; note?: string } | { kind: "quote"; note?: string };
 };
@@ -169,17 +169,17 @@ export const pricing = {
    * an empty list renders nothing, so no placeholder or estimated prices can
    * ever appear (§11). Add one entry per service once approved, e.g.
    *   { slug: "passport-services", fee: { kind: "from", amountEur: <approved amount> } }
-   *   { slug: "corporate-services", fee: { kind: "quote" } }
+   *   { slug: "visa-documentation-support", fee: { kind: "quote" } }
    */
   serviceFees: [] as ServiceFee[],
   feeTypes: [
     {
-      title: "SimplYes service fees",
-      body: "What SimplYes charges for its assistance. Fees depend on the service and your situation and are explained before any paid assistance begins.",
+      title: "Simplyes service fees",
+      body: "What Simplyes charges for its assistance. Fees depend on the service and your situation and are explained before any paid assistance begins.",
     },
     {
       title: "Government or consular fees",
-      body: "Set and collected by the relevant authority. Separate from SimplYes fees where applicable. We never quote amounts we have not verified.",
+      body: "Set and collected by the relevant authority. Separate from Simplyes fees where applicable. We never quote amounts we have not verified.",
     },
     {
       title: "Third-party charges",
@@ -199,3 +199,53 @@ export const pricing = {
     "Corporate group size",
   ],
 };
+
+/* ---------- November 2026 redesign ---------------------------------------------------------------- */
+
+/** "Included with every service" card on the homepage. */
+export const includedWithEveryService: { title: string; body: string; urgent?: boolean }[] = [
+  { title: "Document checking", body: "Every page checked before you submit." },
+  { title: "Form filling", body: "Accurate, complete application forms." },
+  { title: "Appointment booking", body: "Help booking at the Embassy and Consulates." },
+  { title: "Photo help", body: "Your phone photo made upload-ready. No studio visit needed." },
+  { title: "Emergency help", body: "Lost passport or urgent travel? Message URGENT.", urgent: true },
+];
+
+/** "Why Simplyes" card. */
+export const whySimplyes: { title: string; body: string }[] = [
+  { title: "Complete applications", body: "Fewer rejections for photos, signatures and missing papers." },
+  { title: "Appointment and emergency help", body: "Support when time matters most." },
+  { title: "Transparent scope", body: "Clear about what we do, what we don't, and what stays with the authorities." },
+  { title: "For individuals and families", body: "One person or the whole household, coordinated together." },
+];
+
+/** The five steps, from first message to submission. */
+export const fiveSteps: { title: string; body: string }[] = [
+  { title: "Message us", body: "On WhatsApp, with your service and city." },
+  { title: "We find your route", body: "The right service, mission and checklist." },
+  { title: "We check and prepare", body: "Documents, forms and your photo." },
+  { title: "We book your appointment", body: "With a checklist for the day." },
+  { title: "You submit", body: "A complete application. Decisions stay with the authorities." },
+];
+
+/** Homepage FAQs (also published as FAQPage structured data). */
+export const homeFaqs: { question: string; answer: string }[] = [
+  {
+    question: "Can you book my consulate appointment?",
+    answer:
+      "Yes. We help you book your appointment at the Embassy, Consulate or application centre and prepare what you need to bring. The available slots are set by the mission.",
+  },
+  {
+    question: "I lost my passport and need to fly to India. What now?",
+    answer:
+      "Report it to the police, then WhatsApp us with URGENT. We help with the Emergency Certificate and the documents for your new passport.",
+  },
+  {
+    question: "Are official fees included?",
+    answer: "No. Official fees are paid to the mission. Our service fee is separate and agreed before we start.",
+  },
+  {
+    question: "Are you part of the Embassy or a Consulate?",
+    answer: "No. Simplyes is an independent service. Decisions on every application remain with the authorities.",
+  },
+];

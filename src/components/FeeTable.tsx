@@ -29,7 +29,7 @@ export function FeeTable({ fees }: { fees: ServiceFee[] }) {
     <section aria-labelledby="service-fees" className="section-tight">
       <div className="container-site">
         <h2 id="service-fees" className="type-h2 text-center">
-          SimplYes service fees
+          Simplyes service fees
         </h2>
         <p className="type-body mx-auto mt-3 max-w-[640px] text-center">
           Our own fee for each service. Official, consular and third-party costs are always separate.

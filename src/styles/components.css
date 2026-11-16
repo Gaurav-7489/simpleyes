@@ -802,10 +802,15 @@ html[data-form-focus] .fab-wa {
   pointer-events: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
+  /* Desktop: the redesign's WhatsApp pill sits top-right, just under the header, and is always shown. */
   .fab-wa {
     width: auto;
+    top: calc(var(--header-h) + 52px);
+    bottom: auto;
+    right: max(22px, env(safe-area-inset-right));
   }
+
 
   .fab-wa .btn-face {
     padding: 9px 22px;
@@ -829,7 +834,7 @@ html[data-form-focus] .fab-wa {
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
   /* Keep the footer clear of the tab bar, and lift the WhatsApp button above it. */
   footer[aria-label="Site footer"] {
     padding-bottom: calc(68px + env(safe-area-inset-bottom));

@@ -54,7 +54,7 @@ test.describe("links", () => {
       const href = (await link.getAttribute("href")) ?? "";
       const url = new URL(href);
       expect(url.pathname).toBe(`/${WHATSAPP_NUMBER}`);
-      expect(url.searchParams.get("text") ?? "").toMatch(/^Hello SimplYes/);
+      expect(url.searchParams.get("text") ?? "").toMatch(/^(URGENT: )?Hello Simplyes/);
       expect(href).not.toContain(" ");
       await expect(link).toHaveAttribute("target", "_blank");
       await expect(link).toHaveAttribute("rel", /noopener/);
@@ -116,8 +116,8 @@ test.describe("navigation", () => {
     const group = mobileNav.getByRole("button", { name: "Services" });
     await expect(group).toHaveAttribute("aria-expanded", "false");
     await group.click();
-    await expect(mobileNav.getByRole("link", { name: "Corporate Services" })).toBeVisible();
-    await mobileNav.getByRole("link", { name: "Contact Us" }).click();
+    await expect(mobileNav.getByRole("link", { name: "Student Services" })).toBeVisible();
+    await mobileNav.getByRole("link", { name: "Contact", exact: true }).click();
     await expect(page).toHaveURL(/\/contact\/$/);
     await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
   });
@@ -138,7 +138,7 @@ test.describe("FAQ accordion", () => {
     await page.goto("/faqs/");
     const main = page.locator("main");
     for (const c of faqCategories) await expect(main.getByRole("heading", { level: 2, name: c.label, exact: true })).toBeVisible();
-    const first = page.getByRole("button", { name: "Is SimplYes an official government service?" });
+    const first = page.getByRole("button", { name: "Is Simplyes an official government service?" });
     await expect(first).toHaveAttribute("aria-expanded", "false");
     await first.click();
     await expect(first).toHaveAttribute("aria-expanded", "true");
@@ -160,7 +160,7 @@ test.describe("FAQ accordion", () => {
 
     // Answers are in the server HTML even when collapsed (crawlable).
     const html = await (await page.request.get("/faqs/")).text();
-    expect(html).toContain("No. SimplYes is an independent documentation assistance service.");
+    expect(html).toContain("No. Simplyes is an independent documentation assistance service.");
   });
 });
 
@@ -171,7 +171,7 @@ test.describe("content works without JavaScript", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Choose your service" })).toBeVisible();
     // FAQ answers stay readable without JavaScript.
-    await expect(page.getByText("Decisions rest with the relevant authorities.").first()).toBeVisible();
+    await expect(page.getByText("Decisions on every application remain with the authorities.").first()).toBeVisible();
     const hidden = await page.$$eval("[data-reveal]", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
     expect(hidden).toBe(0);
   });
@@ -186,7 +186,7 @@ test.describe("redesign: bottom tab bar and service strip", () => {
       return;
     }
     await expect(bar).toBeVisible();
-    await expect(bar.getByRole("link")).toHaveCount(3);
+    await expect(bar.getByRole("link")).toHaveCount(4);
     await expect(bar.getByRole("link", { name: "Services" })).toHaveAttribute("aria-current", "page");
     await expect(bar.getByRole("link", { name: "Home" })).not.toHaveAttribute("aria-current", "page");
     await bar.getByRole("button", { name: "Show menu" }).click();
@@ -216,9 +216,9 @@ test.describe("redesign: bottom tab bar and service strip", () => {
     expect(lowest).toBeLessThanOrEqual(bar!.y);
   });
 
-  test("homepage service tiles link all eight services by their full names", async ({ page }) => {
+  test("homepage service list links all six services by their full names", async ({ page }) => {
     await page.goto("/");
-    const tiles = page.locator("#services");
+    const tiles = page.locator(".service-list");
     for (const service of services) {
       await expect(tiles.getByRole("link", { name: new RegExp(`^${service.title.replace(/[&]/g, "\\$&")}`) })).toHaveAttribute(
         "href",
@@ -228,42 +228,26 @@ test.describe("redesign: bottom tab bar and service strip", () => {
   });
 });
 
-test.describe("short pages: tap-to-open service sections", () => {
-  test("rows start closed, open on tap, open from a deep link, and stay in the HTML", async ({ page }) => {
-    await page.goto("/services/oci-services/");
-    const row = page.getByRole("button", { name: "What SimplYes can help with" });
-    await expect(row).toHaveAttribute("aria-expanded", "false");
-    const panel = page.locator(`#${await row.getAttribute("aria-controls")}`);
-    await expect(panel).toBeHidden();
-    await row.click();
-    await expect(row).toHaveAttribute("aria-expanded", "true");
-    await expect(panel).toBeVisible();
-
-    await page.goto("/services/oci-services/#what-to-prepare");
-    await expect(page.getByRole("button", { name: "What to have ready" })).toHaveAttribute("aria-expanded", "true");
-
-    // Collapsed content is still server-rendered (crawlable, and visible without JavaScript).
-    const html = await (await page.request.get("/services/oci-services/")).text();
-    expect(html).toContain("Please don&#x27;t send passport numbers or documents with your enquiry.");
+test.describe("videos load only on request", () => {
+  test("video posters are local; nothing is requested from YouTube until play", async ({ page }) => {
+    const requests: string[] = [];
+    page.on("request", (r) => requests.push(r.url()));
+    await page.goto("/guides/");
+    await page.waitForLoadState("networkidle");
+    expect(requests.filter((u) => /youtube|ytimg|googlevideo/.test(u))).toEqual([]);
+    await expect(page.locator(".video-poster").first()).toBeVisible();
   });
 });
 
 test.describe("official YouTube channel", () => {
   const CHANNEL = "https://www.youtube.com/@simplyesde";
 
-  test("hero links to the channel in a new tab without displacing the main actions", async ({ page }) => {
-    await page.goto("/");
-    const hero = page.locator("section[aria-labelledby=hero-title]");
-    const yt = hero.getByRole("link", { name: /Watch our videos on YouTube/ });
-    await expect(yt).toBeVisible();
+  test("guides page links to the channel in a new tab, with no player loaded up front", async ({ page }) => {
+    await page.goto("/guides/");
+    const yt = page.getByRole("link", { name: /All videos on YouTube/ });
     await expect(yt).toHaveAttribute("href", CHANNEL);
     await expect(yt).toHaveAttribute("target", "_blank");
     await expect(yt).toHaveAttribute("rel", /noopener/);
-    // The primary actions come first and stay visible.
-    await expect(hero.getByRole("link", { name: "Get Assistance" })).toBeVisible();
-    const links = await hero.getByRole("link").allTextContents();
-    expect(links.findIndex((t) => /YouTube/.test(t))).toBeGreaterThan(links.findIndex((t) => /Get Assistance/.test(t)));
-    // A plain link: no YouTube player, script or iframe on the page.
     await expect(page.locator('iframe[src*="youtube"], script[src*="youtube"]')).toHaveCount(0);
   });
 

@@ -2,49 +2,41 @@ import Link from "next/link";
 import { site } from "@/content/site";
 
 /**
- * Stand-in for the official logo, drawn after the owners' UI mockup (Nov 2026): a lime → green check
- * mark and the "SimplYes." wordmark. Replace with the supplied SVG once the owners provide the logo
- * asset (§16, Appendix A) — never treat this drawing as the final mark.
+ * The "simplyes." wordmark as drawn in the November 2026 redesign: lower-case, "si" in lime, the rest in
+ * the brand green gradient, and a lime full stop. Text, not an image, so it stays sharp and costs nothing.
  */
 export function Wordmark({
   className,
   asLink = true,
-  idSuffix = "main",
   tone = "dark",
+  size = "md",
 }: {
   className?: string;
   asLink?: boolean;
   /** "light" for use on the dark folder band (footer). */
   tone?: "dark" | "light";
-  /** Keeps the SVG gradient id unique when the mark appears more than once on a page. */
+  size?: "md" | "lg";
+  /** Kept for compatibility with earlier callers; no longer needed. */
   idSuffix?: string;
 }) {
-  const gradientId = `wm-check-${idSuffix}`;
   const mark = (
-    <span className="inline-flex items-center gap-2">
-      <svg aria-hidden="true" viewBox="0 0 32 24" className="h-[22px] w-[29px] shrink-0">
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0" stopColor="#a6dc5c" />
-            <stop offset="0.6" stopColor="#00a26c" />
-            <stop offset="1" stopColor="#00905a" />
-          </linearGradient>
-        </defs>
-        <path d="M2.5 12.5 11 21 29.5 2.5" fill="none" stroke={`url(#${gradientId})`} strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span className={`font-display text-[1.45rem] font-semibold leading-none tracking-[-0.03em] ${tone === "light" ? "text-white" : "text-ink"}`}>
-        {site.name}
-        <span className={tone === "light" ? "text-lime" : "text-accent-600"}>.</span>
-      </span>
+    <span className="wordmark" data-tone={tone} data-size={size} aria-hidden={asLink ? true : undefined}>
+      <span className="wordmark-si">si</span>
+      <span className="wordmark-rest">mplyes</span>
+      <span className="wordmark-dot">.</span>
     </span>
   );
 
   if (!asLink) {
-    return <span className={`inline-flex items-center ${className ?? ""}`}>{mark}</span>;
+    return (
+      <span className={`inline-flex items-center ${className ?? ""}`} role="img" aria-label={site.name}>
+        {mark}
+      </span>
+    );
   }
 
   return (
-    <Link href="/" aria-label={`${site.name} — home`} className={`inline-flex min-h-11 items-center rounded-md ${className ?? ""}`}>
+    <Link href="/" aria-label={`${site.name} home`} className={`inline-flex min-h-11 items-center rounded-md ${className ?? ""}`}>
       {mark}
     </Link>
   );

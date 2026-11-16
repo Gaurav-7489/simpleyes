@@ -10,7 +10,7 @@ export const metadata: Metadata = pageMetadata({
   title: `About Us — Independent Documentation Assistance | ${site.name}`,
   absoluteTitle: true,
   description:
-    "Why SimplYes exists, our mission, vision and values, and how we work: independent documentation assistance for Indians living in Germany.",
+    "Why Simplyes exists, our mission, vision and values, and how we work: independent documentation assistance for Indians living in Germany.",
   path: "/about/",
 });
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = pageMetadata({
 export default function AboutPage() {
   return (
     <>
-      <PageHero title="About SimplYes" lead={about.intro} crumbs={[{ name: "About Us", path: "/about/" }]} scene="about" />
+      <PageHero title="About Simplyes" lead={about.intro} crumbs={[{ name: "About Us", path: "/about/" }]} scene="about" />
 
       <section aria-labelledby="our-story" className="section-tight">
         <div className="container-site service-split">

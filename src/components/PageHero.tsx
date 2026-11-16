@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
 import { revealDelay } from "@/lib/style";
 import { DocumentStage } from "@/components/scene/DocumentStage";
 import type { SceneKey } from "@/components/scene/scenes";
@@ -67,7 +66,7 @@ export function Breadcrumb({ crumbs }: { crumbs: Crumb[] }) {
           const last = i === crumbs.length - 1;
           return (
             <li key={crumb.path}>
-              <ChevronRight aria-hidden="true" className="size-3.5" />
+              <span aria-hidden="true" className="breadcrumb-sep">/</span>
               {last ? <span aria-current="page">{crumb.name}</span> : <Link href={crumb.path}>{crumb.name}</Link>}
             </li>
           );
