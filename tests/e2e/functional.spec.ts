@@ -247,3 +247,36 @@ test.describe("short pages: tap-to-open service sections", () => {
     expect(html).toContain("Please don&#x27;t send passport numbers or documents with your enquiry.");
   });
 });
+
+test.describe("official YouTube channel", () => {
+  const CHANNEL = "https://www.youtube.com/@simplyesde";
+
+  test("hero links to the channel in a new tab without displacing the main actions", async ({ page }) => {
+    await page.goto("/");
+    const hero = page.locator("section[aria-labelledby=hero-title]");
+    const yt = hero.getByRole("link", { name: /Watch our videos on YouTube/ });
+    await expect(yt).toBeVisible();
+    await expect(yt).toHaveAttribute("href", CHANNEL);
+    await expect(yt).toHaveAttribute("target", "_blank");
+    await expect(yt).toHaveAttribute("rel", /noopener/);
+    // The primary actions come first and stay visible.
+    await expect(hero.getByRole("link", { name: "Get Assistance" })).toBeVisible();
+    const links = await hero.getByRole("link").allTextContents();
+    expect(links.findIndex((t) => /YouTube/.test(t))).toBeGreaterThan(links.findIndex((t) => /Get Assistance/.test(t)));
+    // A plain link: no YouTube player, script or iframe on the page.
+    await expect(page.locator('iframe[src*="youtube"], script[src*="youtube"]')).toHaveCount(0);
+  });
+
+  test("footer and Organization data name the same channel", async ({ page }) => {
+    await page.goto("/contact/");
+    const footerLink = page.locator("footer").getByRole("link", { name: /YouTube @simplyesde/ });
+    await expect(footerLink).toHaveAttribute("href", CHANNEL);
+    await expect(footerLink).toHaveAttribute("target", "_blank");
+    const org = await page.evaluate(() =>
+      [...document.querySelectorAll('script[type="application/ld+json"]')]
+        .flatMap((s) => [JSON.parse(s.textContent ?? "{}")].flat())
+        .find((d) => d["@type"] === "Organization"),
+    );
+    expect(org.sameAs).toEqual([CHANNEL]);
+  });
+});

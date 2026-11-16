@@ -59,6 +59,7 @@ export function organizationJsonLd() {
     description: site.description,
     areaServed: { "@type": "Country", name: "Germany" },
     knowsAbout: services.map((service) => service.title),
+    sameAs: [site.youtube.url],
     contactPoint: [
       {
         "@type": "ContactPoint",

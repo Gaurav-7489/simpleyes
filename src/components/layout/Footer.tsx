@@ -6,6 +6,7 @@ import { services } from "@/content/services";
 import { independenceStatement } from "@/content/home";
 import { whatsappHref } from "@/lib/whatsapp";
 import { Wordmark } from "@/components/ui/Wordmark";
+import { YouTubeIcon } from "@/components/ui/YouTubeLink";
 import { BackToTop } from "./BackToTop";
 import { ConsentSettingsButton } from "@/components/analytics/Analytics";
 
@@ -97,6 +98,20 @@ export function Footer() {
                   <MessageCircle aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.75} />
                   WhatsApp {site.whatsapp.display}
                   <span className="sr-only"> (opens WhatsApp in a new tab)</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={site.youtube.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cta="youtube"
+                  data-cta-location="footer"
+                  className={`${linkClass} gap-2`}
+                >
+                  <YouTubeIcon className="size-4 shrink-0" />
+                  YouTube {site.youtube.handle}
+                  <span className="sr-only"> (opens the SimplYes YouTube channel in a new tab)</span>
                 </a>
               </li>
               <li>
