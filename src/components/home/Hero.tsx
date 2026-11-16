@@ -2,6 +2,7 @@ import { site } from "@/content/site";
 import { revealDelay } from "@/lib/style";
 import { ButtonLink } from "@/components/ui/Button";
 import { HeroStage } from "@/components/home/HeroStage";
+import { YouTubeLink } from "@/components/ui/YouTubeLink";
 
 /**
  * Homepage hero: the headline set large across a 3D composition of documents that settle into place on
@@ -28,6 +29,11 @@ export function Hero() {
             <ButtonLink href="/contact/" variant="light" location="hero">
               Get Assistance
             </ButtonLink>
+          </div>
+          <div className="hero-intro mt-5" style={revealDelay(190)}>
+            <YouTubeLink location="hero" className="hero-youtube">
+              Watch our videos on YouTube
+            </YouTubeLink>
           </div>
           <p className="home-hero-note hero-intro mt-7" style={revealDelay(220)}>
             Independent private service. Not an embassy, consulate or government authority.

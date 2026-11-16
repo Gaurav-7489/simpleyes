@@ -39,6 +39,11 @@ export const site = {
     "SimplYes is an independent private documentation-assistance service. It is not affiliated with the Embassy of India, Indian Consulates or outsourced application centres. Application decisions and official processing remain with the relevant authorities. SimplYes does not issue passports, approve visas or grant OCI status, does not guarantee outcomes or processing times, and does not itself perform official attestation, notarisation or certification. Where your matter requires legal advice, notarisation or another regulated service, we will tell you so and you should consult an appropriately qualified professional.",
   /** One-line hero note. */
   heroNote: "Independent private service — not a government authority or application centre.",
+  /** Official YouTube channel, supplied by SimplYes (16 Nov 2026). Tracking parameters (`si=`) removed. */
+  youtube: {
+    url: "https://www.youtube.com/@simplyesde",
+    handle: "@simplyesde",
+  },
   whatsapp: {
     number: whatsappNumber,
     /** Human-readable form of the verified number. */

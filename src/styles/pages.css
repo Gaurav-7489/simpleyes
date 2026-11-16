@@ -40,6 +40,33 @@
   background: linear-gradient(180deg, var(--color-lime), #8fcb45);
 }
 
+/* Official YouTube channel link: quieter than the two buttons so it never competes with them. */
+.hero-youtube {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--color-accent-700) 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #fff 78%, transparent);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-accent-700);
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.hero-youtube:hover {
+  border-color: var(--color-accent-700);
+  background: #fff;
+}
+
+.hero-youtube:focus-visible {
+  outline: 3px solid var(--color-accent-700);
+  outline-offset: 3px;
+}
+
 .home-hero-note {
   max-width: 34rem;
   padding-left: 16px;
