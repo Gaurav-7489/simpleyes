@@ -5,7 +5,7 @@
  * styling changed, so search engines can trust the date. Legal pages use `site.legal.lastUpdated`.
  */
 export const pageUpdated: Record<string, string> = {
-  "/": "2026-11-15", // full-bleed hero and simplified homepage copy
+  "/": "2026-11-18", // video guides section
   "/services/": "2026-11-15", // service tiles with problem choices
   "/services/passport-services/": "2026-11-15",
   "/services/oci-services/": "2026-11-15",

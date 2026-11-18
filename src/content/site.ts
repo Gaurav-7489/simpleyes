@@ -21,7 +21,7 @@ export const site = {
   tagline: "Redefining Consular Services.",
   url: rawSiteUrl.replace(/\/+$/, ""),
   /** Date of the last content change (sitemap lastmod, llms files). Update when page content changes. */
-  contentUpdated: "2026-11-15",
+  contentUpdated: "2026-11-18",
   locale: "en",
   language: "en-DE",
   areaServed: "Germany",

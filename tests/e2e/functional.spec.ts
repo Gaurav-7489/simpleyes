@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { faqCategories } from "../../src/content/faqs";
 import { services } from "../../src/content/services";
+import { videoGuides } from "../../src/content/videos";
 import { routes, WHATSAPP_NUMBER } from "./routes";
 
 test.describe("pages", () => {
@@ -278,5 +279,39 @@ test.describe("official YouTube channel", () => {
         .find((d) => d["@type"] === "Organization"),
     );
     expect(org.sameAs).toEqual([CHANNEL]);
+  });
+});
+
+test.describe("video guides", () => {
+  test("all seven videos, in order, play in place only after a click", async ({ page }) => {
+    // Stay offline: stub YouTube's image server and the privacy-enhanced player.
+    await page.route("https://i.ytimg.com/**", (route) => route.fulfill({ status: 404 }));
+    await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<title>player</title>" }));
+    await page.goto("/");
+    const section = page.locator("section[aria-labelledby=videos-title]");
+    await expect(section.getByRole("heading", { level: 2 })).toHaveText("Video guides");
+    await expect(section.locator(".vg-title")).toHaveText(videoGuides.map((v) => v.title));
+    const thumbs = section.locator("img.vg-thumb");
+    await expect(thumbs).toHaveCount(7);
+    for (let i = 0; i < 7; i++) {
+      await expect(thumbs.nth(i)).toHaveAttribute("loading", "lazy");
+      await expect(thumbs.nth(i)).toHaveAttribute("src", new RegExp(`/vi/${videoGuides[i]!.id}/`));
+    }
+    // Nothing from YouTube's player loads before a click.
+    await expect(page.locator("iframe")).toHaveCount(0);
+
+    const [first, second] = videoGuides;
+    await section.getByRole("button", { name: `Play video: ${first!.title}` }).click();
+    const player = section.locator("iframe");
+    await expect(player).toHaveCount(1);
+    await expect(player).toHaveAttribute("src", `https://www.youtube-nocookie.com/embed/${first!.id}?autoplay=1&rel=0&playsinline=1`);
+    await expect(player).toHaveAttribute("title", first!.title);
+    await expect(page).toHaveURL(/\/$/);
+
+    // Starting another video closes the first.
+    await section.getByRole("button", { name: `Play video: ${second!.title}` }).click();
+    await expect(player).toHaveCount(1);
+    await expect(player).toHaveAttribute("src", new RegExp(`/embed/${second!.id}\\?`));
+    await expect(section.getByRole("button", { name: `Play video: ${first!.title}` })).toBeVisible();
   });
 });

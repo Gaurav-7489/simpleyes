@@ -80,6 +80,7 @@ test.describe("content rules", () => {
       "services-title",
       "why-title",
       "process-title",
+      "videos-title",
       "faq-title",
       "final-cta-title",
     ]);

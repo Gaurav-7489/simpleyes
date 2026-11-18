@@ -58,6 +58,7 @@ export default function PrivacyPage() {
                 We do not use advertising cookies.
               </li>
               <li>Fonts are hosted on our own server — no connection to third-party font services is made.</li>
+              <li>YouTube video players load only when you press play; preview images load from YouTube&apos;s image server.</li>
               <li>If you contact us via WhatsApp or email, those providers process data as described below.</li>
             </ul>
 
@@ -145,13 +146,25 @@ export default function PrivacyPage() {
               <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />.
             </p>
 
-            <h2>7. External links</h2>
+            <h2>7. Video guides (YouTube)</h2>
+            <p>
+              Our homepage shows video guides from our YouTube channel. Their preview images are loaded from
+              YouTube&apos;s image server (i.ytimg.com), operated by Google Ireland Limited, Gordon House, Barrow Street,
+              Dublin 4, Ireland; your browser transmits your IP address and technical request data to Google when they
+              load. The video player itself is loaded only when you press play. It uses YouTube&apos;s privacy-enhanced
+              mode (youtube-nocookie.com); once you start a video, Google may store information on your device and
+              process data, including in the USA. Legal basis: Art. 6(1)(f) GDPR (legitimate interest in presenting our
+              guides) and, for starting playback, Art. 6(1)(a) GDPR and § 25(1) TDDDG (your action of pressing play).
+              See <a href="https://policies.google.com/privacy">Google&apos;s privacy policy</a>.
+            </p>
+
+            <h2>8. External links</h2>
             <p>
               We link to official websites such as the {site.official.embassy.label}. When you follow those links, the
               respective operator is responsible for processing your data.
             </p>
 
-            <h2>8. Your rights</h2>
+            <h2>9. Your rights</h2>
             <p>
               Under the GDPR you have the right to access (Art. 15), rectification (Art. 16), erasure (Art. 17),
               restriction of processing (Art. 18), data portability (Art. 20) and to object to processing based on
@@ -163,7 +176,7 @@ export default function PrivacyPage() {
               {site.contact.email ? <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> : <Missing label="Privacy contact email" />}.
             </p>
 
-            <h2>9. Changes</h2>
+            <h2>10. Changes</h2>
             <p>
               We will update this notice if the website or our data processing changes, for example if we introduce
               new services or tools.

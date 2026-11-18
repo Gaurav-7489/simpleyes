@@ -5,6 +5,7 @@ import { Hero } from "@/components/home/Hero";
 import { Services } from "@/components/home/Services";
 import { WhySimplyes } from "@/components/home/WhySimplyes";
 import { SimpleProcess } from "@/components/home/SimpleProcess";
+import { VideoGuides } from "@/components/home/VideoGuides";
 import { FaqSection } from "@/components/home/FaqSection";
 import { FinalCta } from "@/components/FinalCta";
 
@@ -16,7 +17,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-/** Homepage: Hero → Choose your service → Why SimplYes → Five steps → FAQs → Contact (footer in the layout). */
+/** Homepage: Hero → Choose your service → Why SimplYes → Five steps → Video guides → FAQs → Contact (footer in the layout). */
 export default function HomePage() {
   return (
     <>
@@ -24,6 +25,7 @@ export default function HomePage() {
       <Services />
       <WhySimplyes />
       <SimpleProcess />
+      <VideoGuides />
       <FaqSection />
       <FinalCta />
     </>
