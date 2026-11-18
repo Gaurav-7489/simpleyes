@@ -1,42 +1,34 @@
+import { Check } from "lucide-react";
 import { whyItems } from "@/content/home";
-import { ScrollDepth } from "@/components/motion/ScrollDepth";
 
-/** The benefits that matter most, printed on one sheet: why people bring their paperwork to SimplYes. */
-const shown = ["Personalised assistance", "Clear guidance", "Human support", "Transparent scope", "For individuals and families"];
-
+/** Why SimplYes: the promise, beside the four reasons on a slightly tilted sheet. */
 export function WhySimplyes() {
-  const items = whyItems.filter((item) => shown.includes(item.title));
   return (
-    <section id="why-simplyes" aria-labelledby="why-title" className="section why">
-      <div className="container-site why-grid">
-        <div className="why-copy">
-          <h2 id="why-title" className="type-h2 max-w-[13ch]">
-            Why SimplYes
+    <section id="why-simplyes" aria-labelledby="why-title" className="section why2">
+      <div className="container-site why2-grid">
+        <div>
+          <p className="eyebrow">Why SimplYes</p>
+          <h2 id="why-title" className="why2-title mt-4">
+            Right the first time, with a clear line between what we do and what stays with the authorities.
           </h2>
-          <p className="type-intro mt-6 max-w-[22ch] text-ink">
-            A real person explains your paperwork in plain language.
+          <p className="mt-6 max-w-[30rem] text-[0.9375rem] leading-relaxed text-ink-2">
+            We know the forms, the photo rules and the documents each mission asks for. You get one person on WhatsApp
+            who prepares everything with you.
           </p>
-          <p className="type-lead mt-5 max-w-[28rem]">Guidance shaped to your situation, and a clear line between what we do and what stays with the authorities.</p>
         </div>
-
-        <div className="why-sheet-wrap" data-tilt>
-          <ScrollDepth mode="settle">
-          <div className="why-sheet paper">
-            <span aria-hidden="true" className="why-sheet-tab" />
-            <ul className="why-list">
-              {items.map((item) => (
-                <li key={item.title}>
-                  <span aria-hidden="true" className="mark-box" data-on="" />
-                  <span>
-                    <span className="why-item-title">{item.title}</span>
-                    <span className="why-item-body">{item.body}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          </ScrollDepth>
-        </div>
+        <ul className="why2-sheet" data-tilt>
+          {whyItems.map((item) => (
+            <li key={item.title} className="included-item">
+              <span className="tick" aria-hidden="true">
+                <Check className="size-3" strokeWidth={3} />
+              </span>
+              <span>
+                <span className="included-title">{item.title}</span>
+                <span className="included-body">{item.body}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

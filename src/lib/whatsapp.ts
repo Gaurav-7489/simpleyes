@@ -27,3 +27,9 @@ export function whatsappHref(service?: Pick<Service, "title" | "whatsappMessage"
   const text = encodeURIComponent(service ? serviceWhatsappMessage(service) : generalWhatsappMessage);
   return `https://wa.me/${site.whatsapp.number}?text=${text}`;
 }
+
+/** Emergency route: the message starts with URGENT so the team sees it first. No personal data. */
+export const urgentWhatsappMessage = "URGENT — Hello SimplYes, I need urgent help with an Indian passport or travel to India.";
+
+/** Appointment route: asks for help booking an appointment at the Embassy, a Consulate or the application centre. */
+export const appointmentWhatsappMessage = "Hello SimplYes, I would like help booking my appointment at the Indian Embassy or Consulate.";

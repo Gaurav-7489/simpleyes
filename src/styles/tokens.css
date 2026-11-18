@@ -28,6 +28,12 @@
   --color-accent-900: #003a2c;
   --color-folder: #0d2e26;
   --color-lime: #a6dc5c;
+  /* Emergency: a warm rust used only for urgent routes (lost passport, Emergency Certificate). 5.9:1 on white. */
+  --color-rust-50: #fff4ef;
+  --color-rust-100: #fde4d9;
+  --color-rust-200: #f6cbb9;
+  --color-rust-600: #b2461c;
+  --color-rust-700: #9a3a15;
   --color-green: #00a26c;
   --color-teal: #00905a;
 
@@ -42,7 +48,8 @@
 
 :root {
   /* Layout */
-  --header-h: 80px;
+  --urgent-h: 30px;
+  --header-h: 108px;
   --gutter: 18px;
   --section-y: 72px;
   --section-y-compact: 40px;

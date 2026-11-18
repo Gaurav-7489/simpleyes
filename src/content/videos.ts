@@ -13,3 +13,18 @@ export const videoGuides: VideoGuide[] = [
   { id: "ITCVJ14WiQk", title: "Indian e-Visa Application" },
   { id: "doHN3e53b0k", title: "Passport Photo & Signature Rules" },
 ];
+
+export function getVideo(id: string): VideoGuide | undefined {
+  return videoGuides.find((video) => video.id === id);
+}
+
+/** "Meet SimplYes": the short introduction shown under the five steps. */
+export const introVideoId = "5AqDkuUgoEE";
+
+/** Homepage guide cards, with their label. `urgent` uses the emergency colour. */
+export const homeGuides: { id: string; meta: string; urgent?: boolean }[] = [
+  { id: "U5oRO--jVbQ", meta: "Video guide" },
+  { id: "N7qH5NG0T98", meta: "Video guide" },
+  { id: "fSd52rH97MA", meta: "Video guide" },
+  { id: "K_c2qhg5PSo", meta: "Emergency", urgent: true },
+];

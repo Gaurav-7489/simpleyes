@@ -12,17 +12,17 @@ export const metadata: Metadata = pageMetadata({
   title: `Services — Documentation Assistance in Germany | ${site.name}`,
   absoluteTitle: true,
   description:
-    "All eight SimplYes services: passport, OCI, attestation & legalisation, affidavits, visa documentation, family, student and corporate documentation assistance.",
+    "Six SimplYes services: Indian passport, e-OCI, attestation & affidavits, visa, family documentation and student services in Germany.",
   path: "/services/",
 });
 
-/** Services overview: a gallery of the eight approved services, each with its own document composition. */
+/** Services overview: a gallery of the six services, each with its own document composition. */
 export default function ServicesPage() {
   return (
     <>
       <PageHero
         title="Our Services"
-        lead="Eight kinds of Indian documentation, explained and prepared with you. Choose the one that matches your situation."
+        lead="Six services, named the way the consulates name them. Choose the one that matches your situation."
         crumbs={[{ name: "Services", path: "/services/" }]}
       />
 
@@ -57,11 +57,11 @@ export default function ServicesPage() {
                     <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
                       <Link href={href} className="btn btn-light" data-cta-location="services-page">
                         <span className="btn-face">
-                          View {service.shortTitle ?? service.title}
+                          View {service.title}
                         </span>
                       </Link>
                       <Link
-                        href={enquiryHref(service, service.slug === "corporate-services" ? "corporate" : undefined)}
+                        href={enquiryHref(service)}
                         className="link-tertiary"
                         data-cta-location="services-page"
                       >

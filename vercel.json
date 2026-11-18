@@ -102,6 +102,36 @@
       "source": "/privacy-policy/",
       "destination": "/privacy/",
       "permanent": true
+    },
+    {
+      "source": "/services/attestation-legalisation",
+      "destination": "/services/attestation-affidavits/",
+      "permanent": true
+    },
+    {
+      "source": "/services/attestation-legalisation/",
+      "destination": "/services/attestation-affidavits/",
+      "permanent": true
+    },
+    {
+      "source": "/services/affidavits-declarations",
+      "destination": "/services/attestation-affidavits/",
+      "permanent": true
+    },
+    {
+      "source": "/services/affidavits-declarations/",
+      "destination": "/services/attestation-affidavits/",
+      "permanent": true
+    },
+    {
+      "source": "/services/corporate-services",
+      "destination": "/contact/?context=corporate",
+      "permanent": true
+    },
+    {
+      "source": "/services/corporate-services/",
+      "destination": "/contact/?context=corporate",
+      "permanent": true
     }
   ],
   "headers": [

@@ -16,16 +16,25 @@ export type IconKey =
   | "residents"
   | "corporate";
 
-/** §07 section 4 — Why SimplYes? */
-export const whyItems: { icon: IconKey; title: string; body: string }[] = [
-  { icon: "personal", title: "Personalised assistance", body: "Guidance shaped around your situation, not a generic checklist." },
-  { icon: "guidance", title: "Clear guidance", body: "Requirements explained in plain language, without jargon." },
-  { icon: "communication", title: "Convenient communication", body: "Start through the form, WhatsApp or email — whatever suits you." },
-  { icon: "organised", title: "Organised preparation", body: "A structured way to gather and check what your process needs." },
-  { icon: "human", title: "Human support", body: "A real person helps you, from first question to next steps." },
-  { icon: "transparent", title: "Transparent scope", body: "Clear about what we do, what we don't, and what stays with the authorities." },
-  { icon: "family", title: "For individuals and families", body: "Support for one person or a whole household, coordinated together." },
+/** Why SimplYes: the four reasons on the homepage sheet. */
+export const whyItems: { title: string; body: string }[] = [
+  { title: "Complete applications", body: "Fewer rejections for photos, signatures and missing papers." },
+  { title: "Appointment and emergency help", body: "Support when time matters most." },
+  { title: "Transparent scope", body: "Clear about what we do, what we don't, and what stays with the authorities." },
+  { title: "For individuals and families", body: "One person or the whole household, coordinated together." },
 ];
+
+/** Included with every service (homepage services card and service pages). */
+export const includedWithEveryService: { title: string; body: string; urgent?: boolean }[] = [
+  { title: "Document checking", body: "Every page checked before you submit." },
+  { title: "Form filling", body: "Accurate, complete application forms." },
+  { title: "Appointment booking", body: "Help booking at the Embassy and Consulates." },
+  { title: "Photo help", body: "Your phone photo made upload-ready. No studio visit needed." },
+  { title: "Emergency help", body: "Lost passport or urgent travel? Message URGENT.", urgent: true },
+];
+
+/** Indian missions in Germany we help with applications at. */
+export const missions = ["Embassy of India, Berlin", "Consulate Frankfurt", "Consulate Munich", "Consulate Hamburg"];
 
 /** §07 section 5 — four-step summary. */
 export const homeSteps: { title: string; body: string }[] = [
@@ -37,31 +46,11 @@ export const homeSteps: { title: string; body: string }[] = [
 
 /** §09 — the five-step journey with who acts at each step. */
 export const journeySteps: { title: string; body: string; who: string }[] = [
-  {
-    title: "Tell us what you need",
-    body: "You describe your requirement through the enquiry form, WhatsApp or email.",
-    who: "Customer",
-  },
-  {
-    title: "Understand the requirements",
-    body: "SimplYes understands your situation and identifies the relevant service and next steps.",
-    who: "SimplYes",
-  },
-  {
-    title: "Prepare the documents",
-    body: "You receive guidance on document preparation and the information required.",
-    who: "Customer + SimplYes",
-  },
-  {
-    title: "Assistance & review",
-    body: "Where agreed, SimplYes helps review and organise your documentation.",
-    who: "SimplYes",
-  },
-  {
-    title: "Understand the next steps",
-    body: "You receive guidance on agreed next steps and relevant submission preparation.",
-    who: "Customer",
-  },
+  { title: "Message us", body: "On WhatsApp, with your service and city.", who: "You" },
+  { title: "We find your route", body: "The right service, mission and checklist.", who: "SimplYes" },
+  { title: "We check and prepare", body: "Documents, forms and your photo.", who: "SimplYes + you" },
+  { title: "We book your appointment", body: "With a checklist for the day.", who: "SimplYes" },
+  { title: "You submit", body: "A complete application. Decisions stay with the authorities.", who: "You" },
 ];
 
 /** §09 — what SimplYes does / does not do. */
@@ -69,8 +58,9 @@ export const doesDoesNot = {
   does: [
     "Explains processes in plain language.",
     "Identifies the relevant service and next steps.",
-    "Guides document preparation.",
-    "Reviews and organises documentation where agreed.",
+    "Checks your documents and fills in your forms.",
+    "Helps you book your appointment, with a checklist for the day.",
+    "Makes your phone photo upload-ready.",
     "Communicates clearly throughout.",
   ],
   doesNot: [
@@ -94,7 +84,7 @@ export const audiences: { icon: IconKey; title: string; body: string; links: str
     icon: "students",
     title: "Students",
     body: "Organising certificates, degree documents and attestations — often for the first time.",
-    links: ["student-services", "attestation-legalisation"],
+    links: ["student-services", "attestation-affidavits"],
   },
   {
     icon: "family",
@@ -106,13 +96,13 @@ export const audiences: { icon: IconKey; title: string; body: string; links: str
     icon: "residents",
     title: "Long-term residents",
     body: "Renewals, name discrepancies, declarations and attestations years after arrival.",
-    links: ["affidavits-declarations", "passport-services"],
+    links: ["attestation-affidavits", "passport-services"],
   },
   {
     icon: "corporate",
-    title: "Corporate customers",
-    body: "Coordinating documentation for several Indian employees and their families.",
-    links: ["corporate-services"],
+    title: "Businesses",
+    body: "Commercial documents attested for use in India, and business visas for travelling staff.",
+    links: ["attestation-affidavits", "visa-documentation-support"],
   },
 ];
 
@@ -157,7 +147,7 @@ export const about = {
  * fee only, never official or third-party costs); `quote` = priced per quotation.
  */
 export type ServiceFee = {
-  /** One of the eight service slugs in services.ts. */
+  /** One of the six service slugs in services.ts. */
   slug: string;
   fee: { kind: "from"; amountEur: number; note?: string } | { kind: "quote"; note?: string };
 };
@@ -169,7 +159,6 @@ export const pricing = {
    * an empty list renders nothing, so no placeholder or estimated prices can
    * ever appear (§11). Add one entry per service once approved, e.g.
    *   { slug: "passport-services", fee: { kind: "from", amountEur: <approved amount> } }
-   *   { slug: "corporate-services", fee: { kind: "quote" } }
    */
   serviceFees: [] as ServiceFee[],
   feeTypes: [
@@ -196,6 +185,5 @@ export const pricing = {
     "Number and type of documents",
     "Extent of review agreed",
     "Translation, notarisation or courier needs",
-    "Corporate group size",
   ],
 };

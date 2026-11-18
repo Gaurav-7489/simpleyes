@@ -148,7 +148,7 @@ export default function PrivacyPage() {
 
             <h2>7. Video guides (YouTube)</h2>
             <p>
-              Our homepage shows video guides from our YouTube channel. Their preview images are loaded from
+              Our website shows video guides from our YouTube channel. Their preview images are loaded from
               YouTube&apos;s image server (i.ytimg.com), operated by Google Ireland Limited, Gordon House, Barrow Street,
               Dublin 4, Ireland; your browser transmits your IP address and technical request data to Google when they
               load. The video player itself is loaded only when you press play. It uses YouTube&apos;s privacy-enhanced

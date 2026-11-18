@@ -1,27 +1,34 @@
 import Link from "next/link";
 import { homeFaqs } from "@/content/faqs";
-import { independenceStatement } from "@/content/home";
-import { FaqList } from "@/components/FaqList";
 
-/** Selected FAQs (same wording as the FAQ page — single source of truth), beside the independence statement. */
+/** The four questions everyone asks, open by default (native <details>: works without JavaScript). */
 export function FaqSection() {
   return (
-    <section id="faqs" aria-labelledby="faq-title" className="section faq-home">
-      <div className="container-site faq-home-grid">
+    <section id="faqs" aria-labelledby="faq-title" className="section faq2">
+      <div className="container-site faq2-grid">
         <div>
-          <h2 id="faq-title" className="type-h2 max-w-[12ch]">
+          <p className="eyebrow">FAQs</p>
+          <h2 id="faq-title" className="type-h2 mt-4 max-w-[10ch]">
             Common questions
           </h2>
-          <p className="mt-6 max-w-[26rem] border-l-2 border-lime pl-4 text-[0.9875rem] leading-relaxed text-ink-2">
-            {independenceStatement}
-          </p>
-          <p className="mt-6">
-            <Link href="/faqs/" className="link-tertiary">
-              Read all FAQs
+          <p className="mt-5 text-[0.9375rem] text-ink-2">
+            More answers on the{" "}
+            <Link href="/faqs/" className="link-inline">
+              FAQs page
             </Link>
+            .
           </p>
         </div>
-        <FaqList items={homeFaqs} />
+        <div className="flex flex-col gap-3">
+          {homeFaqs.map((faq) => (
+            <details key={faq.question} className="faq-card" open>
+              <summary>
+                <h3>{faq.question}</h3>
+              </summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );

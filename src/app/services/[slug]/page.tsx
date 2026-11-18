@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
-import { ExternalLink, Mail, MessageCircle, Send } from "lucide-react";
-import { enquiryHref, getService, mainlyForPhrase, relatedServices, services, type Service } from "@/content/services";
+import { ArrowRight, Check, ExternalLink } from "lucide-react";
+import { enquiryHref, getService, OTHER_ISSUE, services, type Service } from "@/content/services";
 import { site } from "@/content/site";
-import { independenceStatement } from "@/content/home";
+import { includedWithEveryService } from "@/content/home";
+import { getVideo } from "@/content/videos";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
-import { whatsappHref } from "@/lib/whatsapp";
+import { appointmentWhatsappMessage, urgentWhatsappMessage, whatsappHref, whatsappHrefForMessage } from "@/lib/whatsapp";
 import { revealDelay } from "@/lib/style";
-import { DocumentStage } from "@/components/scene/DocumentStage";
-import { SceneImage } from "@/components/scene/SceneImage";
 import { Breadcrumb } from "@/components/PageHero";
-import { DisclosureList } from "@/components/DisclosureList";
-import { ProblemPicker } from "@/components/service/ProblemPicker";
 import { FaqList } from "@/components/FaqList";
-import { ProcessRail } from "@/components/ProcessRail";
-import { ScrollDepth } from "@/components/motion/ScrollDepth";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { VideoTile } from "@/components/video/VideoTile";
 import { TrackServiceView } from "@/components/analytics/TrackServiceView";
 
 type Params = { slug: string };
@@ -33,7 +28,6 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const service = getService(slug);
   if (!service) return {};
-  // §17 pattern ("OCI Services — Documentation Assistance in Germany | SimplYes"), shortened for long names.
   return pageMetadata({
     title: `${service.seoTitle} | ${site.name}`,
     absoluteTitle: true,
@@ -43,29 +37,15 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 }
 
 function formatDate(iso: string) {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 }
 
-function CheckList({ items, variant = "check" }: { items: readonly string[]; variant?: "check" | "cross" }) {
-  return (
-    <ul className="check-list" data-variant={variant === "cross" ? "cross" : undefined}>
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-}
-
-function OfficialSources({ service, lastChecked }: { service: Service; lastChecked: string | undefined }) {
+function OfficialSources({ service }: { service: Service }) {
+  const lastChecked = service.sources.map((s) => s.verifiedOn).sort().at(-1);
   if (service.sources.length === 0 || !lastChecked) return null;
   return (
-    <div className="mt-10 border-t border-line pt-6">
-      <h3 id="official-sources" className="text-[0.9375rem] font-medium text-ink">
+    <div className="mt-8 border-t border-line pt-6">
+      <h3 id="official-sources" className="text-[0.875rem] font-medium text-ink">
         Official sources — checked {formatDate(lastChecked)}
       </h3>
       <ul className="mt-2 flex flex-col gap-1">
@@ -75,7 +55,7 @@ function OfficialSources({ service, lastChecked }: { service: Service; lastCheck
               href={source.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-9 items-center gap-1.5 text-[0.9375rem] text-accent-700 underline decoration-accent-300 underline-offset-4 hover:decoration-current"
+              className="inline-flex min-h-9 items-center gap-1.5 text-[0.875rem] text-accent-700 underline decoration-accent-300 underline-offset-4 hover:decoration-current"
             >
               {source.label}
               <ExternalLink aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={1.75} />
@@ -84,22 +64,14 @@ function OfficialSources({ service, lastChecked }: { service: Service; lastCheck
           </li>
         ))}
       </ul>
-      <p className="mt-2 max-w-[70ch] text-sm text-ink-3">
-        Requirements can change. Where an official instruction differs from anything on this page, the official instruction
-        applies.
-      </p>
     </div>
   );
 }
 
-function Note({ children }: { children: ReactNode }) {
-  return <p className="mt-5 max-w-[68ch] border-l-2 border-lime pl-4 text-[0.9375rem] leading-relaxed text-ink-2">{children}</p>;
-}
-
 /**
- * A service page: the same information on all eight pages (breadcrumb, H1, introduction, who it is for,
- * situations, how we help, preparation, five steps, scope, FAQs, related services, contact options and a
- * service-specific enquiry), each led by its own 3D document composition.
+ * A service page (Nov 2026 redesign): breadcrumb and heading, what we help with (each card opens the enquiry with
+ * that problem chosen), the appointment / emergency / included sidebar, the service's video, the usual documents,
+ * FAQs with official sources, related video guides and the service-specific enquiry.
  */
 export default async function ServicePage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
@@ -107,201 +79,201 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
   if (!service) notFound();
 
   const path = `/services/${service.slug}/`;
-  const related = relatedServices(service);
-  const lastChecked = service.sources.map((s) => s.verifiedOn).sort().at(-1);
-  const corporate = service.slug === "corporate-services";
-  const primaryHref = enquiryHref(service, corporate ? "corporate" : undefined);
+  const [mainVideoId, ...relatedIds] = service.guides;
+  const mainVideo = mainVideoId ? getVideo(mainVideoId) : undefined;
+  const relatedVideos = relatedIds.map(getVideo).filter((v) => v !== undefined);
+  const urgentHref = whatsappHrefForMessage(urgentWhatsappMessage);
 
   return (
     <>
       <TrackServiceView name={service.title} />
 
-      {/* Hero: name, outcome, the service's composition, and the main action — pick your problem. */}
-      <section className="service-hero" data-service={service.scene.kind}>
-        <div className="container-site service-hero-grid">
-          <div className="service-hero-head">
-            <Breadcrumb
-              crumbs={[
-                { name: "Services", path: "/services/" },
-                { name: service.title, path },
-              ]}
-            />
-            <h1 className="type-page-title hero-intro mt-6" style={revealDelay(40)}>
-              {service.title}
-            </h1>
-            <p className="type-lead hero-intro mt-5 max-w-[36rem]" style={revealDelay(100)}>
-              {service.outcome}
-            </p>
-            <p className="hero-intro mt-4 text-[0.9375rem] text-accent-700" style={revealDelay(140)}>
-              Mainly for {mainlyForPhrase(service)}
-            </p>
-          </div>
-
-          <div className="service-hero-stage">
-            <ScrollDepth mode="drift">
-              <DocumentStage scene={service.scene.kind} label={service.scene.label} intro tilt ratio="1 / 0.84" />
-            </ScrollDepth>
-          </div>
-
-          <div id="choose-problem" className="service-hero-picker scroll-mt-[calc(var(--header-h)+16px)]">
-            <h2 className="type-card-title">What do you need help with?</h2>
-            <p className="mt-1.5 text-[0.9375rem] text-ink-2">Choose the situation closest to yours. It is filled in for you on the next page.</p>
-            <div className="mt-5">
-              <ProblemPicker slug={service.slug} title={service.title} issues={service.issues} corporate={corporate} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Introduction, in plain language. */}
-      <section aria-labelledby="about-service" className="section-tight">
-        <div className="container-site service-split">
-          <h2 id="about-service" className="type-h2 max-w-[12ch]">
-            About this service
-          </h2>
-          <div>
-            <div className="flex max-w-[66ch] flex-col gap-4 text-[1.0625rem] leading-relaxed text-ink-2">
-              {service.intro.map((p) => (
-                <p key={p}>{p}</p>
-              ))}
-            </div>
-            {service.explainer && (
-              <div className="explainer vellum mt-8">
-                <h3 className="type-card-title">{service.explainer.title}</h3>
-                {service.explainer.body.map((p) => (
-                  <p key={p} className="mt-3 max-w-[64ch] text-[0.9875rem] leading-relaxed text-ink-2">
-                    {p}
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Common situations, in the customer's own words. */}
-      <section aria-labelledby="situations" className="section-tight">
+      <section className="svc2-hero">
         <div className="container-site">
-          <h2 id="situations" className="type-h2 max-w-[16ch]">
-            Sound familiar?
-          </h2>
-          <ul className="situations mt-10">
-            {service.situations.map((s) => (
-              <li key={s.situation} className="situation">
-                <p className="situation-quote">{s.situation}</p>
-                <p className="situation-answer">{s.howWeHelp}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Details: tap to open (server-rendered, crawlable, visible without JavaScript). */}
-      <section aria-label={`${service.title} details`} className="section-tight">
-        <div className="container-site service-split">
-          <p className="max-w-[30ch] text-[0.9375rem] leading-relaxed text-ink-2">
-            Tap a topic to open it. Document categories are indicative and subject to verification.
-          </p>
-          <DisclosureList
-            items={[
-              { id: "who-its-for", title: "Who this service is for", content: <CheckList items={service.audience} /> },
-              { id: "what-we-help-with", title: `What ${site.name} can help with`, content: <CheckList items={service.helpsWith} /> },
-              {
-                id: "document-categories",
-                title: "Possible document categories",
-                content: (
-                  <>
-                    <CheckList items={service.documentCategories} />
-                    <Note>
-                      Indicative categories only. The documents you actually need depend on your situation and the current
-                      official requirements.
-                    </Note>
-                  </>
-                ),
-              },
-              {
-                id: "what-to-prepare",
-                title: "What to have ready",
-                content: (
-                  <>
-                    <CheckList items={service.prepare} />
-                    <Note>Please don&apos;t send passport numbers or documents with your enquiry.</Note>
-                  </>
-                ),
-              },
+          <Breadcrumb
+            crumbs={[
+              { name: "Services", path: "/services/" },
+              { name: service.title, path },
             ]}
           />
-          <div className="lg:col-start-2">
-            <Link href={primaryHref} data-cta-location="service-mid" className="btn btn-dark">
-              <span className="btn-face">Get Assistance With This Service</span>
+          <p className="eyebrow hero-intro mt-6">{service.title}</p>
+          <h1 className="svc2-title hero-intro" style={revealDelay(40)}>
+            {service.heroTitle}
+          </h1>
+          <p className="svc2-lead hero-intro" style={revealDelay(100)}>
+            {service.heroLead}
+          </p>
+          <div className="hero-intro mt-7 flex flex-col gap-3 sm:flex-row" style={revealDelay(160)}>
+            <a
+              href={whatsappHref(service)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cta="whatsapp"
+              data-cta-location="service-hero"
+              data-topic={service.slug}
+              className="btn btn-dark"
+            >
+              <span className="btn-face">
+                Get help on WhatsApp<span className="sr-only"> (opens in a new tab)</span>
+              </span>
+            </a>
+            <Link href="/appointments/" className="btn btn-light" data-cta-location="service-hero">
+              <span className="btn-face">Book an appointment</span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* The five steps, phrased for this service. */}
-      <section aria-labelledby="service-process" className="section-tight">
-        <div className="container-site">
-          <h2 id="service-process" className="type-h2 max-w-[16ch]">
-            How the process works
-          </h2>
-          <ProcessRail steps={service.process} className="mt-10" />
-        </div>
-      </section>
-
-      {/* Scope and limitations. */}
-      <section aria-labelledby="scope" className="section-tight">
-        <div className="container-site">
-          <h2 id="scope" className="type-h2 max-w-[18ch]">
-            Scope and limitations
-          </h2>
-          <div className="scope-grid mt-10">
-            <div className="scope-col paper">
-              <h3 className="type-card-title">What is included</h3>
-              <div className="mt-5">
-                <CheckList items={service.included} />
-              </div>
-            </div>
-            <div className="scope-col scope-col-out">
-              <h3 className="type-card-title">What is outside the scope</h3>
-              <div className="mt-5">
-                <CheckList items={service.outsideScope} variant="cross" />
-              </div>
-              <Note>{independenceStatement}</Note>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQs and official sources. */}
-      <section aria-labelledby="service-faqs" className="section-tight">
-        <div className="container-site service-split">
-          <h2 id="service-faqs" className="type-h2 max-w-[12ch]">
-            {service.title} FAQs
-          </h2>
-          <div>
-            <FaqList items={service.faqs} />
-            <OfficialSources service={service} lastChecked={lastChecked} />
-          </div>
-        </div>
-      </section>
-
-      {/* Related services. */}
-      {related.length > 0 && (
-        <section aria-labelledby="related-services" className="section-tight">
-          <div className="container-site">
-            <h2 id="related-services" className="type-h2">
-              Related services
+      <div className="container-site svc2-grid">
+        <div className="svc2-main">
+          <section aria-labelledby="we-help-with">
+            <h2 id="we-help-with" className="svc2-h2">
+              We help with
             </h2>
-            <ul className="related-grid mt-8">
-              {related.map((other) => (
-                <li key={other.slug}>
-                  <Link href={`/services/${other.slug}/`} className="related-card">
-                    <span className="related-card-stage" aria-hidden="true">
-                      <SceneImage scene={other.scene.kind} alt="" sizes="(min-width: 768px) 400px, 100vw" />
+            <ul className="issue-cards mt-6">
+              {service.issues.map((issue) => (
+                <li key={issue.id}>
+                  <Link
+                    href={enquiryHref(service, undefined, issue.id)}
+                    className="issue-card"
+                    data-urgent={issue.urgent ? "" : undefined}
+                    data-cta-location="service-issues"
+                  >
+                    <span className="issue-card-title">{issue.label}</span>
+                    {issue.body && <span className="issue-card-body">{issue.body}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-[0.875rem] text-ink-2">
+              Something else?{" "}
+              <Link href={enquiryHref(service, undefined, OTHER_ISSUE)} className="link-inline" data-cta-location="service-issues">
+                Describe your situation
+              </Link>{" "}
+              and we tell you the route.
+            </p>
+          </section>
+
+          {mainVideo && (
+            <section aria-labelledby="service-video" className="mt-14">
+              <h2 id="service-video" className="svc2-h2">
+                Watch: {mainVideo.title}
+              </h2>
+              <div className="mt-6">
+                <VideoTile video={mainVideo} size="feature" location="service-video" />
+              </div>
+            </section>
+          )}
+
+          {service.documents && (
+            <section aria-labelledby="service-documents" className="mt-14">
+              <h2 id="service-documents" className="svc2-h2">
+                {service.documents.title}
+              </h2>
+              <ul className="doc-list mt-6">
+                {service.documents.items.map((item) => (
+                  <li key={item}>
+                    <span className="tick" aria-hidden="true">
+                      <Check className="size-3" strokeWidth={3} />
                     </span>
-                    <span className="related-card-title">{other.title}</span>
-                    <span className="related-card-summary">{other.summary}</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="svc2-note">
+                Requirements differ between missions and can change. We check the current list for your mission before you
+                submit.
+              </p>
+            </section>
+          )}
+
+          <section aria-labelledby="service-faqs" className="mt-14">
+            <h2 id="service-faqs" className="svc2-h2">
+              {service.title} FAQs
+            </h2>
+            <div className="mt-4">
+              <FaqList items={service.faqs} />
+            </div>
+            <OfficialSources service={service} />
+          </section>
+        </div>
+
+        <aside className="svc2-aside" aria-label="Appointments, emergencies and what is included">
+          <div className="side-card">
+            <h2 className="side-card-title">Appointment booking</h2>
+            <p className="side-card-body">
+              We help you book your appointment at the Embassy, Consulate or application centre, with a checklist for the
+              day.
+            </p>
+            <a
+              href={whatsappHrefForMessage(appointmentWhatsappMessage)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cta="whatsapp"
+              data-cta-location="service-aside"
+              data-topic="appointment"
+              className="btn btn-dark mt-5 w-full"
+            >
+              <span className="btn-face w-full">
+                Book with us<span className="sr-only"> on WhatsApp (opens in a new tab)</span>
+              </span>
+            </a>
+          </div>
+
+          <div className="side-card" data-urgent="">
+            <h2 className="side-card-title">Emergency assistance</h2>
+            <p className="side-card-body">
+              Lost passport or urgent travel to India? Message us first. We help with the Emergency Certificate and your new
+              passport.
+            </p>
+            <a
+              href={urgentHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cta="whatsapp"
+              data-cta-location="service-aside"
+              data-topic="urgent"
+              className="btn btn-urgent mt-5 w-full"
+            >
+              <span className="btn-face w-full">
+                Message URGENT<span className="sr-only"> on WhatsApp (opens in a new tab)</span>
+              </span>
+            </a>
+          </div>
+
+          <div className="side-card">
+            <p className="eyebrow">Also included</p>
+            <ul className="mt-4 flex flex-col gap-3">
+              {includedWithEveryService
+                .filter((item) => !item.urgent && item.title !== "Appointment booking")
+                .map((item) => (
+                  <li key={item.title} className="flex items-start gap-2.5 text-[0.875rem] text-ink">
+                    <span className="tick mt-px" aria-hidden="true">
+                      <Check className="size-3" strokeWidth={3} />
+                    </span>
+                    {item.title === "Photo help" ? "Photo help, no studio visit needed" : item.title}
+                  </li>
+                ))}
+            </ul>
+            <p className="mt-5 text-[0.8125rem] leading-relaxed text-ink-2">
+              Official fees are paid to the mission. Our service fee is agreed before we start.
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      {relatedVideos.length > 0 && (
+        <section aria-labelledby="related-guides" className="svc2-related">
+          <div className="container-site">
+            <h2 id="related-guides" className="eyebrow">
+              Related guides
+            </h2>
+            <ul className="related-guides mt-5">
+              {relatedVideos.map((video) => (
+                <li key={video.id}>
+                  <Link href={`/guides/#${video.id}`} className="related-guide">
+                    {video.title}
+                    <ArrowRight aria-hidden="true" className="ml-1 inline size-4" strokeWidth={1.75} />
                   </Link>
                 </li>
               ))}
@@ -310,60 +282,14 @@ export default async function ServicePage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      {/* Service-specific enquiry (pre-selected form). */}
       <FinalCta
         compact
-        title={`Get assistance with ${service.title}`}
-        lead="Send a short enquiry with this service pre-selected. A real person will get back to you."
+        title={`Get help with ${service.title}`}
+        lead="Tell us your situation and city. We reply with the exact documents and the next step."
         service={service}
         primaryLabel="Get Assistance With This Service"
-        primaryHref={primaryHref}
+        primaryHref={enquiryHref(service)}
       />
-
-      {/* Contact options. */}
-      <section aria-labelledby="contact-options" className="pb-[var(--section-y-compact)]">
-        <div className="container-site flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-          <h2 id="contact-options" className="text-[0.9375rem] font-medium text-ink">
-            Other ways to reach us
-          </h2>
-          <ul className="flex flex-wrap gap-2">
-            <li>
-              <Link href={primaryHref} className="contact-pill">
-                <Send aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                Enquiry form
-              </Link>
-            </li>
-            <li>
-              <a
-                href={whatsappHref(service)}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cta="whatsapp"
-                data-cta-location="service-contact"
-                data-topic={service.slug}
-                className="contact-pill"
-              >
-                <MessageCircle aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                WhatsApp
-                <span className="sr-only"> (opens WhatsApp in a new tab)</span>
-              </a>
-            </li>
-            {site.contact.email && (
-              <li>
-                <a
-                  href={`mailto:${site.contact.email}?subject=${encodeURIComponent(`Enquiry — ${service.title}`)}`}
-                  data-cta="email"
-                  data-cta-location="service-contact"
-                  className="contact-pill"
-                >
-                  <Mail aria-hidden="true" className="size-4 text-accent-600" strokeWidth={1.75} />
-                  Email
-                </a>
-              </li>
-            )}
-          </ul>
-        </div>
-      </section>
 
       <JsonLd
         data={[

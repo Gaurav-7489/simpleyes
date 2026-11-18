@@ -2,7 +2,7 @@ import type { ServiceSceneKey } from "@/components/scene/scenes";
 import type { Faq } from "@/content/faqs";
 
 /** Service-specific outline icon (§16: one icon family, never repeated across services). */
-export type ServiceIcon = "passport" | "oci" | "attestation" | "affidavit" | "visa" | "family" | "student" | "corporate";
+export type ServiceIcon = "passport" | "oci" | "attestation" | "visa" | "family" | "student";
 
 /** An official page a service relies on. `verifiedOn` is the date it was last checked (YYYY-MM-DD). */
 export type OfficialSource = { label: string; href: string; verifiedOn: string };
@@ -12,7 +12,7 @@ export type Situation = { situation: string; howWeHelp: string };
 
 export type Service = {
   slug: string;
-  /** Catalogue number from §05 ("01"–"08"). */
+  /** Catalogue number ("01"–"06"). */
   number: string;
   title: string;
   /** Short label for chips and tight layouts. */
@@ -58,12 +58,27 @@ export type Service = {
    * Taken from the approved scope (§05); "Something else" is added by the UI, never listed here.
    */
   issues: ServiceIssue[];
+  /** Service-page hero heading (H1), worded as people search. */
+  heroTitle: string;
+  /** Service-page hero lead. */
+  heroLead: string;
+  /** Optional "Documents usually needed" checklist (with the mission caveat shown beneath it). */
+  documents?: { title: string; items: string[] };
+  /** Video guides (YouTube IDs from src/content/videos.ts): the first is embedded, the rest are related guides. */
+  guides: string[];
   /** The service's 3D document composition (src/components/scene/scenes.ts) and its text alternative. */
   scene: { kind: ServiceSceneKey; label: string };
 };
 
 /** One selectable problem on a service page. `id` is stable: it is used in URLs and enquiry emails. */
-export type ServiceIssue = { id: string; label: string };
+export type ServiceIssue = {
+  id: string;
+  label: string;
+  /** One-line description shown on the service page's "We help with" card. */
+  body?: string;
+  /** Urgent situations (lost passport, emergency travel) get the emergency colour and WhatsApp route. */
+  urgent?: boolean;
+};
 
 export { OTHER_ISSUE } from "@/lib/enquiry-keys";
 import { OTHER_ISSUE } from "@/lib/enquiry-keys";
@@ -105,8 +120,7 @@ const nextSteps = {
 };
 
 /**
- * The eight approved service categories (§05 — scope lock: no other category may
- * appear anywhere). Copy uses "may", "where applicable" and "depending on your
+ * The six service categories (Nov 2026 redesign: named the way the consulates name them). Copy uses "may", "where applicable" and "depending on your
  * situation" honestly; document lists are categories only and labelled as
  * subject to verification until the owners approve specifics.
  */
@@ -116,9 +130,9 @@ export const services: Service[] = [
     number: "01",
     title: "Passport Services",
     icon: "passport",
-    summary: "Guidance for new, renewed, reissued, lost or damaged Indian passports and personal-detail corrections.",
+    summary: "Renewal, lost or damaged passports, name and detail changes, PCC, Emergency Certificate and surrender certificate.",
     outcome: "Understand which passport situation applies to you and prepare your application with confidence.",
-    mainlyFor: "Professionals, families, long-term residents",
+    mainlyFor: "Professionals, families and long-term residents",
     intro: [
       "Indian passport processes differ depending on your situation — a first adult passport, a renewal, a reissue, a lost or damaged passport, or a correction to your personal details. Each route can involve different steps and supporting documents.",
       "SimplYes helps Indian nationals living in Germany work out which situation applies, organise the supporting documents and prepare the application before it is submitted through the official channel.",
@@ -187,7 +201,7 @@ export const services: Service[] = [
     ],
     outsideScope: [
       "Issuing passports — only the Government of India, through its missions, does this",
-      "Booking, guaranteeing or speeding up appointments or processing",
+      "Guaranteeing appointment slots or speeding up processing — slots are set by the mission",
       "Making or influencing any official decision",
       "Legal advice or representation before authorities",
     ],
@@ -203,33 +217,51 @@ export const services: Service[] = [
           "We explain the steps usually involved for a lost or damaged passport and help you organise the documentation. Requirements depend on your situation and the responsible mission.",
       },
       {
-        question: "Do you book or attend appointments for me?",
+        question: "Can you book my passport appointment?",
         answer:
-          "No. Appointments are booked and attended by you through the official application centre. We help you prepare so you arrive ready.",
+          "Yes. We help you book your appointment at the Embassy, Consulate or application centre and give you a checklist for the day. The available slots are set by the mission, and you attend the appointment yourself.",
       },
       {
         question: "How long does a passport take?",
         answer: "Processing times are set by the authorities. We do not promise or influence timelines.",
       },
     ],
-    related: ["family-documentation", "oci-services", "affidavits-declarations"],
+    related: ["family-documentation", "oci-services", "attestation-affidavits"],
     sources: [sources.outsourcing],
     issues: [
-      { id: "renewal", label: "Passport renewal" },
-      { id: "new-passport", label: "New passport application" },
-      { id: "lost-damaged", label: "Lost or damaged passport" },
-      { id: "correction", label: "Correct personal details" },
+      { id: "renewal", label: "Passport renewal", body: "Re-issue on expiry or when the pages are full." },
+      { id: "lost-damaged", label: "Lost, stolen or damaged passport", body: "Police report, Annexure F and L affidavits, new passport.", urgent: true },
+      { id: "correction", label: "Name and detail changes", body: "Spouse's name, name change after marriage, name split, address." },
+      { id: "signature", label: "Change of signature", body: "Affidavit and supporting documents." },
+      { id: "pcc", label: "Police Clearance Certificate (PCC)", body: "For jobs, immigration and residence permits." },
+      { id: "emergency-certificate", label: "Emergency Certificate", body: "One-way travel document for urgent travel to India.", urgent: true },
+      { id: "surrender", label: "Surrender certificate", body: "After taking German or another citizenship." },
+      { id: "children", label: "Passports for children", body: "Minors and newborns, with parental consent forms." },
     ],
+    heroTitle: "Indian passport renewal and passport services in Germany",
+    heroLead:
+      "Renewal, lost or damaged passports, name and detail changes, PCC and emergency travel documents. We check, prepare and help you book your appointment.",
+    documents: {
+      title: "Documents usually needed for renewal",
+      items: [
+        "Current passport (original) and copies of the first and last pages",
+        "Printed online application form, signed on the last page",
+        "Photo, 35 × 45 mm, white background, same as uploaded",
+        "Residence permit and Meldebescheinigung",
+        "Fee payment proof and a tracked return envelope",
+      ],
+    },
+    guides: ["U5oRO--jVbQ", "K_c2qhg5PSo", "doHN3e53b0k"],
     scene: { kind: "passport", label: "Illustration of an open, blank passport-style booklet with its pages and a closed booklet" },
   },
   {
     slug: "oci-services",
     number: "02",
-    title: "OCI Services",
+    title: "e-OCI Services",
     icon: "oci",
-    summary: "Help with new OCI applications, reissues where applicable, updates, corrections and family OCI coordination.",
+    summary: "Fresh e-OCI, renewal after a new passport and updates of your details, for adults, children and foreign spouses.",
     outcome: "Understand OCI in plain language and prepare a complete, ready-to-submit application.",
-    mainlyFor: "Families, professionals, new arrivals",
+    mainlyFor: "Families, German citizens of Indian origin and spouses",
     intro: [
       "OCI processes can feel unfamiliar, especially if you are applying for the first time or for several family members. Whether you need a new registration, a reissue where applicable, or an update or correction, the steps and supporting documents differ.",
       "SimplYes explains OCI in plain language, checks your preparation and helps coordinate related applications for your family.",
@@ -332,22 +364,36 @@ export const services: Service[] = [
     ],
     related: ["passport-services", "family-documentation"],
     sources: [sources.ociPortal, sources.embassyOci, sources.outsourcing],
+    heroTitle: "e-OCI card application and updates in Germany",
+    heroLead:
+      "Fresh e-OCI, renewal after a new passport and updates of your details, for adults, children and foreign spouses. We check your form, photo and documents before you submit.",
+    documents: {
+      title: "Documents usually needed for a fresh e-OCI",
+      items: [
+        "Current passport and copies of the relevant pages",
+        "Proof of Indian origin (old Indian passport or parent's documents)",
+        "Photo and signature in the stated format",
+        "Residence permit and Meldebescheinigung",
+        "For spouses: marriage certificate and the spouse's documents",
+      ],
+    },
+    guides: ["N7qH5NG0T98", "doHN3e53b0k"],
     scene: { kind: "oci", label: "Illustration of a blank card resting on its supporting documents" },
     issues: [
-      { id: "new-oci", label: "New OCI application" },
-      { id: "reissue", label: "OCI reissue (where applicable)" },
-      { id: "update-correction", label: "Update or correct OCI details" },
-      { id: "family-oci", label: "OCI for several family members" },
+      { id: "new-oci", label: "Fresh e-OCI", body: "First e-OCI for adults, children and foreign spouses." },
+      { id: "reissue", label: "Renewal after a new passport", body: "Re-issue or update when your passport changes." },
+      { id: "update-correction", label: "Update your details", body: "Name, address, nationality or photo changes." },
+      { id: "family-oci", label: "e-OCI for the whole family", body: "Several family members coordinated as one case." },
     ],
   },
   {
-    slug: "attestation-legalisation",
+    slug: "attestation-affidavits",
     number: "03",
-    title: "Attestation & Legalisation",
+    title: "Attestation & Affidavits",
     icon: "attestation",
-    summary: "Apostille guidance and preparation of educational, personal and certificate documents for use abroad.",
-    outcome: "Understand which recognition route your document needs and prepare it step by step.",
-    mainlyFor: "Students, professionals, residents",
+    summary: "Attestation of personal, educational and commercial documents. Name change, name split and other affidavits, and Power of Attorney.",
+    outcome: "Get your documents attested and your affidavits prepared, in the right order.",
+    mainlyFor: "Residents, students and businesses",
     intro: [
       "When a document issued in one country must be recognised by an authority in another, it may need an apostille, attestation or legalisation — sometimes after translation or notarisation.",
       "SimplYes guides you through the preparation route and coordinates the steps so you know what happens in which order.",
@@ -359,13 +405,15 @@ export const services: Service[] = [
         "Requirements depend on the document type, the issuing authority and the destination authority. We help you work out the route that appears to apply — official confirmation is always performed by the competent authority.",
       ],
     },
-    seoTitle: "Apostille & Attestation Help in Germany",
+    seoTitle: "Attestation & Affidavit Help in Germany",
     metaDescription:
-      "Apostille, attestation and legalisation guidance for educational, personal and certificate documents — for Indians in Germany. Independent documentation assistance.",
+      "Attestation of personal, educational and commercial documents, name change and other affidavits, and Power of Attorney — for Indians in Germany.",
     audience: [
       "Students and graduates whose certificates must be recognised abroad",
       "Professionals preparing documents for employers or authorities",
       "Residents whose personal certificates need recognition in another country",
+      "Anyone whose name differs across documents, or who needs someone to act on their behalf",
+      "Businesses with commercial documents for use in India",
     ],
     situations: [
       {
@@ -388,6 +436,8 @@ export const services: Service[] = [
       "Certificate-related documentation",
       "Translation coordination guidance",
       "Notarisation-related administrative guidance",
+      "Name-change, name-split and other affidavits",
+      "Power of Attorney documentation guidance",
       "Cross-border document preparation",
     ],
     documentCategories: [
@@ -419,7 +469,7 @@ export const services: Service[] = [
       "Performing official attestation, apostille, legalisation or notarisation",
       "Guaranteeing that an authority will accept a document",
       "Translating documents ourselves or acting as a sworn translator",
-      "Legal advice",
+      "Legal advice, legal representation or unauthorised legal drafting",
     ],
     faqs: [
       {
@@ -433,134 +483,40 @@ export const services: Service[] = [
           "Sometimes. It depends on the document, the language and the destination authority. We explain the usual order of steps for your case.",
       },
       {
+        question: "What is a name-change or name-split affidavit used for?",
+        answer:
+          "It explains why your name appears differently across documents, so an authority can match them. We explain what is usually needed and help prepare the supporting paperwork.",
+      },
+      {
         question: "How do I know which route applies?",
         answer:
           "The route depends on the document type, the issuing authority and the destination authority. We help you work it out from the current official guidance.",
       },
     ],
-    related: ["student-services", "affidavits-declarations"],
+    related: ["student-services", "passport-services"],
     sources: [sources.attestationFaq, sources.meaApostille, sources.outsourcing],
+    heroTitle: "Document attestation and affidavits for Indians in Germany",
+    heroLead:
+      "Attestation of personal, educational and commercial documents. Name change, name split and other affidavits, and Power of Attorney. We prepare the papers in the right order.",
+    guides: ["doHN3e53b0k", "U5oRO--jVbQ"],
     scene: { kind: "attestation", label: "Illustration of stacked certificate sheets and a rubber stamp" },
     issues: [
-      { id: "apostille", label: "Apostille guidance" },
-      { id: "educational", label: "Educational document attestation" },
-      { id: "personal-certificates", label: "Personal or civil certificates" },
-      { id: "translation-notarisation", label: "Translation or notarisation guidance" },
-    ],
-  },
-  {
-    slug: "affidavits-declarations",
-    number: "04",
-    title: "Affidavits & Declarations",
-    icon: "affidavit",
-    summary: "Support with name-discrepancy documentation, personal declarations, affidavits and Power of Attorney guidance.",
-    outcome: "Understand what a declaration is for and prepare the supporting paperwork properly.",
-    mainlyFor: "Long-term residents, families",
-    intro: [
-      "Declarations and affidavits are often requested when details differ across documents, when a personal statement is required, or when someone needs to act on your behalf.",
-      "SimplYes explains the purpose of common declarations and supports the administrative preparation — with a clear boundary: we do not provide legal representation or legal drafting.",
-    ],
-    explainer: {
-      title: "What these documents are for",
-      body: [
-        "A name-discrepancy declaration explains why a name is spelt differently across documents. A personal declaration or affidavit is a formal written statement. A Power of Attorney authorises another person to act for you in a defined matter.",
-        "Where your matter requires legal advice, notarisation or another regulated service, we will tell you so and you should consult an appropriately qualified professional.",
-      ],
-    },
-    seoTitle: "Affidavit & Declaration Help in Germany",
-    metaDescription:
-      "Help understanding and preparing name-discrepancy declarations, personal declarations, affidavits and Power of Attorney paperwork — for Indians in Germany.",
-    audience: [
-      "Long-term residents whose names or details differ across documents",
-      "Families asked for personal declarations as part of an application",
-      "Anyone who needs someone to act on their behalf in an administrative matter",
-    ],
-    situations: [
-      {
-        situation: "“My name is spelt differently across my documents.”",
-        howWeHelp: "We explain what a name-discrepancy declaration is used for and help organise the supporting documents.",
-      },
-      {
-        situation: "“An application asks for a declaration.”",
-        howWeHelp: "We explain the purpose of the requested declaration and support the administrative preparation.",
-      },
-      {
-        situation: "“Someone needs to act on my behalf.”",
-        howWeHelp: "We explain what a Power of Attorney is used for and the preparation and notarisation steps usually involved.",
-      },
-    ],
-    helpsWith: [
-      "Name-discrepancy documentation",
-      "Personal declarations",
-      "Affidavit preparation support",
-      "Power of Attorney documentation guidance",
-      "Notarisation guidance",
-      "Supporting-document coordination",
-    ],
-    documentCategories: [
-      "Identity documents showing the details concerned",
-      "Supporting records that explain a discrepancy",
-      "The declaration or authorisation text required by the receiving authority",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Tell us which declaration was requested, and by whom." },
-      { title: "Understand the requirements", body: "We explain the purpose of the document and what the receiving authority usually expects." },
-      { title: "Prepare the documents", body: "You receive guidance on supporting documents and notarisation steps." },
-      { title: "Assistance & review", body: "Where agreed, we help organise and check the supporting paperwork." },
-      nextSteps,
-    ],
-    prepare: [
-      "Which declaration or authorisation was requested, and by which authority",
-      "The details that differ, or the matter someone should act on",
-      "Any template or instructions you have received",
-    ],
-    included: [
-      "A plain-language explanation of the document's purpose",
-      "Administrative preparation support",
-      "Notarisation guidance and supporting-document coordination",
-    ],
-    outsideScope: [
-      "Legal representation or legal advice",
-      "Unauthorised legal drafting",
-      "Notarising documents — only a notary or competent authority can do this",
-      "Guaranteeing acceptance by any authority",
-    ],
-    faqs: [
-      {
-        question: "What is a name-discrepancy declaration used for?",
-        answer:
-          "It explains why your name appears differently across documents, so an authority can match them. Whether one is needed depends on the receiving authority.",
-      },
-      {
-        question: "Does SimplYes provide legal advice?",
-        answer:
-          "No. We provide documentation assistance only. Where a matter needs legal advice or legal drafting, we will tell you to consult a qualified professional.",
-      },
-      {
-        question: "What is a Power of Attorney used for?",
-        answer:
-          "It authorises another person to act on your behalf in a defined matter. We explain the preparation and notarisation steps usually involved.",
-      },
-    ],
-    related: ["passport-services", "attestation-legalisation"],
-    sources: [sources.attestationFaq, sources.outsourcing],
-    scene: { kind: "affidavit", label: "Illustration of a signed declaration, a folded note and a pen" },
-    issues: [
-      { id: "name-discrepancy", label: "Name discrepancy declaration" },
-      { id: "personal-declaration", label: "Personal declaration or affidavit" },
-      { id: "power-of-attorney", label: "Power of Attorney guidance" },
-      { id: "notarisation", label: "Notarisation guidance" },
+      { id: "personal-certificates", label: "Personal documents", body: "Birth, marriage and other civil-status certificates." },
+      { id: "educational", label: "Educational documents", body: "Degrees, transcripts and school certificates." },
+      { id: "commercial", label: "Commercial documents", body: "Company documents for use in India." },
+      { id: "apostille", label: "Apostille", body: "For use in Hague Convention countries." },
+      { id: "name-discrepancy", label: "Name change and name split affidavits", body: "When your name differs across documents." },
+      { id: "power-of-attorney", label: "Power of Attorney", body: "Someone in India acting on your behalf." },
     ],
   },
   {
     slug: "visa-documentation-support",
-    number: "05",
-    title: "Visa & Documentation Support",
-    shortTitle: "Visa & Documentation",
-    icon: "visa",
-    summary: "Requirements guidance, application preparation, checklists and completeness checks for your documentation.",
+    number: "04",
+    title: "Visa Services",
+        icon: "visa",
+    summary: "Indian e-Visa and regular visa: e-Tourist, e-Business, e-Medical and more, for spouses, family, friends and business travellers.",
     outcome: "Organise your documentation and check it is complete before you submit.",
-    mainlyFor: "Professionals, spouses, new arrivals",
+    mainlyFor: "German citizens and business professionals",
     intro: [
       "Preparing documents for an application can be stressful when you are unsure what is needed or whether your file is complete.",
       "SimplYes helps you understand the published documentation requirements, organise supporting documents, prepare a checklist and check completeness before you submit.",
@@ -572,7 +528,7 @@ export const services: Service[] = [
         "If your situation needs legal advice, we will tell you so and you should consult a qualified immigration lawyer.",
       ],
     },
-    seoTitle: "Visa Documentation Support in Germany",
+    seoTitle: "Indian e-Visa & Visa Help in Germany",
     metaDescription:
       "Documentation assistance for visa applications: requirements guidance, checklists and completeness checks. Not immigration-law advice. For Indians in Germany.",
     audience: [
@@ -650,22 +606,37 @@ export const services: Service[] = [
     ],
     related: ["attestation-legalisation", "family-documentation"],
     sources: [sources.outsourcing],
+    heroTitle: "Indian e-Visa and visa help for German citizens",
+    heroLead:
+      "Indian e-Visa and regular visa: e-Tourist, e-Business, e-Medical and more, for spouses, family, friends and business travellers. We fill in, check and prepare your application.",
+    documents: {
+      title: "Documents usually needed for an e-Visa",
+      items: [
+        "Passport valid for at least six months, with two blank pages",
+        "Scan of the passport photo page",
+        "Recent photo, white background",
+        "Purpose-specific documents (invitation letter, business card, hospital letter)",
+      ],
+    },
+    guides: ["fSd52rH97MA", "ITCVJ14WiQk"],
     scene: { kind: "visa", label: "Illustration of an organised document folder, a checklist and a travel booklet" },
     issues: [
-      { id: "requirements", label: "Understand document requirements" },
-      { id: "application-preparation", label: "Prepare my application" },
-      { id: "completeness-check", label: "Check my documents are complete" },
-      { id: "appointment-preparation", label: "Prepare for an appointment" },
+      { id: "e-tourist", label: "e-Tourist visa", body: "Holidays and visits to family and friends." },
+      { id: "e-business", label: "e-Business visa", body: "Meetings, trade and business travel." },
+      { id: "e-medical", label: "e-Medical visa", body: "Treatment in India, and for attendants." },
+      { id: "regular-visa", label: "Regular visa", body: "Longer stays and categories outside the e-Visa." },
+      { id: "urgent-visa", label: "Urgent visa for family", body: "Family emergencies in India.", urgent: true },
+      { id: "completeness-check", label: "Check my application", body: "Form, photo and documents before you submit." },
     ],
   },
   {
     slug: "family-documentation",
-    number: "06",
+    number: "05",
     title: "Family Documentation",
     icon: "family",
-    summary: "Spouse, children, birth-, marriage-related and dependant documentation, coordinated per household.",
+    summary: "Passport, e-OCI and visa for the whole family as one case: minor passports, birth registration and parental consent forms.",
     outcome: "One point of contact for your household's documentation, with related requirements aligned.",
-    mainlyFor: "Families, spouses and dependants",
+    mainlyFor: "Families, spouses and children",
     intro: [
       "When several family members need documentation at the same time — a new baby, a spouse joining, or renewals for the whole household — handling each application separately can lead to inconsistencies and repeated work.",
       "SimplYes treats family documentation as a coordinated household solution: one point of contact, with related requirements aligned across applications.",
@@ -746,20 +717,24 @@ export const services: Service[] = [
     ],
     related: ["passport-services", "oci-services", "corporate-services"],
     sources: [sources.outsourcing, sources.ociPortal],
+    heroTitle: "Family passports, e-OCI and visas in Germany",
+    heroLead:
+      "Passport, e-OCI and visa for the whole family as one case: minor passports, birth registration and parental consent forms. One person on WhatsApp coordinates everything.",
+    guides: ["U5oRO--jVbQ", "N7qH5NG0T98", "fSd52rH97MA"],
     scene: { kind: "family", label: "Illustration of three matching document sets arranged together" },
     issues: [
-      { id: "spouse", label: "Spouse documentation" },
-      { id: "children", label: "Children or newborn documentation" },
-      { id: "marriage", label: "Marriage-related documents" },
-      { id: "household", label: "Several family members together" },
+      { id: "children", label: "Passports for minors", body: "Newborns and children, with parental consent forms." },
+      { id: "birth-registration", label: "Birth registration", body: "Registering a child born in Germany with the mission." },
+      { id: "spouse", label: "Spouse documentation", body: "Passport, e-OCI or visa for your spouse." },
+      { id: "household", label: "The whole family as one case", body: "Passport, e-OCI and visa coordinated together." },
     ],
   },
   {
     slug: "student-services",
-    number: "07",
+    number: "06",
     title: "Student Services",
     icon: "student",
-    summary: "Help organising educational certificates, degree documents and academic paperwork, including attestation guidance.",
+    summary: "Passport renewal, attestation of educational documents and PCC for Indian students in Germany.",
     outcome: "Get your academic documents organised and ready, without the jargon.",
     mainlyFor: "Indian students in Germany",
     intro: [
@@ -781,7 +756,7 @@ export const services: Service[] = [
       },
       {
         situation: "“My certificates need attestation.”",
-        howWeHelp: "We explain the route that appears to apply and link you to our Attestation & Legalisation guidance.",
+        howWeHelp: "We explain the route that appears to apply and link you to our Attestation & Affidavits guidance.",
       },
       {
         situation: "“I'm handling paperwork alongside my studies.”",
@@ -839,109 +814,18 @@ export const services: Service[] = [
           "You can start your enquiry online through the form, WhatsApp or email. How the rest of the assistance is delivered is agreed with you after your enquiry.",
       },
     ],
-    related: ["attestation-legalisation", "passport-services"],
+    related: ["attestation-affidavits", "passport-services"],
     sources: [sources.attestationFaq, sources.meaApostille],
+    heroTitle: "Passport, attestation and PCC help for Indian students in Germany",
+    heroLead:
+      "Passport renewal, attestation of educational documents and PCC for Indian students in Germany. Simple steps that fit around your studies.",
+    guides: ["U5oRO--jVbQ", "doHN3e53b0k"],
     scene: { kind: "student", label: "Illustration of an academic certificate, a rolled diploma and study notes" },
     issues: [
-      { id: "certificates", label: "Educational certificates" },
-      { id: "degree-attestation", label: "Degree attestation guidance" },
-      { id: "academic-documents", label: "Organise academic documents" },
-      { id: "student-paperwork", label: "Other student paperwork" },
-    ],
-  },
-  {
-    slug: "corporate-services",
-    number: "08",
-    title: "Corporate Services",
-    icon: "corporate",
-    summary: "Employee, relocation and onboarding documentation coordination for employers, with group case handling.",
-    outcome: "Reduce the administrative burden on HR while employees get organised documentation support.",
-    mainlyFor: "Employers, HR and relocation teams",
-    intro: [
-      "Employers relocating or onboarding Indian staff often face documentation questions that take HR time away from other work — for employees and, frequently, their families.",
-      "SimplYes coordinates employee documentation support so your team has one partner for documentation questions. Group arrangements and terms are agreed directly with each employer.",
-    ],
-    seoTitle: "Corporate Documentation Support in Germany",
-    metaDescription:
-      "Documentation coordination for employers relocating or onboarding Indian employees in Germany: employee, relocation, onboarding and family documentation.",
-    audience: [
-      "Employers relocating Indian staff to Germany",
-      "HR teams onboarding several Indian employees",
-      "Relocation teams supporting employees' families",
-    ],
-    situations: [
-      {
-        situation: "“We are relocating Indian staff.”",
-        howWeHelp: "We coordinate relocation-related documentation support for each employee.",
-      },
-      {
-        situation: "“HR is onboarding several employees at once.”",
-        howWeHelp: "We handle group cases in an organised way, so HR is not managing each employee's paperwork.",
-      },
-      {
-        situation: "“Employees' families need support too.”",
-        howWeHelp: "We coordinate family documentation alongside the employee's own.",
-      },
-    ],
-    helpsWith: [
-      "Employee documentation assistance",
-      "Relocation-related documentation coordination",
-      "New employee onboarding documentation support",
-      "Family documentation coordination",
-      "Group case handling",
-      "Ongoing administrative assistance",
-    ],
-    documentCategories: [
-      "Employee identity and travel documents",
-      "Relocation-related supporting documents",
-      "Family documentation for accompanying members",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Use the corporate enquiry option to tell us about your team and timeline." },
-      { title: "Understand the requirements", body: "We discuss the documentation needs across your employees." },
-      { title: "Prepare the documents", body: "Employees receive guidance on what to prepare, coordinated by us." },
-      { title: "Assistance & review", body: "Where agreed, we review and organise employees' documentation." },
-      nextSteps,
-    ],
-    prepare: [
-      "Your company name and approximate number of employees",
-      "The kind of documentation support your employees need",
-      "Your timeline and preferred point of contact",
-    ],
-    included: [
-      "Employer-focused coordination with one point of contact",
-      "Group case handling",
-      "Employee and family documentation guidance",
-    ],
-    outsideScope: [
-      "Immigration-law or employment-law advice",
-      "Submitting applications on behalf of employees to authorities",
-      "Guaranteeing outcomes or timelines",
-    ],
-    faqs: [
-      {
-        question: "Do you provide corporate documentation assistance?",
-        answer: "Yes. We coordinate documentation support for employers relocating or onboarding Indian employees in Germany.",
-      },
-      {
-        question: "Can you support several employees at once?",
-        answer: "Yes. Group case handling is part of this service. Arrangements and terms are agreed with each employer.",
-      },
-      {
-        question: "How do corporate engagements start?",
-        answer:
-          "Send a corporate enquiry through our contact page with your company name and approximate team size, and we will get back to you to discuss your needs.",
-      },
-    ],
-    related: ["family-documentation", "visa-documentation-support"],
-    sources: [sources.outsourcing],
-    whatsappMessage: "Hello SimplYes, I would like to discuss Corporate Services for our team. Could you explain the next steps?",
-    scene: { kind: "corporate", label: "Illustration of three employee document folders under one shared checklist" },
-    issues: [
-      { id: "employee-documentation", label: "Employee documentation" },
-      { id: "relocation", label: "Relocation documentation" },
-      { id: "onboarding", label: "New employee onboarding" },
-      { id: "employee-families", label: "Support for employees' families" },
+      { id: "passport-renewal", label: "Passport renewal", body: "Renew while you study, without missing lectures." },
+      { id: "degree-attestation", label: "Attestation of educational documents", body: "Degrees and transcripts for jobs or recognition." },
+      { id: "pcc", label: "Police Clearance Certificate (PCC)", body: "For residence permits and job applications." },
+      { id: "student-paperwork", label: "Other student paperwork", body: "Certificates and supporting documents." },
     ],
   },
 ];
@@ -949,7 +833,7 @@ export const services: Service[] = [
 /** "Mainly for …" phrased mid-sentence, keeping proper nouns and acronyms ("Indian", "HR") as written. */
 export function mainlyForPhrase(service: Pick<Service, "mainlyFor">): string {
   const text = service.mainlyFor;
-  return /^(Indian|HR)\b/.test(text) ? text : text.charAt(0).toLowerCase() + text.slice(1);
+  return /^(Indian|German|HR)\b/.test(text) ? text : text.charAt(0).toLowerCase() + text.slice(1);
 }
 
 export function getService(slug: string): Service | undefined {

@@ -1,18 +1,20 @@
 import { getAssistance, primaryNav } from "@/content/site";
+import { UrgentBar } from "./UrgentBar";
 import { services } from "@/content/services";
 import { ButtonLink } from "@/components/ui/Button";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { MobileMenu } from "./MobileMenu";
 import { NavLinks } from "./NavLinks";
 
-/** §14 header: logo → home, primary nav with Services dropdown, Get Assistance button; sticky. */
+/** Header: the urgent WhatsApp strip, then logo → home, primary nav with Services dropdown and Get Assistance; fixed. */
 export function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
+      <UrgentBar />
       {/* Desktop */}
-      <div className="hidden h-[var(--header-h)] items-center lg:flex">
+      <div className="hidden h-[calc(var(--header-h)-var(--urgent-h))] items-center lg:flex">
         <div className="container-site">
-          <div className="header-bar header-bar-glass flex h-16 items-center justify-between gap-6 pl-6 pr-2.5">
+          <div className="header-bar header-bar-glass flex h-[60px] items-center justify-between gap-4 pl-6 pr-2">
             <Wordmark idSuffix="desktop" />
             <nav aria-label="Primary">
               <NavLinks items={primaryNav} />

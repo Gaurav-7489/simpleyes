@@ -120,7 +120,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
   const context = ctxParam === "pricing" || ctxParam === "corporate" ? ctxParam : "";
   const slugParam = params.get("service") ?? "";
   const urlService = services.find((s) => s.slug === slugParam);
-  const preService = urlService ? urlService.slug : context === "corporate" ? "corporate-services" : "";
+  const preService = urlService ? urlService.slug : "";
   // Only an issue that belongs to the URL's service is accepted; anything else is ignored.
   const issueParam = params.get("issue") ?? "";
   const preIssue = urlService && (issueParam === OTHER || urlService.issues.some((i) => i.id === issueParam)) ? issueParam : "";
@@ -131,7 +131,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     ...raw,
     service: resolvedService,
     issue: rawIssue === OTHER || serviceOption?.issues.some((i) => i.id === rawIssue) ? rawIssue : "",
-    corporate: raw.corporate ?? (context === "corporate" || resolvedService === "corporate-services"),
+    corporate: raw.corporate ?? context === "corporate",
   };
   const issueLabel =
     values.issue === OTHER ? "Something else" : serviceOption?.issues.find((i) => i.id === values.issue)?.label ?? "";
@@ -188,7 +188,6 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       // Freeze the URL selection into state on first edit, so later changes start from what the visitor sees.
       if (next.service === null) next.service = values.service;
       if (next.issue === null) next.issue = values.issue;
-      if (key === "corporate" && value === true) next.service = "corporate-services";
       // A different service has different problems: reset the problem, keep everything else typed.
       if (key === "service" || (key === "corporate" && value === true)) {
         const svc = services.find((s) => s.slug === next.service);

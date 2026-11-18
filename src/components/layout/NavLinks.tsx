@@ -19,7 +19,7 @@ const linkClass = () => "nav-link";
 /**
  * Services dropdown (§14): a disclosure button with aria-expanded/aria-controls.
  * Keyboard: Enter/Space toggles, Esc closes and returns focus, Tab moves through
- * the eight service links. Opens on hover for mouse users too.
+ * the service links. Opens on hover for mouse users too.
  */
 function ServicesMenu({ active }: { active: boolean }) {
   const hydrated = useHydrated();
@@ -142,7 +142,7 @@ function ServicesMenu({ active }: { active: boolean }) {
           onClick={close}
           className="mt-2 flex min-h-12 items-center justify-between rounded-[16px] bg-canvas-alt px-4 text-[0.9375rem] font-medium text-accent-700 hover:bg-accent-50"
         >
-          View all eight services
+          View all services
           <ArrowRight aria-hidden="true" className="size-4" strokeWidth={1.75} />
         </Link>
       </div>
@@ -168,7 +168,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
           <li key={item.href}>
             <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass()}>
               {item.label}
-                  </Link>
+            </Link>
           </li>
         );
       })}

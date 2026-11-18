@@ -32,7 +32,7 @@ export const faqCategories: FaqCategory[] = [
         id: "who-can-use",
         question: "Who can use SimplYes?",
         answer:
-          "Individuals, families, students and employers — including working professionals, long-term residents, new arrivals and HR teams supporting Indian employees in Germany.",
+          "Individuals, families and students — including working professionals, long-term residents, German citizens of Indian origin, spouses and new arrivals in Germany.",
       },
       {
         id: "official-service",
@@ -41,9 +41,9 @@ export const faqCategories: FaqCategory[] = [
           "No. SimplYes is an independent documentation assistance service. We are not an embassy, consulate or government authority, and we are not affiliated with any of them.",
       },
       {
-        id: "independent",
-        question: "Does SimplYes operate independently?",
-        answer: "Yes. SimplYes operates independently and has no affiliation with any government authority, embassy or consulate.",
+        id: "part-of-embassy",
+        question: "Are you part of the Embassy or a Consulate?",
+        answer: "No. SimplYes is an independent service. Decisions on every application remain with the authorities.",
       },
       {
         id: "cities",
@@ -67,38 +67,46 @@ export const faqCategories: FaqCategory[] = [
         id: "which-services",
         question: "What documentation services do you offer?",
         answer:
-          "Eight categories: Passport Services, OCI Services, Attestation & Legalisation, Affidavits & Declarations, Visa & Documentation Support, Family Documentation, Student Services and Corporate Services. Each has its own page with full details.",
+          "Six services, named the way the consulates name them: Passport Services, e-OCI Services, Attestation & Affidavits, Visa Services, Family Documentation and Student Services. Each has its own page with full details.",
       },
       {
         id: "passport",
         question: "Can I get help with passport renewal?",
-        answer: "Yes — guidance and preparation for renewals, reissues, lost or damaged passports and detail corrections. See Passport Services.",
+        answer:
+          "Yes — renewals, lost or damaged passports, name and detail changes, PCC, Emergency Certificate and surrender certificate. See Passport Services.",
       },
       {
         id: "oci",
-        question: "Do you assist with OCI documentation?",
-        answer: "Yes — new OCI applications, reissues where applicable, updates, corrections and family OCI coordination. See OCI Services.",
+        question: "Do you assist with e-OCI applications?",
+        answer: "Yes — fresh e-OCI, renewal after a new passport and updates of your details, for adults, children and foreign spouses. See e-OCI Services.",
       },
       {
         id: "attestation",
-        question: "Do you help with document attestation?",
+        question: "Do you help with document attestation and affidavits?",
         answer:
-          "Yes. Requirements vary by document type, issuing authority and destination authority. See Attestation & Legalisation.",
+          "Yes — attestation of personal, educational and commercial documents, name change, name split and other affidavits, and Power of Attorney. See Attestation & Affidavits.",
+      },
+      {
+        id: "book-appointment",
+        question: "Can you book my consulate appointment?",
+        answer:
+          "Yes. We help you book your appointment at the Embassy, Consulate or application centre and prepare what you need to bring. The available slots are set by the mission.",
+      },
+      {
+        id: "lost-passport",
+        question: "I lost my passport and need to fly to India. What now?",
+        answer:
+          "Report it to the police, then WhatsApp us with URGENT. We help with the Emergency Certificate and the documents for your new passport.",
       },
       {
         id: "family",
         question: "Can you help with family documentation?",
-        answer: "Yes — coordinated per household, with one point of contact. See Family Documentation.",
+        answer: "Yes — passport, e-OCI and visa for the whole family as one case, with one point of contact. See Family Documentation.",
       },
       {
         id: "students",
         question: "Do you support students?",
-        answer: "Yes — academic documentation and attestation guidance for Indian students in Germany. See Student Services.",
-      },
-      {
-        id: "corporate",
-        question: "Do you provide corporate documentation assistance?",
-        answer: "Yes — through a separate corporate enquiry route for employers and HR teams. See Corporate Services.",
+        answer: "Yes — passport renewal, attestation of educational documents and PCC for Indian students in Germany. See Student Services.",
       },
     ],
   },
@@ -146,7 +154,7 @@ export const faqCategories: FaqCategory[] = [
         id: "official-fees",
         question: "Are official fees included?",
         answer:
-          "No. Government or consular fees are set and collected by the relevant authority and are separate from SimplYes service fees.",
+          "No. Official fees are paid to the mission. Our service fee is separate and agreed before we start.",
       },
       {
         id: "quotation",
@@ -216,5 +224,5 @@ function pick(ids: string[]): Faq[] {
   return ids.map((id) => allFaqs.find((faq) => faq.id === id)).filter((faq): faq is Faq => faq !== undefined);
 }
 
-/** Homepage selection (§07 section 9): includes the two required questions. */
-export const homeFaqs: Faq[] = pick(["official-service", "guarantee", "which-services", "get-started", "official-fees", "cities"]);
+/** Homepage selection (Nov 2026 redesign): the four questions everyone asks. */
+export const homeFaqs: Faq[] = pick(["book-appointment", "lost-passport", "official-fees", "part-of-embassy"]);

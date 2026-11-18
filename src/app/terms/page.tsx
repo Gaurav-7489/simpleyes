@@ -38,7 +38,7 @@ export default function TermsPage() {
             <p>
               {site.name} provides documentation assistance: explaining processes in plain language, identifying the
               relevant service and next steps, guiding document preparation and, where agreed, reviewing and organising
-              documentation. The services offered are the eight categories described on our{" "}
+              documentation. The services offered are the six categories described on our{" "}
               <Link href="/services/">Services</Link> pages.
             </p>
             <p>{independenceStatement}</p>

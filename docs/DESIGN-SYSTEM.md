@@ -1,5 +1,17 @@
 # Design system — the Living Document System (3D editorial, Nov 2026)
 
+## Redesign (18 Nov 2026, owners' "Simplyes Website Redesign" mockup)
+
+- **Styles:** `src/styles/redesign.css`, loaded last. It adds the urgent strip (`.urgent-bar`), the lower-case
+  gradient wordmark, flatter pill buttons, the lime-bar `.eyebrow`, and the homepage and service-page layouts.
+- **Emergency colour:** `--color-rust-*` tokens, used only for urgent routes (lost passport, Emergency Certificate,
+  "Message URGENT"). WhatsApp messages on these routes start with "URGENT".
+- **Homepage:** HTML/CSS hero illustration (application check, booked appointment, photo chip) instead of a 3D
+  scene; appointment and emergency cards; the six services as a list beside "Included with every service".
+- **Services:** six, named the way the consulates name them. Old slugs redirect in `vercel.json`.
+- **Videos:** `src/components/video/VideoTile.tsx`, click-to-play, privacy-enhanced embed; all seven on `/guides/`.
+
+
 **Idea:** *European sophistication, Indian understanding.* The site's visual language is paper: sheets,
 blank passport-style booklets, cards, envelopes, folders and stamps, floating above a table in soft
 daylight. Together they stand for clarification, organisation, guidance and progress. The 3D scene is
@@ -29,17 +41,9 @@ the one bold element. Everything around it stays quiet: editorial type, generous
 - **`scenes.ts`** holds the compositions: the hero, one per service, five How It Works stages, pricing layers, About, contact, thanks, 404 and legal. Each object has x/y (% of the stage), w (cqw), z (height above the table, cqw), rz/rx/ry, and a stagger index.
 - **`src/styles/scene.css`** does the rendering: a camera with perspective over a `preserve-3d` world, sized in container-query units so scenes scale fluidly. Each object casts a shadow onto the table that grows softer the higher it floats.
 
-**CSS 3D and WebGL, each where it pays off.**
+**CSS 3D only.** Every scene is server-rendered CSS 3D, with no dependency. The homepage hero no longer uses a
+scene (see the redesign section below), so the WebGL hero and three.js / React Three Fiber were removed.
 
-- **CSS 3D** renders every scene server-side, with no dependency. It is always painted first.
-- **WebGL (React Three Fiber) is used only for the homepage hero** (`src/components/scene/webgl/HeroCanvas.tsx`). It is a real lit composition, built from procedural, original textures (`textures.ts`), with no downloaded assets.
-  - **Who gets it:** `HeroStage.tsx` loads it after the page is idle, and only at 768px and wider, with no reduced-motion or data-saver request and a hardware WebGL context (`failIfMajorPerformanceCaveat`). Otherwise the CSS scene stays.
-  - **Handover:** the canvas fades in over the CSS scene after its first frame. A failure or a lost context falls back to CSS.
-  - **Rendering:** `frameloop="demand"` draws frames only while something moves, never when idle or off screen.
-  - **QA:** `/?webgl=force` skips the hardware check in headless browsers.
-  - **Cost:** about 250 KB gzipped (all of three.js, plus R3F and drei's `RoundedBox`), never downloaded on phones.
-  - **Pin:** `three` is pinned to `~0.182` because r183+ deprecates `THREE.Clock`, which R3F 9.8 still uses (console warning). Lift the pin once R3F moves to `THREE.Timer`.
-  - **Don't add drei's `Environment`:** it bundles the HDR and EXR loaders (+25 KB). The hero uses a hemisphere light instead.
 - **Stills:** places that show a scene without interaction use pre-rendered images (`<SceneImage>`, `public/images/scenes/`). These are the gallery, related services and the mobile service list. They are AVIF with a WebP fallback, in 560, 840 and 1120 px, lazy-loaded with fixed dimensions.
   - Regenerate after changing a composition: `npm run build && npm run preview`, then `npm run render:scenes`.
 

@@ -18,7 +18,7 @@ export const site = {
   name: "SimplYes",
   /** Lower-case wordmark with period, as written in the brand brief. */
   wordmark: "simplyes",
-  tagline: "Redefining Consular Services.",
+  tagline: "Built to simplify what matters most.",
   url: rawSiteUrl.replace(/\/+$/, ""),
   /** Date of the last content change (sitemap lastmod, llms files). Update when page content changes. */
   contentUpdated: "2026-11-18",
@@ -119,27 +119,30 @@ export type NavItem = { label: string; href: string };
 
 /** §06 desktop navigation: Home · Services ▾ · How It Works · About Us · FAQs · Contact Us · [Get Assistance]. */
 export const primaryNav: NavItem[] = [
-  { label: "Home", href: "/" },
   { label: "Services", href: "/services/" },
+  { label: "Appointments", href: "/appointments/" },
+  { label: "Emergency help", href: "/emergency/" },
   { label: "How It Works", href: "/how-it-works/" },
-  { label: "About Us", href: "/about/" },
+  { label: "Guides", href: "/guides/" },
   { label: "FAQs", href: "/faqs/" },
-  { label: "Contact Us", href: "/contact/" },
+  { label: "Contact", href: "/contact/" },
 ];
 
 /** Primary CTA in the header and across the site. */
 export const getAssistance: NavItem = { label: "Get Assistance", href: "/contact/" };
 
-/** Footer "Company" column. */
-export const companyNav: NavItem[] = [
-  { label: "About SimplYes", href: "/about/" },
+/** Footer "Help" column. */
+export const helpNav: NavItem[] = [
+  { label: "Appointment booking", href: "/appointments/" },
+  { label: "Emergency help", href: "/emergency/" },
+  { label: "Guides", href: "/guides/" },
   { label: "How It Works", href: "/how-it-works/" },
-  { label: "Contact", href: "/contact/" },
+  { label: "FAQs", href: "/faqs/" },
 ];
 
 /** Footer "Information" column. */
 export const informationNav: NavItem[] = [
-  { label: "FAQs", href: "/faqs/" },
+  { label: "About SimplYes", href: "/about/" },
   { label: "Pricing", href: "/pricing/" },
   { label: "Privacy Policy", href: "/privacy/" },
   { label: "Terms & Conditions", href: "/terms/" },

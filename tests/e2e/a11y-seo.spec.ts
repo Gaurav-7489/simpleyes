@@ -109,7 +109,7 @@ test.describe("SEO", () => {
   test("important content is server-rendered", async ({ request }) => {
     const html = await (await request.get("/")).text();
     for (const phrase of [
-      "Your Documentation Journey,",
+      "and visa help in Germany,",
       site.coverageStatement,
       "not affiliated with",
       ...services.map((s) => s.title.replace("&", "&amp;")),
@@ -152,7 +152,7 @@ test.describe("GEO: AI answer-engine readiness", () => {
   });
 
   test("service structured data lists its problems and how to request it", async ({ page }) => {
-    for (const s of [services[0]!, services[7]!]) {
+    for (const s of [services[0]!, services[5]!]) {
       await page.goto(`/services/${s.slug}/`);
       const blocks = await page.$$eval('script[type="application/ld+json"]', (els) => els.map((e) => JSON.parse(e.textContent ?? "null")));
       const service = blocks.flat().find((b) => b?.["@type"] === "Service");
