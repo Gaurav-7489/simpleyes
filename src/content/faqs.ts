@@ -24,26 +24,26 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "what-is-simplyes",
-        question: "What is SimplYes?",
+        question: "What is Simplyes?",
         answer:
-          "SimplYes is an independent documentation assistance service that helps Indian nationals living in Germany understand, prepare and organise documentation for administrative processes.",
+          "Simplyes is an independent documentation assistance service that helps Indian nationals living in Germany understand, prepare and organise documentation for administrative processes.",
       },
       {
         id: "who-can-use",
-        question: "Who can use SimplYes?",
+        question: "Who can use Simplyes?",
         answer:
           "Individuals, families and students — including working professionals, long-term residents, German citizens of Indian origin, spouses and new arrivals in Germany.",
       },
       {
         id: "official-service",
-        question: "Is SimplYes an official government service?",
+        question: "Is Simplyes an official government service?",
         answer:
-          "No. SimplYes is an independent documentation assistance service. We are not an embassy, consulate or government authority, and we are not affiliated with any of them.",
+          "No. Simplyes is an independent documentation assistance service. We are not an embassy, consulate or government authority, and we are not affiliated with any of them.",
       },
       {
         id: "part-of-embassy",
         question: "Are you part of the Embassy or a Consulate?",
-        answer: "No. SimplYes is an independent service. Decisions on every application remain with the authorities.",
+        answer: "No. Simplyes is an independent service. Decisions on every application remain with the authorities.",
       },
       {
         id: "cities",
@@ -52,7 +52,7 @@ export const faqCategories: FaqCategory[] = [
       },
       {
         id: "contact",
-        question: "How can I contact SimplYes?",
+        question: "How can I contact Simplyes?",
         answer: site.contact.email
           ? `Use the enquiry form on our Contact page, message us on WhatsApp or email us at ${site.contact.email}. All three routes are shown on every page.`
           : "Use the enquiry form on our Contact page or message us on WhatsApp. Both routes are shown on every page.",
@@ -67,7 +67,7 @@ export const faqCategories: FaqCategory[] = [
         id: "which-services",
         question: "What documentation services do you offer?",
         answer:
-          "Six services, named the way the consulates name them: Passport Services, e-OCI Services, Attestation & Affidavits, Visa Services, Family Documentation and Student Services. Each has its own page with full details.",
+          "Six services, named the way the consulates name them: Passport Services, e-OCI Services, Attestation, Affidavits & Declarations, Indian Visa Documentation, Family Documentation and New in Germany. Each has its own page with full details.",
       },
       {
         id: "passport",
@@ -84,7 +84,7 @@ export const faqCategories: FaqCategory[] = [
         id: "attestation",
         question: "Do you help with document attestation and affidavits?",
         answer:
-          "Yes — attestation of personal, educational and commercial documents, name change, name split and other affidavits, and Power of Attorney. See Attestation & Affidavits.",
+          "Yes — attestation of personal, educational and commercial documents, name change, name split and other affidavits, Power of Attorney, NRI and other certificates. See Attestation, Affidavits & Declarations.",
       },
       {
         id: "book-appointment",
@@ -104,9 +104,26 @@ export const faqCategories: FaqCategory[] = [
         answer: "Yes — passport, e-OCI and visa for the whole family as one case, with one point of contact. See Family Documentation.",
       },
       {
+        id: "visa",
+        question: "Can you help with an Indian visa or e-Visa?",
+        answer:
+          "Yes — Indian e-Visa and regular visa: e-Tourist, e-Business, e-Medical and more, for spouses, family, friends and business travellers. See Indian Visa Documentation.",
+      },
+      {
+        id: "just-moved",
+        question: "I just moved to Germany. Can you help?",
+        answer:
+          "Yes. New in Germany covers insurance guidance, apartment search help and first steps like Anmeldung and your bank account.",
+      },
+      {
         id: "students",
-        question: "Do you support students?",
-        answer: "Yes — passport renewal, attestation of educational documents and PCC for Indian students in Germany. See Student Services.",
+        question: "I'm a student. Can you still help with my degree documents?",
+        answer: "Yes. Academic certificates and attestation are under Attestation, Affidavits & Declarations.",
+      },
+      {
+        id: "who-is-simple",
+        question: "Who is Simple?",
+        answer: "Simple is the AI-generated presenter of our Ask Simplyes videos. Every message you send is answered by a real person.",
       },
     ],
   },
@@ -146,7 +163,7 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "how-much",
-        question: "How much does SimplYes charge?",
+        question: "How much does Simplyes charge?",
         answer:
           "Our fees depend on the service and your situation. We explain the fee and what it covers before any paid assistance begins. See our Pricing page for what affects a quote.",
       },
@@ -169,14 +186,14 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "personal-documents",
-        question: "How does SimplYes handle personal documents?",
+        question: "How does Simplyes handle personal documents?",
         answer:
           "As described in our Privacy Policy. Personal documents are never requested or accepted through the public enquiry form.",
       },
       {
         id: "who-accesses",
         question: "Who can access my information?",
-        answer: "Only the authorised SimplYes team and the service providers named in our Privacy Policy.",
+        answer: "Only the authorised Simplyes team and the service providers named in our Privacy Policy.",
       },
       {
         id: "retention",
@@ -196,17 +213,17 @@ export const faqCategories: FaqCategory[] = [
     items: [
       {
         id: "guarantee",
-        question: "Can SimplYes guarantee approval?",
+        question: "Can Simplyes guarantee approval?",
         answer: "No. Decisions rest with the relevant authorities. We help you prepare; we cannot influence the outcome.",
       },
       {
         id: "represent",
-        question: "Does SimplYes represent customers before government authorities?",
+        question: "Does Simplyes represent customers before government authorities?",
         answer: "No. You remain in control of your application and submit it through the official channel.",
       },
       {
         id: "legal-advice",
-        question: "Does SimplYes provide legal advice?",
+        question: "Does Simplyes provide legal advice?",
         answer: "No — documentation assistance only. Where a matter needs legal advice, we will tell you to consult a qualified professional.",
       },
       {
@@ -225,4 +242,4 @@ function pick(ids: string[]): Faq[] {
 }
 
 /** Homepage selection (Nov 2026 redesign): the four questions everyone asks. */
-export const homeFaqs: Faq[] = pick(["book-appointment", "lost-passport", "official-fees", "part-of-embassy"]);
+export const homeFaqs: Faq[] = pick(["book-appointment", "lost-passport", "just-moved", "who-is-simple", "official-fees", "part-of-embassy"]);

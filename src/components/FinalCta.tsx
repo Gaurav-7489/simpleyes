@@ -14,6 +14,7 @@ export function FinalCta({
   primaryLabel = "Get Assistance",
   primaryHref,
   compact = false,
+  whatsappFirst = false,
 }: {
   title?: string;
   lead?: string;
@@ -22,6 +23,8 @@ export function FinalCta({
   primaryHref?: string;
   /** Less vertical space around the band, for inner pages. */
   compact?: boolean;
+  /** WhatsApp as the main action (lime), with no enquiry button. */
+  whatsappFirst?: boolean;
 }) {
   return (
     <section aria-labelledby="final-cta-title" className={compact ? "pb-[var(--section-y-compact)] pt-[calc(var(--section-y-compact)*0.5)]" : "section"}>
@@ -32,9 +35,11 @@ export function FinalCta({
           </h2>
           <p className="mt-4 max-w-[44ch] text-[0.9375rem] leading-relaxed text-white/80">{lead}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <Link href={primaryHref ?? enquiryHref(service)} data-cta-location="final-cta" className="btn btn-on-dark">
-              <span className="btn-face">{primaryLabel}</span>
-            </Link>
+            {!whatsappFirst && (
+              <Link href={primaryHref ?? enquiryHref(service)} data-cta-location="final-cta" className="btn btn-on-dark">
+                <span className="btn-face">{primaryLabel}</span>
+              </Link>
+            )}
             <a
               href={whatsappHref(service)}
               target="_blank"
@@ -42,7 +47,7 @@ export function FinalCta({
               data-cta="whatsapp"
               data-cta-location="final-cta"
               data-topic={service?.slug ?? "general"}
-              className="btn btn-outline-on-dark"
+              className={`btn ${whatsappFirst ? "btn-on-dark" : "btn-outline-on-dark"}`}
             >
               <span className="btn-face">
                 WhatsApp {site.whatsapp.display}

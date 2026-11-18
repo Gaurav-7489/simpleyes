@@ -237,7 +237,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     // (names, types, limits, allowed ids) is src/lib/enquiry-schema.ts, enforced again by the Formdall field schema.
     // Optional fields are sent only when filled in, so nothing empty reaches the provider or the inbox.
     const fields: [string, string][] = [
-      ["subject", clip(`New SimplYes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`, ENQUIRY_LIMITS.subject)],
+      ["subject", clip(`New Simplyes Enquiry — ${service?.title ?? "General"}${issueLabel ? ` — ${issueLabel}` : ""}`, ENQUIRY_LIMITS.subject)],
       ["name", values.name.trim()],
       ["email", values.email.trim()],
       ["phone", values.phone.trim()],
@@ -647,7 +647,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
               <Link href="/privacy/" className="text-accent-700 underline underline-offset-4">
                 Privacy Policy
               </Link>{" "}
-              and agree to SimplYes processing my details to respond to this enquiry. <span aria-hidden="true">*</span>
+              and agree to Simplyes processing my details to respond to this enquiry. <span aria-hidden="true">*</span>
             </span>
           </label>
           {err("consent")}

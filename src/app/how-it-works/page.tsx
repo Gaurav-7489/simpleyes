@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMetadata({
   title: `How It Works — Five Clear Steps | ${site.name}`,
   absoluteTitle: true,
   description:
-    "How SimplYes works in five steps — and the clear boundary between our documentation assistance and official processing by the authorities.",
+    "How Simplyes works in five steps — and the clear boundary between our documentation assistance and official processing by the authorities.",
   path: "/how-it-works/",
 });
 

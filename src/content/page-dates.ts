@@ -11,7 +11,7 @@ export const pageUpdated: Record<string, string> = {
   "/services/attestation-affidavits/": "2026-11-18",
   "/services/visa-documentation-support/": "2026-11-18",
   "/services/family-documentation/": "2026-11-18",
-  "/services/student-services/": "2026-11-18", // six services, mockup page layout
+  "/services/new-in-germany/": "2026-11-18", // six services, second mockup
   "/services/": "2026-11-18",
   "/appointments/": "2026-11-18",
   "/emergency/": "2026-11-18",

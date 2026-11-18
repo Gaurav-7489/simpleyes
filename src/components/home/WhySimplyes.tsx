@@ -1,13 +1,13 @@
 import { Check } from "lucide-react";
 import { whyItems } from "@/content/home";
 
-/** Why SimplYes: the promise, beside the four reasons on a slightly tilted sheet. */
+/** Why Simplyes: the promise, beside the four reasons on a slightly tilted sheet. */
 export function WhySimplyes() {
   return (
     <section id="why-simplyes" aria-labelledby="why-title" className="section why2">
       <div className="container-site why2-grid">
         <div>
-          <p className="eyebrow">Why SimplYes</p>
+          <p className="eyebrow">Why Simplyes</p>
           <h2 id="why-title" className="why2-title mt-4">
             Right the first time, with a clear line between what we do and what stays with the authorities.
           </h2>

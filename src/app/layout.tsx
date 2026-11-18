@@ -35,7 +35,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — Indian documentation help in Germany`,
+    default: site.title,
     template: `%s | ${site.name}`,
   },
   description: site.description,

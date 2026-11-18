@@ -2,8 +2,9 @@ import Link from "next/link";
 import { site } from "@/content/site";
 
 /**
- * Stand-in for the official logo, drawn after the owners' redesign (Nov 2026): the lower-case "simplyes." wordmark
- * in a teal → lime gradient. Replace with the supplied SVG once the owners provide the logo asset.
+ * The Simplyes logo: lower-case "simplyes." in Outfit semibold, "si" in lime, then "mplyes." running from teal to
+ * green to a lime full stop (colours sampled from the owners' logo). The same drawing is used for the favicon, the
+ * app icons and the link-preview image (scripts/render-brand.mjs), so the logo is identical everywhere.
  */
 export function Wordmark({
   className,
@@ -19,8 +20,8 @@ export function Wordmark({
 }) {
   const mark = (
     <span className="wordmark" data-tone={tone}>
-      {site.wordmark}
-      <span>.</span>
+      <span className="wordmark-si">si</span>
+      <span className="wordmark-rest">mplyes.</span>
     </span>
   );
 

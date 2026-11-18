@@ -132,6 +132,16 @@
       "source": "/services/corporate-services/",
       "destination": "/contact/?context=corporate",
       "permanent": true
+    },
+    {
+      "source": "/services/student-services",
+      "destination": "/services/attestation-affidavits/",
+      "permanent": true
+    },
+    {
+      "source": "/services/student-services/",
+      "destination": "/services/attestation-affidavits/",
+      "permanent": true
     }
   ],
   "headers": [
@@ -174,7 +184,7 @@
       ]
     },
     {
-      "source": "/(icon-192.png|icon-512.png|og-image.png)",
+      "source": "/(icon-192.png|icon-512.png|og-image.png|logo.png)",
       "headers": [
         {
           "key": "Cache-Control",

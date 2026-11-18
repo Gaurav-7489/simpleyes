@@ -18,7 +18,8 @@
     "check": "npm run test:unit && npm run lint && npm run build && npm run typecheck && npm run test:e2e",
     "check:content": "node scripts/check-content.mjs",
     "check:launch": "node scripts/check-launch.mjs --live",
-    "render:scenes": "node scripts/render-scenes.mjs"
+    "render:scenes": "node scripts/render-scenes.mjs",
+    "render:brand": "node scripts/render-brand.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.63.0",

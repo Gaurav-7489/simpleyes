@@ -1,87 +1,68 @@
-import type { ServiceSceneKey } from "@/components/scene/scenes";
 import type { Faq } from "@/content/faqs";
-
-/** Service-specific outline icon (§16: one icon family, never repeated across services). */
-export type ServiceIcon = "passport" | "oci" | "attestation" | "visa" | "family" | "student";
 
 /** An official page a service relies on. `verifiedOn` is the date it was last checked (YYYY-MM-DD). */
 export type OfficialSource = { label: string; href: string; verifiedOn: string };
 
-/** A real situation in the customer's words, linked to how SimplYes may help. */
-export type Situation = { situation: string; howWeHelp: string };
-
-export type Service = {
-  slug: string;
-  /** Catalogue number ("01"–"06"). */
-  number: string;
-  title: string;
-  /** Short label for chips and tight layouts. */
-  shortTitle?: string;
-  icon: ServiceIcon;
-  /** One-sentence plain-language card summary (unique per service). */
-  summary: string;
-  /** Hero one-line outcome. */
-  outcome: string;
-  /** "Mainly for" line from §05. */
-  mainlyFor: string;
-  /** Service introduction — what the service is, in plain language. */
-  intro: string[];
-  /** Optional explainer shown near the top (OCI "What is OCI?", visa distinction…). */
-  explainer?: { title: string; body: string[] };
-  /** Search-result title (≤ 60 characters with " | SimplYes"), worded as people search; no keyword lists. */
-  seoTitle: string;
-  metaDescription: string;
-  /** Who this service is for. */
-  audience: string[];
-  /** Common customer situations, in the customer's words. */
-  situations: Situation[];
-  /** What SimplYes can help with — the approved scope (§05). */
-  helpsWith: string[];
-  /** Possible document categories — categories only, subject to verification. */
-  documentCategories: string[];
-  /** The five-step journey phrased for this service. */
-  process: { title: string; body: string }[];
-  /** General preparation guidance — information to have ready, never a document list. */
-  prepare: string[];
-  /** What is included — the assistance SimplYes provides for this service. */
-  included: string[];
-  /** Explicit boundaries. */
-  outsideScope: string[];
-  faqs: Faq[];
-  /** Related services (§05 link map), by slug. */
-  related: string[];
-  sources: OfficialSource[];
-  /** Overrides the default prefilled WhatsApp text (still non-sensitive). */
-  whatsappMessage?: string;
-  /**
-   * Problems a visitor can pick on the service page (stable ids, used in /contact/?service=&issue=).
-   * Taken from the approved scope (§05); "Something else" is added by the UI, never listed here.
-   */
-  issues: ServiceIssue[];
-  /** Service-page hero heading (H1), worded as people search. */
-  heroTitle: string;
-  /** Service-page hero lead. */
-  heroLead: string;
-  /** Optional "Documents usually needed" checklist (with the mission caveat shown beneath it). */
-  documents?: { title: string; items: string[] };
-  /** Video guides (YouTube IDs from src/content/videos.ts): the first is embedded, the rest are related guides. */
-  guides: string[];
-  /** The service's 3D document composition (src/components/scene/scenes.ts) and its text alternative. */
-  scene: { kind: ServiceSceneKey; label: string };
-};
-
-/** One selectable problem on a service page. `id` is stable: it is used in URLs and enquiry emails. */
+/** One "We help with" card. `id` is stable: it is used in /contact/?service=&issue= and in enquiry emails. */
 export type ServiceIssue = {
   id: string;
   label: string;
-  /** One-line description shown on the service page's "We help with" card. */
+  /** One line under the card title. */
   body?: string;
-  /** Urgent situations (lost passport, emergency travel) get the emergency colour and WhatsApp route. */
+  /** Urgent situations (lost passport, Emergency Certificate, urgent visa) get the emergency colour. */
   urgent?: boolean;
+  /** Small label above the title (Attestation, Affidavits, …). */
+  kicker?: string;
+};
+
+/** A card in the service page's sidebar, in the order shown. */
+export type AsideCard =
+  | { kind: "appointment"; title?: string; body: string }
+  | { kind: "emergency" }
+  | { kind: "ask"; title: string; body: string }
+  | { kind: "dark"; title: string; body: string; link: { label: string; href: string } }
+  | { kind: "included"; items: string[]; note: string };
+
+/** "New in Germany": groups of topics with a short list each. */
+export type HelpGroup = { title: string; icon: "insurance" | "apartment" | "arrival"; items: string[] };
+
+export type Service = {
+  slug: string;
+  title: string;
+  /** "New" badge in lists. */
+  isNew?: boolean;
+  /** One-line summary (homepage list, services page, llms.txt). */
+  summary: string;
+  /** "Mainly for …" line. */
+  mainlyFor: string;
+  /** Search-result title (≤ 60 characters with " | Simplyes"). */
+  seoTitle: string;
+  metaDescription: string;
+  /** Service-page H1 and lead. `heroAccent` is the part of the H1 set in green. */
+  heroTitle: string;
+  heroAccent?: string;
+  heroLead: string;
+  /** Overrides the urgent strip's question on this page. */
+  urgentQuestion?: string;
+  /** Overrides the prefilled WhatsApp text (still non-sensitive). */
+  whatsappMessage?: string;
+  /** The "We help with" cards. Three columns when the cards carry kickers. */
+  issues: ServiceIssue[];
+  aside: AsideCard[];
+  video?: { id: string; heading: string; caption?: string };
+  documents?: { title: string; items: string[]; note: string };
+  /** Related video guides (IDs from src/content/videos.ts). */
+  guides: string[];
+  /** New in Germany only: topic groups, included / not included, and questions. */
+  helpGroups?: HelpGroup[];
+  scope?: { included: string[]; notIncluded: string[] };
+  faqs: Faq[];
+  /** Closing band. */
+  cta?: { title: string; lead: string };
+  sources: OfficialSource[];
 };
 
 export { OTHER_ISSUE } from "@/lib/enquiry-keys";
-import { OTHER_ISSUE } from "@/lib/enquiry-keys";
 
 const CHECKED = "2026-10-30";
 
@@ -113,121 +94,25 @@ const sources = {
   },
 } satisfies Record<string, OfficialSource>;
 
-/** Shared final step: official processing always stays with the authority. */
-const nextSteps = {
-  title: "Understand the next steps",
-  body: "You receive guidance on the agreed next steps and on preparing your submission. Official processing, appointments and decisions remain with the relevant authority.",
-};
+const missionNote = "Requirements differ between missions and can change. We check the current list for your mission before you submit.";
+const missionFees = "Official fees are paid to the mission. Our service fee is agreed before we start.";
 
 /**
- * The six service categories (Nov 2026 redesign: named the way the consulates name them). Copy uses "may", "where applicable" and "depending on your
- * situation" honestly; document lists are categories only and labelled as
- * subject to verification until the owners approve specifics.
+ * The six services, named the way the consulates name them. Wording follows the owners' "Simplyes Website Redesign"
+ * (Nov 2026) word for word.
  */
 export const services: Service[] = [
   {
     slug: "passport-services",
-    number: "01",
     title: "Passport Services",
-    icon: "passport",
     summary: "Renewal, lost or damaged passports, name and detail changes, PCC, Emergency Certificate and surrender certificate.",
-    outcome: "Understand which passport situation applies to you and prepare your application with confidence.",
     mainlyFor: "Professionals, families and long-term residents",
-    intro: [
-      "Indian passport processes differ depending on your situation — a first adult passport, a renewal, a reissue, a lost or damaged passport, or a correction to your personal details. Each route can involve different steps and supporting documents.",
-      "SimplYes helps Indian nationals living in Germany work out which situation applies, organise the supporting documents and prepare the application before it is submitted through the official channel.",
-    ],
-    seoTitle: "Indian Passport Renewal & Reissue Help in Germany",
+    seoTitle: "Indian Passport Renewal & Services in Germany",
     metaDescription:
-      "Help with Indian passport renewal, reissue, lost or damaged passports and detail corrections for Indians in Germany. Independent documentation assistance.",
-    audience: [
-      "Indian nationals in Germany whose passport is nearing expiry",
-      "Anyone whose passport has been lost, stolen or damaged",
-      "People whose name, address or other personal details need correcting",
-      "Families preparing passports for several members at once",
-    ],
-    situations: [
-      {
-        situation: "“My passport is expiring soon.”",
-        howWeHelp: "We explain the renewal route, help you prepare a checklist and check your application before you submit.",
-      },
-      {
-        situation: "“I lost my passport” or “my passport is damaged.”",
-        howWeHelp: "We explain the steps usually involved for a lost or damaged passport and help you organise the supporting documentation.",
-      },
-      {
-        situation: "“My details need correcting.”",
-        howWeHelp: "We help you understand what a personal-information correction may involve and which supporting documents could be relevant.",
-      },
-      {
-        situation: "“I need my first adult passport” or “I have an appointment coming up.”",
-        howWeHelp: "We help you prepare the application and get ready for your appointment at the official application centre.",
-      },
-    ],
-    helpsWith: [
-      "New passport application assistance",
-      "Renewal and reissue guidance",
-      "Lost or damaged passport documentation guidance",
-      "Personal-information correction guidance",
-      "Supporting-document preparation and checklist assistance",
-      "Application preparation support and appointment preparation",
-    ],
-    documentCategories: [
-      "Proof of identity and your current or previous passport",
-      "Proof of residence in Germany",
-      "Photographs and signature in the stated format",
-      "Supporting documents for a change or correction of details",
-      "For loss or damage: documents relating to the loss or damage",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Describe your passport situation through the enquiry form, WhatsApp or email." },
-      { title: "Understand the requirements", body: "We identify which passport route applies — renewal, reissue, loss, damage or correction." },
-      { title: "Prepare the documents", body: "You receive guidance on the documents and information your route usually requires." },
-      { title: "Assistance & review", body: "Where agreed, we help review and organise your application and supporting documents." },
-      nextSteps,
-    ],
-    prepare: [
-      "Your current or last passport details — please don't send copies at enquiry stage",
-      "Your city of residence in Germany",
-      "Which situation applies: renewal, reissue, loss, damage or a correction",
-      "Any instructions or emails you have already received",
-    ],
-    included: [
-      "Identifying the passport situation that applies to you",
-      "A checklist for your case based on current official instructions",
-      "Help organising and checking supporting documents",
-      "Photo and signature format checks against the stated specifications",
-      "Preparation for your appointment at the application centre",
-    ],
-    outsideScope: [
-      "Issuing passports — only the Government of India, through its missions, does this",
-      "Guaranteeing appointment slots or speeding up processing — slots are set by the mission",
-      "Making or influencing any official decision",
-      "Legal advice or representation before authorities",
-    ],
-    faqs: [
-      {
-        question: "Can I get help with passport renewal?",
-        answer:
-          "Yes. We explain the renewal route, help you prepare the application and supporting documents, and check them before you submit through the official channel.",
-      },
-      {
-        question: "What if my passport is lost or damaged?",
-        answer:
-          "We explain the steps usually involved for a lost or damaged passport and help you organise the documentation. Requirements depend on your situation and the responsible mission.",
-      },
-      {
-        question: "Can you book my passport appointment?",
-        answer:
-          "Yes. We help you book your appointment at the Embassy, Consulate or application centre and give you a checklist for the day. The available slots are set by the mission, and you attend the appointment yourself.",
-      },
-      {
-        question: "How long does a passport take?",
-        answer: "Processing times are set by the authorities. We do not promise or influence timelines.",
-      },
-    ],
-    related: ["family-documentation", "oci-services", "attestation-affidavits"],
-    sources: [sources.outsourcing],
+      "Indian passport renewal, lost or damaged passports, name changes, PCC, Emergency Certificate and surrender certificate in Germany. We check, prepare and help book.",
+    heroTitle: "Indian passport renewal and passport services in Germany",
+    heroLead:
+      "Renewal, lost or damaged passports, name and detail changes, PCC and emergency travel documents. We check, prepare and help you book your appointment.",
     issues: [
       { id: "renewal", label: "Passport renewal", body: "Re-issue on expiry or when the pages are full." },
       { id: "lost-damaged", label: "Lost, stolen or damaged passport", body: "Police report, Annexure F and L affidavits, new passport.", urgent: true },
@@ -238,9 +123,12 @@ export const services: Service[] = [
       { id: "surrender", label: "Surrender certificate", body: "After taking German or another citizenship." },
       { id: "children", label: "Passports for children", body: "Minors and newborns, with parental consent forms." },
     ],
-    heroTitle: "Indian passport renewal and passport services in Germany",
-    heroLead:
-      "Renewal, lost or damaged passports, name and detail changes, PCC and emergency travel documents. We check, prepare and help you book your appointment.",
+    aside: [
+      { kind: "appointment", body: "We help you book your appointment at the Embassy, Consulate or application centre, with a checklist for the day." },
+      { kind: "emergency" },
+      { kind: "included", items: ["Document checking", "Form filling", "Photo and signature check"], note: missionFees },
+    ],
+    video: { id: "U5oRO--jVbQ", heading: "Watch: renew your passport in 6 steps", caption: "How to renew your Indian passport in Germany" },
     documents: {
       title: "Documents usually needed for renewal",
       items: [
@@ -250,601 +138,283 @@ export const services: Service[] = [
         "Residence permit and Meldebescheinigung",
         "Fee payment proof and a tracked return envelope",
       ],
+      note: missionNote,
     },
-    guides: ["U5oRO--jVbQ", "K_c2qhg5PSo", "doHN3e53b0k"],
-    scene: { kind: "passport", label: "Illustration of an open, blank passport-style booklet with its pages and a closed booklet" },
+    guides: ["K_c2qhg5PSo", "doHN3e53b0k"],
+    faqs: [],
+    sources: [sources.outsourcing],
   },
   {
     slug: "oci-services",
-    number: "02",
     title: "e-OCI Services",
-    icon: "oci",
     summary: "Fresh e-OCI, renewal after a new passport and updates of your details, for adults, children and foreign spouses.",
-    outcome: "Understand OCI in plain language and prepare a complete, ready-to-submit application.",
     mainlyFor: "Families, German citizens of Indian origin and spouses",
-    intro: [
-      "OCI processes can feel unfamiliar, especially if you are applying for the first time or for several family members. Whether you need a new registration, a reissue where applicable, or an update or correction, the steps and supporting documents differ.",
-      "SimplYes explains OCI in plain language, checks your preparation and helps coordinate related applications for your family.",
-    ],
-    explainer: {
-      title: "What is OCI?",
-      body: [
-        "Overseas Citizenship of India (OCI) is a registration granted by the Government of India to eligible people of Indian origin and certain family members who hold another citizenship. It is not dual citizenship.",
-        "Eligibility, the documents required and the decision rest entirely with the Government of India. We help you understand the published criteria and prepare.",
-      ],
-    },
-    seoTitle: "OCI Card Application & Update Help in Germany",
+    seoTitle: "e-OCI Card Application Help in Germany",
     metaDescription:
-      "Help preparing new OCI applications, OCI updates, corrections and family OCI applications for people living in Germany. Independent documentation assistance.",
-    audience: [
-      "People of Indian origin in Germany applying for OCI for the first time",
-      "Existing OCI holders whose details or passport have changed",
-      "Families with several members applying together",
-      "New arrivals unfamiliar with OCI procedures",
-    ],
-    situations: [
-      {
-        situation: "“I'm applying for OCI for the first time.”",
-        howWeHelp: "We explain what OCI is, the published criteria and the steps, then help you prepare the application.",
-      },
-      {
-        situation: "“My details have changed” or “I have a new passport.”",
-        howWeHelp: "We help you understand whether an update, correction or reissue may apply and what to prepare.",
-      },
-      {
-        situation: "“Several family members need to apply.”",
-        howWeHelp: "We coordinate related applications so the family's documents and details stay consistent.",
-      },
-      {
-        situation: "“My photo or document upload keeps being rejected.”",
-        howWeHelp: "We check your photograph and documents against the stated specifications.",
-      },
-    ],
-    helpsWith: [
-      "New OCI application assistance",
-      "Reissue guidance where applicable",
-      "Information update guidance and correction assistance",
-      "Supporting-document preparation",
-      "Photograph and document preparation checks",
-      "Application readiness assistance",
-      "Family OCI documentation coordination",
-    ],
-    documentCategories: [
-      "Proof of current citizenship and passport",
-      "Proof of Indian origin or of the family relationship relied on",
-      "Proof of residence",
-      "Photograph and signature in the portal format",
-      "Supporting documents for an update or correction",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Tell us whether this is a new OCI, a change of details or a family application." },
-      { title: "Understand the requirements", body: "We explain which OCI service appears to apply under the published rules." },
-      { title: "Prepare the documents", body: "You receive guidance on the information and document categories involved." },
-      { title: "Assistance & review", body: "Where agreed, we check your form, photograph and documents for completeness." },
-      nextSteps,
-    ],
-    prepare: [
-      "Your current citizenship and passport details",
-      "Your existing OCI details, if you have them",
-      "What has changed, or who in the family is applying",
-      "Your city of residence in Germany",
-    ],
-    included: [
-      "A plain-language explanation of the OCI route that appears to apply",
-      "A case-specific checklist",
-      "Photograph and document preparation checks",
-      "Application readiness review before you submit",
-      "Coordination of related family applications",
-    ],
-    outsideScope: [
-      "Granting OCI or deciding eligibility — this rests with the Government of India",
-      "Guaranteeing a grant, outcome or timeline",
-      "Submitting applications on your behalf to authorities",
-      "Legal or immigration-law advice",
-    ],
-    faqs: [
-      {
-        question: "Do you assist with OCI documentation?",
-        answer:
-          "Yes. We help with new OCI applications, reissues where applicable, updates and corrections — explaining the steps and checking your preparation.",
-      },
-      {
-        question: "Can you help my whole family apply?",
-        answer: "Yes. We coordinate related family applications so details and supporting documents stay consistent.",
-      },
-      {
-        question: "When might an OCI need updating?",
-        answer:
-          "Common triggers include a new passport or a change of personal details. Whether an update, correction or reissue applies depends on the current official rules for your case.",
-      },
-      {
-        question: "Can you tell me if I'm eligible?",
-        answer: "We can explain the published criteria; the decision rests with the authorities.",
-      },
-    ],
-    related: ["passport-services", "family-documentation"],
-    sources: [sources.ociPortal, sources.embassyOci, sources.outsourcing],
-    heroTitle: "e-OCI card application and updates in Germany",
+      "Fresh e-OCI, e-OCI for children and foreign spouses, and updates after a new passport, from Germany. We check your eligibility, photo and documents before you submit.",
+    heroTitle: "e-OCI card applications from Germany, prepared right",
     heroLead:
-      "Fresh e-OCI, renewal after a new passport and updates of your details, for adults, children and foreign spouses. We check your form, photo and documents before you submit.",
-    documents: {
-      title: "Documents usually needed for a fresh e-OCI",
-      items: [
-        "Current passport and copies of the relevant pages",
-        "Proof of Indian origin (old Indian passport or parent's documents)",
-        "Photo and signature in the stated format",
-        "Residence permit and Meldebescheinigung",
-        "For spouses: marriage certificate and the spouse's documents",
-      ],
-    },
-    guides: ["N7qH5NG0T98", "doHN3e53b0k"],
-    scene: { kind: "oci", label: "Illustration of a blank card resting on its supporting documents" },
+      "Fresh e-OCI, children, foreign spouses and updates after a new passport. We check your eligibility, photo and documents before you submit.",
     issues: [
-      { id: "new-oci", label: "Fresh e-OCI", body: "First e-OCI for adults, children and foreign spouses." },
-      { id: "reissue", label: "Renewal after a new passport", body: "Re-issue or update when your passport changes." },
-      { id: "update-correction", label: "Update your details", body: "Name, address, nationality or photo changes." },
-      { id: "family-oci", label: "e-OCI for the whole family", body: "Several family members coordinated as one case." },
+      { id: "new-oci", label: "Fresh e-OCI", body: "For former Indian citizens and people of Indian origin." },
+      { id: "oci-children", label: "e-OCI for children", body: "Minors born in Germany, with parents' documents and consent." },
+      { id: "foreign-spouse", label: "Foreign spouses", body: "Spouse of an Indian citizen or OCI cardholder." },
+      { id: "reissue", label: "Update after a new passport", body: "Upload or re-issue, depending on your age." },
+      { id: "update-correction", label: "Change of details", body: "Name, nationality, address or occupation." },
+      { id: "lost-oci", label: "Lost or damaged OCI card", body: "Police report and re-issue application.", urgent: true },
     ],
+    aside: [
+      { kind: "appointment", body: "We help you book your submission appointment, with a checklist for the day." },
+      {
+        kind: "dark",
+        title: "German citizen now?",
+        body: "You usually need a surrender certificate before your e-OCI. We handle both together.",
+        link: { label: "Surrender certificate →", href: "/contact/?service=passport-services&issue=surrender#enquiry" },
+      },
+      { kind: "included", items: ["Eligibility check", "Form filling", "Photo and signature check"], note: missionFees },
+    ],
+    documents: {
+      title: "Documents usually needed",
+      items: [
+        "Current foreign passport",
+        "Proof of Indian origin: old Indian passport or parents' documents",
+        "Surrender certificate, if you held an Indian passport",
+        "Square photo and signature in the required format",
+        "Meldebescheinigung, and marriage certificate for spouses",
+      ],
+      note: missionNote,
+    },
+    guides: [],
+    faqs: [],
+    sources: [sources.ociPortal, sources.embassyOci, sources.outsourcing],
   },
   {
     slug: "attestation-affidavits",
-    number: "03",
-    title: "Attestation & Affidavits",
-    icon: "attestation",
-    summary: "Attestation of personal, educational and commercial documents. Name change, name split and other affidavits, and Power of Attorney.",
-    outcome: "Get your documents attested and your affidavits prepared, in the right order.",
+    title: "Attestation, Affidavits & Declarations",
+    summary:
+      "Attestation of personal, educational and commercial documents. Name change, name split and other affidavits, Power of Attorney, NRI and other certificates.",
     mainlyFor: "Residents, students and businesses",
-    intro: [
-      "When a document issued in one country must be recognised by an authority in another, it may need an apostille, attestation or legalisation — sometimes after translation or notarisation.",
-      "SimplYes guides you through the preparation route and coordinates the steps so you know what happens in which order.",
-    ],
-    explainer: {
-      title: "Apostille, attestation and legalisation — in plain language",
-      body: [
-        "An apostille is a certificate that confirms a public document for use in countries that are part of the Hague Apostille Convention. Attestation and legalisation are confirmation steps used where an apostille is not the applicable route.",
-        "Requirements depend on the document type, the issuing authority and the destination authority. We help you work out the route that appears to apply — official confirmation is always performed by the competent authority.",
-      ],
-    },
-    seoTitle: "Attestation & Affidavit Help in Germany",
+    seoTitle: "Attestation & Affidavits for India from Germany",
     metaDescription:
-      "Attestation of personal, educational and commercial documents, name change and other affidavits, and Power of Attorney — for Indians in Germany.",
-    audience: [
-      "Students and graduates whose certificates must be recognised abroad",
-      "Professionals preparing documents for employers or authorities",
-      "Residents whose personal certificates need recognition in another country",
-      "Anyone whose name differs across documents, or who needs someone to act on their behalf",
-      "Businesses with commercial documents for use in India",
-    ],
-    situations: [
-      {
-        situation: "“An authority asked for an apostille on my certificate.”",
-        howWeHelp: "We help you understand the apostille route and prepare the document correctly.",
-      },
-      {
-        situation: "“My document needs translating or notarising first.”",
-        howWeHelp: "We explain the usual order of steps and coordinate translation and notarisation guidance.",
-      },
-      {
-        situation: "“I don't know which route applies to my document.”",
-        howWeHelp: "We look at the document type, issuing authority and destination to identify the route that appears to apply.",
-      },
-    ],
-    helpsWith: [
-      "Apostille guidance",
-      "Educational document preparation",
-      "Personal document preparation",
-      "Certificate-related documentation",
-      "Translation coordination guidance",
-      "Notarisation-related administrative guidance",
-      "Name-change, name-split and other affidavits",
-      "Power of Attorney documentation guidance",
-      "Cross-border document preparation",
-    ],
-    documentCategories: [
-      "Educational documents (certificates, degrees, transcripts)",
-      "Personal documents (civil-status and similar certificates)",
-      "Certified translations, where required",
-      "Notarised copies or declarations, where required",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Tell us which document needs recognition and for which country or authority." },
-      { title: "Understand the requirements", body: "We identify the route that appears to apply for your document and destination." },
-      { title: "Prepare the documents", body: "You receive guidance on preparation, translation and notarisation steps." },
-      { title: "Assistance & review", body: "Where agreed, we check the document set and coordinate the order of steps." },
-      nextSteps,
-    ],
-    prepare: [
-      "Which document needs recognition and who issued it",
-      "The country and authority where it will be used",
-      "Any instructions you received from that authority",
-      "Whether a translation already exists",
-    ],
-    included: [
-      "Identifying the recognition route that appears to apply",
-      "A step-by-step preparation plan in the right order",
-      "Translation and notarisation coordination guidance",
-      "Completeness checks before submission",
-    ],
-    outsideScope: [
-      "Performing official attestation, apostille, legalisation or notarisation",
-      "Guaranteeing that an authority will accept a document",
-      "Translating documents ourselves or acting as a sworn translator",
-      "Legal advice, legal representation or unauthorised legal drafting",
-    ],
-    faqs: [
-      {
-        question: "Do you help with document attestation?",
-        answer:
-          "Yes. We guide you through the attestation, apostille or legalisation route that appears to apply and help you prepare. Requirements vary by document and authority.",
-      },
-      {
-        question: "Do my documents need translating first?",
-        answer:
-          "Sometimes. It depends on the document, the language and the destination authority. We explain the usual order of steps for your case.",
-      },
-      {
-        question: "What is a name-change or name-split affidavit used for?",
-        answer:
-          "It explains why your name appears differently across documents, so an authority can match them. We explain what is usually needed and help prepare the supporting paperwork.",
-      },
-      {
-        question: "How do I know which route applies?",
-        answer:
-          "The route depends on the document type, the issuing authority and the destination authority. We help you work it out from the current official guidance.",
-      },
-    ],
-    related: ["student-services", "passport-services"],
-    sources: [sources.attestationFaq, sources.meaApostille, sources.outsourcing],
-    heroTitle: "Document attestation and affidavits for Indians in Germany",
+      "Attestation of personal, educational and commercial documents, name affidavits, Power of Attorney and consular certificates for India, from Germany.",
+    heroTitle: "Attestation, affidavits and certificates for India, from Germany",
     heroLead:
-      "Attestation of personal, educational and commercial documents. Name change, name split and other affidavits, and Power of Attorney. We prepare the papers in the right order.",
-    guides: ["doHN3e53b0k", "U5oRO--jVbQ"],
-    scene: { kind: "attestation", label: "Illustration of stacked certificate sheets and a rubber stamp" },
+      "Personal, educational and commercial documents, affidavits, Power of Attorney and consular certificates. We find the right route and prepare every page.",
     issues: [
-      { id: "personal-certificates", label: "Personal documents", body: "Birth, marriage and other civil-status certificates." },
-      { id: "educational", label: "Educational documents", body: "Degrees, transcripts and school certificates." },
-      { id: "commercial", label: "Commercial documents", body: "Company documents for use in India." },
-      { id: "apostille", label: "Apostille", body: "For use in Hague Convention countries." },
-      { id: "name-discrepancy", label: "Name change and name split affidavits", body: "When your name differs across documents." },
-      { id: "power-of-attorney", label: "Power of Attorney", body: "Someone in India acting on your behalf." },
+      { id: "personal-certificates", kicker: "Attestation", label: "Personal documents", body: "Birth, marriage and other civil certificates." },
+      { id: "educational", kicker: "Attestation", label: "Educational documents", body: "Degrees, transcripts and school certificates." },
+      {
+        id: "commercial",
+        kicker: "Attestation",
+        label: "Commercial documents",
+        body: "Certificates of origin, invoices, company extracts and board resolutions.",
+      },
+      { id: "name-affidavit", kicker: "Affidavits", label: "Name affidavits", body: "Name change, name split, one and the same person." },
+      { id: "power-of-attorney", kicker: "Declarations", label: "Power of Attorney", body: "For property, bank or legal matters in India." },
+      { id: "consular-certificates", kicker: "Certificates", label: "Consular certificates", body: "NRI, non-nationality, name-change and life certificates." },
     ],
+    aside: [
+      { kind: "ask", title: "Not sure which route?", body: "Send us a photo of the document and tell us where it will be used." },
+      {
+        kind: "dark",
+        title: "For businesses",
+        body: "Several commercial documents at once? We prepare them as one batch.",
+        link: { label: "Start a business enquiry →", href: "/contact/?context=corporate#enquiry" },
+      },
+    ],
+    documents: {
+      title: "Documents usually needed",
+      items: [
+        "The original document and copies",
+        "Passport and residence permit copies",
+        "Apostille or prior legalisation, depending on the document",
+        "For companies: authorisation letter and company registration extract",
+      ],
+      note: "The route depends on who issued the document and where it will be used. We check it before anything is signed or sent.",
+    },
+    guides: [],
+    faqs: [],
+    sources: [sources.attestationFaq, sources.meaApostille, sources.outsourcing],
   },
   {
     slug: "visa-documentation-support",
-    number: "04",
-    title: "Visa Services",
-        icon: "visa",
+    title: "Indian Visa Documentation",
     summary: "Indian e-Visa and regular visa: e-Tourist, e-Business, e-Medical and more, for spouses, family, friends and business travellers.",
-    outcome: "Organise your documentation and check it is complete before you submit.",
     mainlyFor: "German citizens and business professionals",
-    intro: [
-      "Preparing documents for an application can be stressful when you are unsure what is needed or whether your file is complete.",
-      "SimplYes helps you understand the published documentation requirements, organise supporting documents, prepare a checklist and check completeness before you submit.",
-    ],
-    explainer: {
-      title: "Documentation assistance — not immigration-law advice",
-      body: [
-        "This service is documentation assistance. We do not give immigration-law advice and we do not decide or influence visa outcomes. Visa decisions are made solely by the issuing authority.",
-        "If your situation needs legal advice, we will tell you so and you should consult a qualified immigration lawyer.",
-      ],
-    },
-    seoTitle: "Indian e-Visa & Visa Help in Germany",
+    seoTitle: "Indian Visa & e-Visa Documents in Germany",
     metaDescription:
-      "Documentation assistance for visa applications: requirements guidance, checklists and completeness checks. Not immigration-law advice. For Indians in Germany.",
-    audience: [
-      "Professionals preparing an application file",
-      "Spouses and dependants preparing supporting documentation",
-      "New arrivals unsure what a documentation checklist should contain",
-    ],
-    situations: [
-      {
-        situation: "“I'm preparing documents for an application.”",
-        howWeHelp: "We help you understand the published requirements and build a checklist for your case.",
-      },
-      {
-        situation: "“I'm not sure whether my file is complete.”",
-        howWeHelp: "We check your documentation for completeness against the published requirements.",
-      },
-      {
-        situation: "“I have an appointment coming up.”",
-        howWeHelp: "We help you organise your documents and prepare for the appointment.",
-      },
-    ],
-    helpsWith: [
-      "Documentation requirements guidance",
-      "Application preparation assistance",
-      "Supporting-document organisation",
-      "Checklist preparation",
-      "Appointment preparation",
-      "Document completeness checks",
-      "Administrative guidance",
-    ],
-    documentCategories: [
-      "Passport and identity documents",
-      "Supporting documents for the purpose of travel or stay",
-      "Proof of residence or address",
-      "Photographs in the stated format",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Tell us what you are applying for and where you are in the process." },
-      { title: "Understand the requirements", body: "We explain the published documentation requirements for your application type." },
-      { title: "Prepare the documents", body: "You receive a checklist and guidance on organising your supporting documents." },
-      { title: "Assistance & review", body: "Where agreed, we check your file for completeness before you submit." },
-      nextSteps,
-    ],
-    prepare: [
-      "What you are applying for and the issuing authority",
-      "Any checklist or instructions you have already received",
-      "Your appointment date, if you have one",
-    ],
-    included: [
-      "Plain-language explanation of published documentation requirements",
-      "A checklist for your application",
-      "Organisation of supporting documents",
-      "Completeness check before submission",
-      "Appointment preparation",
-    ],
-    outsideScope: [
-      "Immigration-law advice",
-      "Deciding or influencing visa outcomes",
-      "Eligibility verdicts or guarantees of approval",
-      "Representing you before authorities",
-    ],
-    faqs: [
-      {
-        question: "Do you decide or influence visa outcomes?",
-        answer: "No. Visa decisions are made solely by the issuing authority. We help you prepare complete documentation.",
-      },
-      {
-        question: "Can you check whether my file is complete?",
-        answer: "Yes. Where agreed, we check your documentation for completeness against the published requirements before you submit.",
-      },
-      {
-        question: "Do you give immigration-law advice?",
-        answer: "No. This is documentation assistance only. For legal advice, please consult a qualified immigration lawyer.",
-      },
-    ],
-    related: ["attestation-legalisation", "family-documentation"],
-    sources: [sources.outsourcing],
-    heroTitle: "Indian e-Visa and visa help for German citizens",
+      "Indian e-Visa and regular visa documents for German and other nationals: e-Tourist, e-Business, e-Medical, e-Conference and urgent family visas.",
+    heroTitle: "Indian visa and e-Visa documents for German and other nationals",
     heroLead:
-      "Indian e-Visa and regular visa: e-Tourist, e-Business, e-Medical and more, for spouses, family, friends and business travellers. We fill in, check and prepare your application.",
-    documents: {
-      title: "Documents usually needed for an e-Visa",
-      items: [
-        "Passport valid for at least six months, with two blank pages",
-        "Scan of the passport photo page",
-        "Recent photo, white background",
-        "Purpose-specific documents (invitation letter, business card, hospital letter)",
-      ],
-    },
-    guides: ["fSd52rH97MA", "ITCVJ14WiQk"],
-    scene: { kind: "visa", label: "Illustration of an organised document folder, a checklist and a travel booklet" },
+      "The right visa type, a correct form and a complete document set, whether you travel for tourism, business, medical treatment or family.",
+    urgentQuestion: "Family emergency in India and need a visa fast?",
     issues: [
-      { id: "e-tourist", label: "e-Tourist visa", body: "Holidays and visits to family and friends." },
-      { id: "e-business", label: "e-Business visa", body: "Meetings, trade and business travel." },
-      { id: "e-medical", label: "e-Medical visa", body: "Treatment in India, and for attendants." },
-      { id: "regular-visa", label: "Regular visa", body: "Longer stays and categories outside the e-Visa." },
-      { id: "urgent-visa", label: "Urgent visa for family", body: "Family emergencies in India.", urgent: true },
-      { id: "completeness-check", label: "Check my application", body: "Form, photo and documents before you submit." },
+      { id: "e-tourist", label: "e-Tourist visa", body: "Holidays, visiting friends and family." },
+      { id: "e-business", label: "e-Business visa", body: "Meetings, trade fairs and business trips." },
+      { id: "e-medical", label: "e-Medical visa", body: "Treatment in India, plus attendant visas." },
+      { id: "e-conference", label: "e-Conference visa", body: "Events and conferences in India." },
+      { id: "regular-visa", label: "Regular (paper) visa", body: "Employment, student, long stays, or when e-Visa doesn't apply." },
+      { id: "urgent-visa", label: "Urgent family visa", body: "When a family emergency means you must travel soon.", urgent: true },
     ],
+    aside: [
+      { kind: "ask", title: "Which visa do I need?", body: "Tell us your nationality and why you travel. We tell you the right visa and what to prepare." },
+      {
+        kind: "included",
+        items: ["Visa type check", "Form filling", "Photo and scan check"],
+        note: "Visa fees are paid to the Government of India. Our service fee is agreed before we start.",
+      },
+    ],
+    video: { id: "ITCVJ14WiQk", heading: "Watch: the Indian e-Visa in 6 steps" },
+    documents: {
+      title: "Documents usually needed",
+      items: [
+        "Passport valid for at least 6 months, with blank pages",
+        "Photo and passport scan in the required format",
+        "Residence permit, if you are not a German citizen",
+        "Visa-type papers: invitation, business letter or hospital letter",
+      ],
+      note: "Apply only on the official Government of India portal. Visa decisions are made only by the Government of India.",
+    },
+    guides: [],
+    faqs: [],
+    sources: [sources.outsourcing],
   },
   {
     slug: "family-documentation",
-    number: "05",
     title: "Family Documentation",
-    icon: "family",
-    summary: "Passport, e-OCI and visa for the whole family as one case: minor passports, birth registration and parental consent forms.",
-    outcome: "One point of contact for your household's documentation, with related requirements aligned.",
+    summary:
+      "Passport, e-OCI and visa for the whole family as one case: minor passports, newborn birth registration, NOC for naming a child and parental consent forms.",
     mainlyFor: "Families, spouses and children",
-    intro: [
-      "When several family members need documentation at the same time — a new baby, a spouse joining, or renewals for the whole household — handling each application separately can lead to inconsistencies and repeated work.",
-      "SimplYes treats family documentation as a coordinated household solution: one point of contact, with related requirements aligned across applications.",
-    ],
-    seoTitle: "Family Documentation Help in Germany",
+    seoTitle: "Family Passports, e-OCI & Visas in Germany",
     metaDescription:
-      "Coordinated family documentation for Indians in Germany: spouse, children, birth- and marriage-related and dependant paperwork, handled per household.",
-    audience: [
-      "Families with several members needing documentation at once",
-      "Parents preparing documentation for a newborn or children",
-      "Spouses and dependants joining family in Germany",
-    ],
-    situations: [
-      {
-        situation: "“We have a new baby.”",
-        howWeHelp: "We help you understand the birth-related documentation usually involved and prepare it in the right order.",
-      },
-      {
-        situation: "“My spouse is joining me.”",
-        howWeHelp: "We help organise spouse and marriage-related documentation alongside your own records.",
-      },
-      {
-        situation: "“Several of us need renewals at once.”",
-        howWeHelp: "We coordinate the household's applications so details and supporting documents stay consistent.",
-      },
-    ],
-    helpsWith: [
-      "Spouse documentation",
-      "Children's documentation",
-      "Birth-related documentation",
-      "Marriage-related documentation",
-      "Dependant documentation",
-      "Family profile coordination",
-      "Management of multiple related applications",
-    ],
-    documentCategories: [
-      "Identity documents for each family member",
-      "Birth- and marriage-related certificates",
-      "Proof of relationship and of residence",
-      "Photographs and signatures (or thumb impressions for young children, where required)",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Tell us who in the household needs documentation and why." },
-      { title: "Understand the requirements", body: "We map the related requirements across family members." },
-      { title: "Prepare the documents", body: "You receive one coordinated plan for the household's documents." },
-      { title: "Assistance & review", body: "Where agreed, we check that details are consistent across all applications." },
-      nextSteps,
-    ],
-    prepare: [
-      "Who in the family needs documentation, and for which process",
-      "Each person's current document details (no copies at enquiry stage)",
-      "Any deadlines or appointments",
-    ],
-    included: [
-      "One point of contact for the household",
-      "A coordinated plan across related applications",
-      "Consistency checks of details across family documents",
-    ],
-    outsideScope: [
-      "Issuing or approving any document — this rests with the authorities",
-      "Guaranteeing outcomes or timelines",
-      "Legal advice on family or immigration law",
-    ],
-    faqs: [
-      {
-        question: "Can you help with family documentation?",
-        answer: "Yes. We coordinate documentation for spouses, children and dependants as one household rather than separate cases.",
-      },
-      {
-        question: "Can several family members be handled together?",
-        answer: "Yes. Coordinating related applications together is the core of this service.",
-      },
-      {
-        question: "What about documentation for a newborn?",
-        answer:
-          "We explain the birth-related documentation usually involved and help you prepare it in the right order. Requirements depend on your situation.",
-      },
-    ],
-    related: ["passport-services", "oci-services", "corporate-services"],
-    sources: [sources.outsourcing, sources.ociPortal],
-    heroTitle: "Family passports, e-OCI and visas in Germany",
+      "Children's passports, newborn birth registration, NOC for a child's name, spouse documents and e-OCI for family members: one contact, one checklist.",
+    heroTitle: "The whole family's documents, handled as one case",
     heroLead:
-      "Passport, e-OCI and visa for the whole family as one case: minor passports, birth registration and parental consent forms. One person on WhatsApp coordinates everything.",
-    guides: ["U5oRO--jVbQ", "N7qH5NG0T98", "fSd52rH97MA"],
-    scene: { kind: "family", label: "Illustration of three matching document sets arranged together" },
+      "Children's passports, newborns, spouses and e-OCI for family members. One contact, one checklist, everyone's papers in order.",
     issues: [
-      { id: "children", label: "Passports for minors", body: "Newborns and children, with parental consent forms." },
-      { id: "birth-registration", label: "Birth registration", body: "Registering a child born in Germany with the mission." },
-      { id: "spouse", label: "Spouse documentation", body: "Passport, e-OCI or visa for your spouse." },
-      { id: "household", label: "The whole family as one case", body: "Passport, e-OCI and visa coordinated together." },
+      { id: "child-passport", label: "Child's passport", body: "Minor passport renewal with Annexure D, signed by both parents." },
+      { id: "newborns", label: "Newborns", body: "Birth registration, birth certificate and first passport." },
+      { id: "naming", label: "Naming a newborn", body: "No Objection Certificate for the child's name." },
+      { id: "oci-children", label: "e-OCI for children", body: "Children with German or other foreign passports." },
+      { id: "spouse", label: "Spouses", body: "Name change after marriage, spouse e-OCI or visa." },
+      { id: "household", label: "Whole family together", body: "Several applications prepared and booked as one." },
     ],
+    aside: [
+      {
+        kind: "appointment",
+        title: "One appointment for the family",
+        body: "We help you book together where the mission allows it, with one checklist for everyone.",
+      },
+      {
+        kind: "included",
+        items: ["One contact for the whole family", "Form filling for every member", "Photo and signature check"],
+        note: missionFees,
+      },
+    ],
+    documents: {
+      title: "Documents usually needed for a child's passport",
+      items: [
+        "Child's current passport and birth certificate",
+        "Both parents' passports and residence permits",
+        "Annexure D, parental consent signed by both parents",
+        "Child's photo in the required format",
+      ],
+      note: missionNote,
+    },
+    guides: [],
+    faqs: [],
+    sources: [sources.outsourcing, sources.ociPortal],
   },
   {
-    slug: "student-services",
-    number: "06",
-    title: "Student Services",
-    icon: "student",
-    summary: "Passport renewal, attestation of educational documents and PCC for Indian students in Germany.",
-    outcome: "Get your academic documents organised and ready, without the jargon.",
-    mainlyFor: "Indian students in Germany",
-    intro: [
-      "Studying in Germany often means organising transcripts, degree certificates and other academic paperwork — sometimes with attestation — alongside your studies.",
-      "SimplYes helps Indian students organise and prepare their academic documentation in plain language, with an approachable process that respects a student budget.",
-    ],
-    seoTitle: "Student Document & Attestation Help in Germany",
+    slug: "new-in-germany",
+    title: "New in Germany",
+    isNew: true,
+    summary: "German insurance guidance, apartment search help and first steps for new arrivals, from Anmeldung to bank account.",
+    mainlyFor: "Students, professionals and families who just arrived",
+    seoTitle: "New in Germany: Insurance, Apartment, First Steps",
     metaDescription:
-      "Help for Indian students in Germany organising educational certificates, degree documents and academic paperwork, with attestation guidance.",
-    audience: [
-      "Indian students studying in Germany",
-      "Graduates preparing degree documents for employers or authorities",
-      "Students who need certificates attested or apostilled",
+      "New in Germany? German insurance guidance, apartment search help and first steps for new arrivals, from Anmeldung to bank account, in plain language.",
+    heroTitle: "New in Germany? Your first months,",
+    heroAccent: "made simpler.",
+    heroLead:
+      "German insurance, your apartment search and the first offices you need to visit. We explain what you need and help you prepare the papers.",
+    issues: [
+      { id: "german-insurance", label: "German insurance" },
+      { id: "apartment-help", label: "Apartment help" },
+      { id: "first-steps", label: "First steps after arrival" },
     ],
-    situations: [
+    aside: [],
+    helpGroups: [
       {
-        situation: "“I need to organise my transcripts and degree.”",
-        howWeHelp: "We help you work out which academic documents are relevant and organise them.",
+        title: "German insurance guidance",
+        icon: "insurance",
+        items: [
+          "Public vs private health insurance, and what your visa or university asks for",
+          "Travel or incoming insurance for visa applications",
+          "Liability (Haftpflicht) and household insurance explained",
+          "Referral to licensed advisers",
+        ],
       },
       {
-        situation: "“My certificates need attestation.”",
-        howWeHelp: "We explain the route that appears to apply and link you to our Attestation & Affidavits guidance.",
+        title: "Apartment help",
+        icon: "apartment",
+        items: [
+          "What landlords ask for: SCHUFA, salary slips, rent-free certificate",
+          "A clear application folder (Bewerbungsmappe)",
+          "Reading your contract: Kaution, notice period, Warm- vs Kaltmiete",
+          "Wohnungsgeberbestätigung for your Anmeldung",
+        ],
       },
       {
-        situation: "“I'm handling paperwork alongside my studies.”",
-        howWeHelp: "We keep it simple and explain each step clearly, so it fits around your studies.",
+        title: "First steps for new arrivals",
+        icon: "arrival",
+        items: [
+          "Anmeldung and your Bürgeramt appointment",
+          "Tax ID, bank account, phone and Rundfunkbeitrag",
+          "Residence permit paperwork checklist",
+          "Registering with your Indian mission, MADAD, OCI for children born here",
+        ],
       },
     ],
-    helpsWith: [
-      "Educational certificate preparation",
-      "Degree document guidance",
-      "Academic document organisation",
-      "Supporting certificates",
-      "Student-related paperwork",
-      "Document attestation guidance",
-    ],
-    documentCategories: [
-      "Degree certificates and transcripts",
-      "School-leaving and other educational certificates",
-      "Supporting certificates requested by the receiving institution",
-    ],
-    process: [
-      { title: "Tell us what you need", body: "Tell us which academic documents you need and what they are for." },
-      { title: "Understand the requirements", body: "We explain what the receiving institution or authority usually expects." },
-      { title: "Prepare the documents", body: "You receive guidance on organising and, where needed, attesting your documents." },
-      { title: "Assistance & review", body: "Where agreed, we check your academic document set for completeness." },
-      nextSteps,
-    ],
-    prepare: [
-      "Which documents you need and who asked for them",
-      "Your institution and the purpose (study, work, recognition)",
-      "Any deadlines",
-    ],
-    included: [
-      "Plain-language guidance on academic documentation",
-      "Help organising certificates and transcripts",
-      "Attestation route guidance, where relevant",
-    ],
-    outsideScope: [
-      "Issuing, attesting or recognising academic documents",
-      "Guaranteeing recognition by any institution or authority",
-      "Admission or immigration advice",
-    ],
+    scope: {
+      included: [
+        "Plain-language guidance in English, Deutsch, Malayalam, Hindi or Tamil",
+        "Checklists and help preparing your papers",
+        "Referral to licensed advisers when you need one",
+      ],
+      notIncluded: ["Selling or arranging insurance contracts", "Renting out or brokering apartments", "Legal, tax or immigration advice"],
+    },
     faqs: [
       {
-        question: "Do you support students?",
-        answer: "Yes. We help Indian students in Germany organise and prepare academic documentation, including attestation guidance.",
+        question: "Can you find me an apartment?",
+        answer: "We help you prepare a strong application and understand listings and contracts. We don't rent out or broker apartments.",
       },
       {
-        question: "Which academic documents might need attestation?",
-        answer:
-          "It depends on the receiving institution or authority and the country. We help you work out which documents are affected.",
+        question: "Which health insurance should I choose?",
+        answer: "We explain the options and what your visa or employer needs. For a personal recommendation we refer you to a licensed adviser.",
       },
       {
-        question: "Can I get help remotely while studying?",
-        answer:
-          "You can start your enquiry online through the form, WhatsApp or email. How the rest of the assistance is delivered is agreed with you after your enquiry.",
+        question: "I'm a student. Can you still help with my degree documents?",
+        answer: "Yes. Academic certificates and attestation are under Attestation, Affidavits & Declarations.",
       },
     ],
-    related: ["attestation-affidavits", "passport-services"],
-    sources: [sources.attestationFaq, sources.meaApostille],
-    heroTitle: "Passport, attestation and PCC help for Indian students in Germany",
-    heroLead:
-      "Passport renewal, attestation of educational documents and PCC for Indian students in Germany. Simple steps that fit around your studies.",
-    guides: ["U5oRO--jVbQ", "doHN3e53b0k"],
-    scene: { kind: "student", label: "Illustration of an academic certificate, a rolled diploma and study notes" },
-    issues: [
-      { id: "passport-renewal", label: "Passport renewal", body: "Renew while you study, without missing lectures." },
-      { id: "degree-attestation", label: "Attestation of educational documents", body: "Degrees and transcripts for jobs or recognition." },
-      { id: "pcc", label: "Police Clearance Certificate (PCC)", body: "For residence permits and job applications." },
-      { id: "student-paperwork", label: "Other student paperwork", body: "Certificates and supporting documents." },
-    ],
+    cta: { title: "Just arrived? Ask us anything.", lead: "A real person replies and explains the next step." },
+    guides: [],
+    sources: [],
   },
 ];
 
-/** "Mainly for …" phrased mid-sentence, keeping proper nouns and acronyms ("Indian", "HR") as written. */
+/** "Mainly for …" phrased mid-sentence, keeping proper nouns ("Indian", "German") as written. */
 export function mainlyForPhrase(service: Pick<Service, "mainlyFor">): string {
   const text = service.mainlyFor;
-  return /^(Indian|German|HR)\b/.test(text) ? text : text.charAt(0).toLowerCase() + text.slice(1);
+  return /^(Indian|German)\b/.test(text) ? text : text.charAt(0).toLowerCase() + text.slice(1);
 }
 
 export function getService(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);
 }
 
-export function relatedServices(service: Service): Service[] {
-  return service.related.map(getService).filter((s): s is Service => s !== undefined);
-}
-
-/** Contact link with the service pre-selected in the enquiry form (§08 conversion rule). */
+/** Contact link with the service pre-selected in the enquiry form. */
 export function enquiryHref(service?: Pick<Service, "slug">, context?: "pricing" | "corporate", issueId?: string): string {
   const params = new URLSearchParams();
   if (service) params.set("service", service.slug);
@@ -857,6 +427,6 @@ export function enquiryHref(service?: Pick<Service, "slug">, context?: "pricing"
 /** Validated lookup: returns the issue only if it belongs to the service (never trust URL values). */
 export function getIssue(service: Pick<Service, "issues"> | undefined, issueId: string | null | undefined): ServiceIssue | undefined {
   if (!service || !issueId) return undefined;
-  if (issueId === OTHER_ISSUE) return { id: OTHER_ISSUE, label: "Something else" };
+  if (issueId === "other") return { id: "other", label: "Something else" };
   return service.issues.find((issue) => issue.id === issueId);
 }

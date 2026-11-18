@@ -8,7 +8,7 @@ import { Missing, OwnerCopy, OwnerPolicy, PendingReview } from "@/components/Leg
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description:
-    "How SimplYes handles personal data: the enquiry form, WhatsApp and email contact, optional analytics with consent, hosting, retention and your rights.",
+    "How Simplyes handles personal data: the enquiry form, WhatsApp and email contact, optional analytics with consent, hosting, retention and your rights.",
   path: "/privacy/",
   noindex: !site.legal.reviewed,
 });
@@ -94,14 +94,14 @@ export default function PrivacyPage() {
                 for spam on {enquiryService.location} and forwards them by email to our business inbox. {enquiryService.name}{" "}
                 describes its processing and sub-processors in <a href={enquiryService.url}>its privacy policy</a>.
                 Our business inbox is provided by{" "}
-                <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />. Only the authorised SimplYes team can
+                <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />. Only the authorised Simplyes team can
                 access enquiries. Retention period for enquiry data: <OwnerCopy value={site.privacy.enquiryRetention} label="Retention period" />.
               </p>
             ) : (
               <p>
                 Form submissions are transmitted to <Missing label="Form service provider name and address" />, which
                 forwards them to our business inbox, provided by <OwnerCopy value={site.privacy.mailboxProvider} label="Email (mailbox) provider name and address" />.
-                Only the authorised SimplYes team can access enquiries. Retention period for enquiry data:{" "}
+                Only the authorised Simplyes team can access enquiries. Retention period for enquiry data:{" "}
                 <OwnerCopy value={site.privacy.enquiryRetention} label="Retention period" />.
               </p>
             )}

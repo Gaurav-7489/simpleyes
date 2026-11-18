@@ -16,7 +16,7 @@ export type IconKey =
   | "residents"
   | "corporate";
 
-/** Why SimplYes: the four reasons on the homepage sheet. */
+/** Why Simplyes: the four reasons on the homepage sheet. */
 export const whyItems: { title: string; body: string }[] = [
   { title: "Complete applications", body: "Fewer rejections for photos, signatures and missing papers." },
   { title: "Appointment and emergency help", body: "Support when time matters most." },
@@ -29,7 +29,7 @@ export const includedWithEveryService: { title: string; body: string; urgent?: b
   { title: "Document checking", body: "Every page checked before you submit." },
   { title: "Form filling", body: "Accurate, complete application forms." },
   { title: "Appointment booking", body: "Help booking at the Embassy and Consulates." },
-  { title: "Photo help", body: "Your phone photo made upload-ready. No studio visit needed." },
+  { title: "Photo help", body: "We check your photo against the size and background rules." },
   { title: "Emergency help", body: "Lost passport or urgent travel? Message URGENT.", urgent: true },
 ];
 
@@ -47,13 +47,13 @@ export const homeSteps: { title: string; body: string }[] = [
 /** §09 — the five-step journey with who acts at each step. */
 export const journeySteps: { title: string; body: string; who: string }[] = [
   { title: "Message us", body: "On WhatsApp, with your service and city.", who: "You" },
-  { title: "We find your route", body: "The right service, mission and checklist.", who: "SimplYes" },
-  { title: "We check and prepare", body: "Documents, forms and your photo.", who: "SimplYes + you" },
-  { title: "We book your appointment", body: "With a checklist for the day.", who: "SimplYes" },
+  { title: "We find your route", body: "The right service, mission and checklist.", who: "Simplyes" },
+  { title: "We check and prepare", body: "Documents, forms and your photo.", who: "Simplyes + you" },
+  { title: "We book your appointment", body: "With a checklist for the day.", who: "Simplyes" },
   { title: "You submit", body: "A complete application. Decisions stay with the authorities.", who: "You" },
 ];
 
-/** §09 — what SimplYes does / does not do. */
+/** §09 — what Simplyes does / does not do. */
 export const doesDoesNot = {
   does: [
     "Explains processes in plain language.",
@@ -84,7 +84,7 @@ export const audiences: { icon: IconKey; title: string; body: string; links: str
     icon: "students",
     title: "Students",
     body: "Organising certificates, degree documents and attestations — often for the first time.",
-    links: ["student-services", "attestation-affidavits"],
+    links: ["attestation-affidavits", "new-in-germany"],
   },
   {
     icon: "family",
@@ -117,14 +117,14 @@ export const approach: string[] = [
 
 /** §20 — draft independence statement (subject to owner/legal review). */
 export const independenceStatement =
-  "SimplYes is an independent documentation assistance service. We are not affiliated with any government authority, embassy or consulate. Official applications and decisions remain subject to the relevant authorities.";
+  "Simplyes is an independent documentation assistance service. We are not affiliated with any government authority, embassy or consulate. Official applications and decisions remain subject to the relevant authorities.";
 
 /** §10 — About page. */
 export const about = {
   intro:
-    "SimplYes is an independent documentation assistance service for Indian nationals living in Germany. We help individuals, families, students and employers understand, prepare and organise documentation for administrative processes.",
+    "Simplyes is an independent documentation assistance service for Indian nationals living in Germany. We help individuals, families, students and employers understand, prepare and organise documentation for administrative processes.",
   story:
-    "Documentation processes can be confusing and time-consuming. Requirements vary by document type and authority, information is scattered, and people often do not know where to start. SimplYes exists to make them easier to understand and manage.",
+    "Documentation processes can be confusing and time-consuming. Requirements vary by document type and authority, information is scattered, and people often do not know where to start. Simplyes exists to make them easier to understand and manage.",
   mission: "Make complex documentation processes simpler, clearer and more accessible.",
   vision: "Build a trusted documentation assistance ecosystem that combines personal service, structured processes and technology.",
   values: [
@@ -143,7 +143,7 @@ export const about = {
 };
 
 /**
- * §11 fee table entry. `from` = fixed starting price in EUR (SimplYes service
+ * §11 fee table entry. `from` = fixed starting price in EUR (Simplyes service
  * fee only, never official or third-party costs); `quote` = priced per quotation.
  */
 export type ServiceFee = {
@@ -163,12 +163,12 @@ export const pricing = {
   serviceFees: [] as ServiceFee[],
   feeTypes: [
     {
-      title: "SimplYes service fees",
-      body: "What SimplYes charges for its assistance. Fees depend on the service and your situation and are explained before any paid assistance begins.",
+      title: "Simplyes service fees",
+      body: "What Simplyes charges for its assistance. Fees depend on the service and your situation and are explained before any paid assistance begins.",
     },
     {
       title: "Government or consular fees",
-      body: "Set and collected by the relevant authority. Separate from SimplYes fees where applicable. We never quote amounts we have not verified.",
+      body: "Set and collected by the relevant authority. Separate from Simplyes fees where applicable. We never quote amounts we have not verified.",
     },
     {
       title: "Third-party charges",

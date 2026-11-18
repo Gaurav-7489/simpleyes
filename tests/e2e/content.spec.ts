@@ -26,15 +26,15 @@ test.describe("content rules", () => {
       "attestation-affidavits",
       "visa-documentation-support",
       "family-documentation",
-      "student-services",
+      "new-in-germany",
     ]);
     expect(services.map((s) => s.title)).toEqual([
       "Passport Services",
       "e-OCI Services",
-      "Attestation & Affidavits",
-      "Visa Services",
+      "Attestation, Affidavits & Declarations",
+      "Indian Visa Documentation",
       "Family Documentation",
-      "Student Services",
+      "New in Germany",
     ]);
   });
 
@@ -43,7 +43,7 @@ test.describe("content rules", () => {
     for (const s of services) expect(sitemap).toContain(`/services/${s.slug}/`);
     for (const slug of retiredSlugs) expect(sitemap).not.toContain(slug);
     expect(sitemap).toContain("/pricing/");
-    for (const slug of ["attestation-legalisation", "affidavits-declarations", "corporate-services"]) expect(sitemap).not.toContain(slug);
+    for (const slug of ["attestation-legalisation", "affidavits-declarations", "corporate-services", "student-services"]) expect(sitemap).not.toContain(slug);
     for (const path of ["/appointments/", "/emergency/", "/guides/"]) expect(sitemap).toContain(path);
   });
 
@@ -53,14 +53,15 @@ test.describe("content rules", () => {
     expect(txt.match(/\/services\/[a-z-]+\//g)?.length).toBe(services.length);
   });
 
-  test("header: Services ▾ · Appointments · Emergency help · How It Works · Guides · FAQs · Contact + Get Assistance", async ({ page }) => {
-    await page.goto("/guides/");
+  test("header: Services ▾ · Appointments · Emergency help · How It Works · Ask Simplyes (New) · FAQs · Contact + Get Assistance", async ({ page }) => {
+    await page.goto("/faqs/");
     const nav = page.getByRole("navigation", { name: "Primary" });
     const items = await nav.locator(":scope > ul > li").evaluateAll((lis) =>
       lis.map((li) => (li.querySelector(":scope > a, :scope > div > button")?.textContent ?? "").trim()),
     );
-    expect(items).toEqual(["Services", "Appointments", "Emergency help", "How It Works", "Guides", "FAQs", "Contact"]);
-    await expect(nav.getByRole("link", { name: "Guides" })).toHaveAttribute("aria-current", "page");
+    expect(items).toEqual(["Services", "Appointments", "Emergency help", "How It Works", "Ask SimplyesNew", "FAQs", "Contact"]);
+    await expect(nav.getByRole("link", { name: "FAQs" })).toHaveAttribute("aria-current", "page");
+    await expect(nav.getByRole("link", { name: /Ask Simplyes/ })).toHaveAttribute("href", "/#ask-simplyes");
     await expect(page.getByRole("banner").getByRole("link", { name: "Get Assistance" })).toHaveAttribute("href", "/contact/");
     // The urgent strip opens WhatsApp with a message that starts with URGENT.
     const urgent = page.getByRole("banner").locator('a[data-topic="urgent"]');
@@ -77,7 +78,7 @@ test.describe("content rules", () => {
       await expect(footer.getByRole("heading", { name: title, exact: true })).toBeVisible();
     }
     for (const s of services) await expect(footer.getByRole("link", { name: s.title, exact: true })).toBeVisible();
-    for (const label of ["Appointment booking", "Emergency help", "Guides", "About SimplYes", "FAQs", "Pricing", "Privacy Policy", "Terms & Conditions", "Disclaimer", "Impressum"]) {
+    for (const label of ["Appointment booking", "Emergency help", "Ask Simplyes", "Guides", "About Simplyes", "FAQs", "Pricing", "Privacy Policy", "Terms & Conditions", "Disclaimer", "Impressum"]) {
       await expect(footer.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
   });
@@ -91,6 +92,7 @@ test.describe("content rules", () => {
       "services-title",
       "why-title",
       "process-title",
+      "ask-title",
       "guides-title",
       "faq-title",
       "final-cta-title",
@@ -99,7 +101,8 @@ test.describe("content rules", () => {
     await expect(page.locator("#services .svc-rows > li")).toHaveCount(6);
     await expect(page.getByRole("heading", { name: "Appointment booking", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Emergency assistance", exact: true })).toBeVisible();
-    for (const q of ["Can you book my consulate appointment?", "I lost my passport and need to fly to India. What now?", "Are official fees included?", "Are you part of the Embassy or a Consulate?"]) {
+    await expect(page).toHaveTitle("Simplyes – Indian Passport, Visa & OCI Help in Germany");
+    for (const q of ["Can you book my consulate appointment?", "I lost my passport and need to fly to India. What now?", "I just moved to Germany. Can you help?", "Who is Simple?", "Are official fees included?", "Are you part of the Embassy or a Consulate?"]) {
       await expect(page.getByRole("heading", { name: q })).toBeVisible();
     }
   });
@@ -108,20 +111,27 @@ test.describe("content rules", () => {
     test(`${service.slug} has every section and a service-specific WhatsApp link`, async ({ page }) => {
       await page.goto(`/services/${service.slug}/`);
       await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(service.title);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(service.heroTitle);
-      for (const heading of ["We help with", `${service.title} FAQs`, "Appointment booking", "Emergency assistance"]) {
-        await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
-      }
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText([service.heroTitle, service.heroAccent].filter(Boolean).join(" "));
+      await expect(page.getByRole("heading", { name: "We help with", exact: true })).toBeVisible();
       if (service.documents) await expect(page.getByRole("heading", { name: service.documents.title })).toBeVisible();
-      // Every "We help with" card opens the enquiry with that problem chosen.
-      const cards = page.locator(".issue-card");
-      await expect(cards).toHaveCount(service.issues.length);
-      for (const [i, issue] of service.issues.entries()) {
-        await expect(cards.nth(i)).toHaveAttribute("href", `/contact/?service=${service.slug}&issue=${issue.id}#enquiry`);
+      if (service.helpGroups) {
+        // New in Germany: the problem picker beside the heading opens the enquiry with that problem chosen.
+        const options = page.locator(".picker-option");
+        await expect(options).toHaveCount(service.issues.length + 1);
+        await expect(options.first()).toHaveAttribute("href", `/contact/?service=${service.slug}&issue=${service.issues[0]!.id}#enquiry`);
+        for (const g of service.helpGroups) await expect(page.getByRole("heading", { name: g.title })).toBeVisible();
+      } else {
+        // Every "We help with" card opens the enquiry with that problem chosen.
+        const cards = page.locator(".issue-card");
+        await expect(cards).toHaveCount(service.issues.length);
+        for (const [i, issue] of service.issues.entries()) {
+          await expect(cards.nth(i)).toHaveAttribute("href", `/contact/?service=${service.slug}&issue=${issue.id}#enquiry`);
+        }
       }
-      const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
-      await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
-      await expect(page.getByRole("heading", { name: /^Official sources — checked / })).toBeVisible();
+      if (!service.cta) {
+        const ctas = page.getByRole("link", { name: "Get Assistance With This Service" });
+        await expect(ctas.first()).toHaveAttribute("href", new RegExp(`/contact/\\?service=${service.slug}`));
+      }
       const hrefs = await page.$$eval('main a[href^="https://wa.me/"]', (as) => as.map((a) => a.getAttribute("href") ?? ""));
       const texts = hrefs.map((h) => new URL(h).searchParams.get("text") ?? "");
       expect(texts.some((t) => t.includes(service.title))).toBe(true);
@@ -141,7 +151,7 @@ test.describe("content rules", () => {
         const url = new URL(href);
         expect(url.origin + url.pathname).toBe(`https://wa.me/${WHATSAPP_NUMBER}`);
         const text = url.searchParams.get("text") ?? "";
-        expect(text).toMatch(/^(Hello SimplYes|URGENT — Hello SimplYes)/);
+        expect(text).toMatch(/^(Hello Simplyes|URGENT — Hello Simplyes|Ask Simplyes: )/);
         expect(text).not.toMatch(/\d/);
         expect(href).not.toMatch(/\s/);
         expect(target).toBe("_blank");
@@ -164,7 +174,8 @@ test.describe("content rules", () => {
       expect(text, route).not.toMatch(/\blog in\b|\bsign in\b|\bupload your\b|track your case|pay now|coming soon/i);
       expect(text, route).not.toMatch(/OCI renewal/i);
       expect(text, route).not.toMatch(/€\s?\d|\d\s?€/);
-      expect(text, route).not.toMatch(/\bAI\b|chatbot|artificial intelligence/i);
+      // The only mention allowed is the honest disclosure that Simple, the video presenter, is AI-generated.
+      expect(text, route).not.toMatch(/\bAI\b(?!-generated presenter)|chatbot|artificial intelligence/i);
     }
   });
 
@@ -201,7 +212,7 @@ test.describe("floating WhatsApp button", () => {
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 1.5));
     await expect(fab).toHaveAttribute("data-visible", "true");
     await expect(fab).toBeVisible();
-    await expect(fab).toHaveAccessibleName("Chat with SimplYes on WhatsApp (opens in a new tab)");
+    await expect(fab).toHaveAccessibleName("Chat with Simplyes on WhatsApp (opens in a new tab)");
     const box = await fab.boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(44);
     expect(box!.x + box!.width).toBeLessThanOrEqual(390);
@@ -291,7 +302,7 @@ test.describe("floating WhatsApp button", () => {
   test("when visible, it is focusable with a visible focus ring", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard flow on desktop");
     // A standard service page: long enough that the button shows before the closing CTA (which hides it by design).
-    await page.goto("/services/oci-services/");
+    await page.goto("/services/passport-services/");
     await page.keyboard.press("Tab"); // keyboard modality, so :focus-visible applies
     await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.8));
     const fab = page.locator("[data-floating-wa]");
@@ -441,7 +452,7 @@ test.describe("enquiry delivery with a configured endpoint (§13)", () => {
     expect(headers["accept"]).toContain("application/json");
     expect(headers["content-type"]).toContain("application/json");
     expect(body[honeypot]).toBe("");
-    expect(body.subject).toBe("New SimplYes Enquiry — OCI Services — New OCI application");
+    expect(body.subject).toBe("New Simplyes Enquiry — OCI Services — New OCI application");
     expect(body.service).toBe("OCI Services");
     expect(body.issue).toBe("New OCI application");
     expect(body.email).toBe("test@example.com");
@@ -588,7 +599,7 @@ test.describe("enquiry contract: browser payload ↔ Formdall field schema", () 
     expect(renewal.service_id).toBe("passport-services");
     expect(renewal.issue_id).toBe("renewal");
     expect(renewal.issue).toBe("Passport renewal");
-    expect(renewal.subject).toBe("New SimplYes Enquiry — Passport Services — Passport renewal");
+    expect(renewal.subject).toBe("New Simplyes Enquiry — Passport Services — Passport renewal");
     expect(renewal).not.toHaveProperty("phone"); // empty optional fields are not sent
     expect(violations(renewal, schema.fields)).toEqual([]);
 
@@ -606,10 +617,10 @@ test.describe("enquiry contract: browser payload ↔ Formdall field schema", () 
     expect(violations(corporate, schema.fields)).toEqual([]);
 
     const direct = await capture(page, "/contact/", async (form) => {
-      await form.getByLabel(/Service category/).selectOption("student-services");
+      await form.getByLabel(/Service category/).selectOption("attestation-affidavits");
       await form.getByLabel(/Describe your problem/).fill("I need help organising my degree documents.");
     });
-    expect(direct.service_id).toBe("student-services");
+    expect(direct.service_id).toBe("attestation-affidavits");
     expect(direct).not.toHaveProperty("issue_id");
     expect(violations(direct, schema.fields)).toEqual([]);
   });
@@ -664,10 +675,10 @@ test.describe("smart contact flow: service page → prefilled form", () => {
     const form = page.locator("form#enquiry");
     await expect(form.getByLabel(/Service category/)).toHaveValue("");
     await expect(form.getByLabel(/Selected problem/)).toBeDisabled();
-    await form.getByLabel(/Service category/).selectOption("student-services");
+    await form.getByLabel(/Service category/).selectOption("attestation-affidavits");
     await expect(form.getByLabel(/Selected problem/)).toBeEnabled();
-    await form.getByLabel(/Selected problem/).selectOption("degree-attestation");
-    await expect(form.locator(".selection-summary")).toContainText("Student Services — Attestation of educational documents");
+    await form.getByLabel(/Selected problem/).selectOption("educational");
+    await expect(form.locator(".selection-summary")).toContainText("Attestation, Affidavits & Declarations — Educational documents");
   });
 
   test("D: changing the service resets only the problem; typed text stays", async ({ page }) => {
@@ -701,7 +712,7 @@ test.describe("smart contact flow: service page → prefilled form", () => {
     await form.getByLabel(/Describe your problem/).fill("private details");
     const formWa = await form.locator('a[data-cta-location="form"]').getAttribute("href");
     const text = new URL(formWa!).searchParams.get("text") ?? "";
-    expect(text).toBe("Hello SimplYes, I need assistance with Passport Services — Passport renewal.");
+    expect(text).toBe("Hello Simplyes, I need assistance with Passport Services — Passport renewal.");
     expect(text).not.toContain("private");
   });
 

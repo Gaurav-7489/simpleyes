@@ -6,6 +6,7 @@ import { whatsappHref } from "@/lib/whatsapp";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { BackToTop } from "./BackToTop";
 import { ConsentSettingsButton } from "@/components/analytics/Analytics";
+import { socialProfiles } from "@/components/SocialLinks";
 
 const linkClass = "footer-link";
 
@@ -104,9 +105,17 @@ export function Footer() {
                   className={linkClass}
                 >
                   YouTube {site.youtube.handle}
-                  <span className="sr-only"> (opens the SimplYes YouTube channel in a new tab)</span>
+                  <span className="sr-only"> (opens the Simplyes YouTube channel in a new tab)</span>
                 </a>
               </li>
+              {socialProfiles().map((p) => (
+                <li key={p.key}>
+                  <a href={p.href} target="_blank" rel="noopener noreferrer" data-cta={p.key} data-cta-location="footer" className={linkClass}>
+                    {p.label}
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </a>
+                </li>
+              ))}
             </Column>
           </div>
         </div>
@@ -114,7 +123,7 @@ export function Footer() {
         <div className="mt-12 flex items-center justify-between gap-4 border-t border-white/12 pt-6">
           <p className="text-[0.8125rem] leading-relaxed text-white/70">
             {site.name} is an independent service, not affiliated with the Embassy of India or the Consulates General of
-            India. © {year} {site.name}
+            India. Simple is an AI-generated presenter. © {year} {site.name}
           </p>
           <BackToTop />
         </div>

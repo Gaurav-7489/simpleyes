@@ -77,7 +77,7 @@ export function Hero() {
             <span className="tick tick-round">
               <Check className="size-3" strokeWidth={3} />
             </span>
-            Photo ready, no studio visit
+            Photo checked against the rules
           </div>
         </div>
       </div>

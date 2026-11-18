@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getVideo, homeGuides } from "@/content/videos";
 import { missions } from "@/content/home";
+import { site } from "@/content/site";
 import { VideoTile } from "@/components/video/VideoTile";
 
 /** Step-by-step video guides, played in place, and the missions we help with. */
@@ -13,9 +14,14 @@ export function GuidesSection() {
           <h2 id="guides-title" className="type-h2 max-w-[22ch]">
             Answers to the questions everyone asks
           </h2>
-          <Link href="/guides/" className="link-inline text-[0.9375rem]">
-            All guides →
-          </Link>
+          <span className="flex flex-wrap gap-x-5 gap-y-2 text-[0.9375rem]">
+            <Link href="/guides/" className="link-inline">
+              All guides →
+            </Link>
+            <a href={site.youtube.url} target="_blank" rel="noopener noreferrer" data-cta="youtube" data-cta-location="home-guides" className="link-inline">
+              YouTube {site.youtube.handle} →<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </span>
         </div>
         <ul className="guide-cards mt-10">
           {homeGuides.map((guide) => {

@@ -10,7 +10,7 @@ import { NavLinks } from "./NavLinks";
 export function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <UrgentBar />
+      <UrgentBar questions={Object.fromEntries(services.flatMap((s) => (s.urgentQuestion ? [[s.slug, s.urgentQuestion]] : [])))} />
       {/* Desktop */}
       <div className="hidden h-[calc(var(--header-h)-var(--urgent-h))] items-center lg:flex">
         <div className="container-site">

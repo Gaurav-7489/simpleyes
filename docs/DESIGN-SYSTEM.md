@@ -63,3 +63,13 @@ scene (see the redesign section below), so the WebGL hero and three.js / React T
 ## Adding a service composition
 
 Add a key to `serviceSceneKeys` and a composition in `scenes.ts`, then set `scene: { kind, label }` on the service in `src/content/services.ts`.
+
+## Logo, favicon and link preview (18 Nov 2026)
+
+- **Logo:** `src/components/ui/Wordmark.tsx` — lower-case "simplyes." in Outfit semibold: "si" lime `#9ed657`, then
+  "mplyes." from teal `#0e9bad` to lime `#7ad552` (colours sampled from the owners' logo).
+- **Icons and preview:** `npm run render:brand` (with the built site served) renders the favicon (`src/app/icon.png`),
+  `apple-icon.png`, the manifest icons, `public/logo.png` and `public/og-image.png` from that same markup, so the logo
+  is identical everywhere. Re-run it after any logo change.
+- **Site title:** `site.title` — "Simplyes – Indian Passport, Visa & OCI Help in Germany".
+- **Social profiles:** `site.social` (Instagram, Facebook, LinkedIn) render only once set.

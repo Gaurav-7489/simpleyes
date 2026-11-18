@@ -57,7 +57,7 @@ test.describe("links", () => {
       const href = (await link.getAttribute("href")) ?? "";
       const url = new URL(href);
       expect(url.pathname).toBe(`/${WHATSAPP_NUMBER}`);
-      expect(url.searchParams.get("text") ?? "").toMatch(/^(Hello SimplYes|URGENT — Hello SimplYes)/);
+      expect(url.searchParams.get("text") ?? "").toMatch(/^(Hello Simplyes|URGENT — Hello Simplyes|Ask Simplyes: )/);
       expect(href).not.toContain(" ");
       await expect(link).toHaveAttribute("target", "_blank");
       await expect(link).toHaveAttribute("rel", /noopener/);
@@ -119,7 +119,7 @@ test.describe("navigation", () => {
     const group = mobileNav.getByRole("button", { name: "Services" });
     await expect(group).toHaveAttribute("aria-expanded", "false");
     await group.click();
-    await expect(mobileNav.getByRole("link", { name: "Attestation & Affidavits" })).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Attestation, Affidavits & Declarations" })).toBeVisible();
     await mobileNav.getByRole("link", { name: "Contact", exact: true }).click();
     await expect(page).toHaveURL(/\/contact\/$/);
     await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
@@ -141,7 +141,7 @@ test.describe("FAQ accordion", () => {
     await page.goto("/faqs/");
     const main = page.locator("main");
     for (const c of faqCategories) await expect(main.getByRole("heading", { level: 2, name: c.label, exact: true })).toBeVisible();
-    const first = page.getByRole("button", { name: "Is SimplYes an official government service?" });
+    const first = page.getByRole("button", { name: "Is Simplyes an official government service?" });
     await expect(first).toHaveAttribute("aria-expanded", "false");
     await first.click();
     await expect(first).toHaveAttribute("aria-expanded", "true");
@@ -163,7 +163,7 @@ test.describe("FAQ accordion", () => {
 
     // Answers are in the server HTML even when collapsed (crawlable).
     const html = await (await page.request.get("/faqs/")).text();
-    expect(html).toContain("No. SimplYes is an independent documentation assistance service.");
+    expect(html).toContain("No. Simplyes is an independent documentation assistance service.");
   });
 });
 
@@ -293,7 +293,31 @@ test.describe("video guides", () => {
     await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<title>player</title>" }));
     await page.goto("/");
     await expect(page.locator("#guides .guide-card")).toHaveCount(4);
-    await page.getByRole("button", { name: /Play video: Meet SimplYes/ }).click();
+    await page.getByRole("button", { name: /Play video: Meet Simplyes/ }).click();
     await expect(page.locator("main iframe")).toHaveAttribute("src", /\/embed\/5AqDkuUgoEE\?/);
   });
 });
+
+test.describe("Ask Simplyes", () => {
+  test("episode 1 plays large; questions go to WhatsApp; subscribe links to the channel", async ({ page }) => {
+    await page.route("https://i.ytimg.com/**", (route) => route.fulfill({ status: 404 }));
+    await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<title>player</title>" }));
+    await page.goto("/#ask-simplyes");
+    const section = page.locator("#ask-simplyes");
+    await expect(section.getByRole("heading", { level: 2 })).toHaveText("Got a paperwork question? Just ask Simple.");
+    await expect(section.getByText("Simple is an AI-generated presenter. A real person from Simplyes replies to every message.")).toBeVisible();
+
+    // Typing a question puts it into the WhatsApp message; nothing is submitted by the site.
+    await section.getByLabel("Your question for Simple").fill("Can I renew my passport in Hamburg?");
+    const ask = section.getByRole("link", { name: /Ask on WhatsApp/ });
+    expect(new URL((await ask.getAttribute("href"))!).searchParams.get("text")).toBe("Ask Simplyes: Can I renew my passport in Hamburg?");
+
+    const subscribe = section.getByRole("link", { name: /Subscribe on YouTube/ });
+    await expect(subscribe).toHaveAttribute("href", "https://www.youtube.com/@simplyesde?sub_confirmation=1");
+    await expect(subscribe).toHaveAttribute("rel", /noopener/);
+
+    await section.getByRole("button", { name: /Play video: Passport Renewal Guide/ }).click();
+    await expect(section.locator("iframe")).toHaveAttribute("src", /\/embed\/U5oRO--jVbQ\?/);
+  });
+});
+

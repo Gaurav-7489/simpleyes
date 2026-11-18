@@ -3,7 +3,7 @@ import { getVideo, introVideoId } from "@/content/videos";
 import { ProcessRail } from "@/components/ProcessRail";
 import { VideoTile } from "@/components/video/VideoTile";
 
-/** The five steps, then the short "Meet SimplYes" video. The full version lives on /how-it-works/. */
+/** The five steps, then the short "Meet Simplyes" video. The full version lives on /how-it-works/. */
 export function SimpleProcess() {
   const video = getVideo(introVideoId)!;
   return (
@@ -19,7 +19,7 @@ export function SimpleProcess() {
         </div>
         <ProcessRail steps={journeySteps} />
         <div className="process2-video">
-          <VideoTile video={video} size="feature" caption="Watch: how SimplYes works" location="home-process" />
+          <VideoTile video={video} size="feature" caption="Watch: how Simplyes works" location="home-process" />
         </div>
       </div>
     </section>

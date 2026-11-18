@@ -61,7 +61,7 @@ export function FloatingWhatsApp({ generalHref, serviceHrefs }: Props) {
       data-visible={shown}
       // Out of the tab order the moment it starts to hide (the fade keeps it visible for a moment).
       tabIndex={shown ? undefined : -1}
-      aria-label="Chat with SimplYes on WhatsApp (opens in a new tab)"
+      aria-label="Chat with Simplyes on WhatsApp (opens in a new tab)"
       // Hidden state uses visibility:hidden, which also removes it from the tab order and accessibility tree.
       className="fab-wa btn btn-dark"
     >

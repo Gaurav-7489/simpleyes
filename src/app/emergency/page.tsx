@@ -13,7 +13,7 @@ export const metadata: Metadata = pageMetadata({
   title: `Lost Indian Passport & Emergency Help | ${site.name}`,
   absoluteTitle: true,
   description:
-    "Lost or stolen Indian passport, an Emergency Certificate for urgent travel to India or an urgent visa for family: WhatsApp SimplYes and start with URGENT.",
+    "Lost or stolen Indian passport, an Emergency Certificate for urgent travel to India or an urgent visa for family: WhatsApp Simplyes and start with URGENT.",
   path: "/emergency/",
 });
 

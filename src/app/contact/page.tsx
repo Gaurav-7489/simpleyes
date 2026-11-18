@@ -13,7 +13,7 @@ export const metadata: Metadata = pageMetadata({
   title: `Contact Us — Get Assistance | ${site.name}`,
   absoluteTitle: true,
   description:
-    "Contact SimplYes: send an enquiry, chat on WhatsApp, or use the business enquiry option. Documentation assistance for Indians across Germany.",
+    "Contact Simplyes: send an enquiry, chat on WhatsApp, or use the business enquiry option. Documentation assistance for Indians across Germany.",
   path: "/contact/",
 });
 

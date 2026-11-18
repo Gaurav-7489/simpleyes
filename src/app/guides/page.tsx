@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/guides/",
 });
 
-/** All video guides from the SimplYes YouTube channel, in the owner-approved order, played in place. */
+/** All video guides from the Simplyes YouTube channel, in the owner-approved order, played in place. */
 export default function GuidesPage() {
   return (
     <>

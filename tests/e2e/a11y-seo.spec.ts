@@ -69,8 +69,9 @@ test.describe("SEO", () => {
       "/": ["Organization", "WebSite"],
       "/faqs/": ["FAQPage", "BreadcrumbList"],
       "/contact/": ["ContactPage", "BreadcrumbList"],
-      "/services/oci-services/": ["Service", "BreadcrumbList", "FAQPage"],
-      "/services/passport-services/": ["Service", "BreadcrumbList", "FAQPage"],
+      "/services/oci-services/": ["Service", "BreadcrumbList"],
+      "/services/passport-services/": ["Service", "BreadcrumbList"],
+      "/services/new-in-germany/": ["Service", "BreadcrumbList", "FAQPage"],
     };
     for (const [route, types] of Object.entries(expectTypes)) {
       await page.goto(route);
@@ -146,7 +147,7 @@ test.describe("GEO: AI answer-engine readiness", () => {
     const txt = await res.text();
     for (const s of services) expect(txt).toContain(`## ${s.title}`);
     for (const faq of allFaqs) expect(txt).toContain(`Q: ${faq.question}`);
-    expect(txt).toContain("SimplYes is an independent documentation assistance service.");
+    expect(txt).toContain("Simplyes is an independent documentation assistance service.");
     // Affirmative promises or prices only (the negatives "does not guarantee…" are required content).
     expect(txt).not.toMatch(/€\s?\d|\d\s?€|\bwe guarantee|guaranteed (approval|appointment|visa)/i);
   });

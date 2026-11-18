@@ -10,7 +10,7 @@ type PageMetaInput = {
   title: string;
   description: string;
   path: string;
-  /** Use the title as-is instead of applying the "| SimplYes" template. */
+  /** Use the title as-is instead of applying the "| Simplyes" template. */
   absoluteTitle?: boolean;
   noindex?: boolean;
 };
@@ -30,7 +30,7 @@ export function pageMetadata({ title, description, path, absoluteTitle, noindex 
       title: absoluteTitle ? title : `${title} | ${site.name}`,
       description,
       locale: "en_DE",
-      images: [{ url: absoluteUrl("/og-image.png"), width: 1200, height: 630, alt: `${site.name} — ${site.tagline}` }],
+      images: [{ url: absoluteUrl("/og-image.png"), width: 1200, height: 630, alt: site.title }],
     },
     twitter: {
       card: "summary_large_image",
@@ -54,12 +54,12 @@ export function organizationJsonLd() {
     "@id": orgId,
     name: site.name,
     url: `${site.url}/`,
-    logo: absoluteUrl("/icon-512.png"),
+    logo: absoluteUrl("/logo.png"),
     slogan: site.tagline,
     description: site.description,
     areaServed: { "@type": "Country", name: "Germany" },
     knowsAbout: services.map((service) => service.title),
-    sameAs: [site.youtube.url],
+    sameAs: [site.youtube.url, ...Object.values(site.social).filter((url): url is string => Boolean(url))],
     contactPoint: [
       {
         "@type": "ContactPoint",

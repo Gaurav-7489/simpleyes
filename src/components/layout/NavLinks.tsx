@@ -168,6 +168,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
           <li key={item.href}>
             <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass()}>
               {item.label}
+              {item.badge && <span className="badge-new ml-1.5">{item.badge}</span>}
             </Link>
           </li>
         );

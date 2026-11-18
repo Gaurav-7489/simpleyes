@@ -191,6 +191,7 @@ export function MobileMenu({ items, services, cta }: Props) {
                     className="flex min-h-12 items-center rounded-[10px] px-3 font-display text-lg text-ink transition-colors hover:bg-black/[0.04]"
                   >
                     {item.label}
+                    {item.badge && <span className="badge-new ml-2">{item.badge}</span>}
                   </Link>
                 </li>
               ),

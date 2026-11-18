@@ -1,84 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { enquiryHref, services } from "@/content/services";
 import { site } from "@/content/site";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/PageHero";
-import { SceneImage } from "@/components/scene/SceneImage";
+import { ServiceList } from "@/components/ServiceList";
 import { FinalCta } from "@/components/FinalCta";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = pageMetadata({
-  title: `Services — Documentation Assistance in Germany | ${site.name}`,
+  title: `Services: Indian Passport, e-OCI & Visa | ${site.name}`,
   absoluteTitle: true,
   description:
-    "Six SimplYes services: Indian passport, e-OCI, attestation & affidavits, visa, family documentation and student services in Germany.",
+    "Six Simplyes services: Indian passport, e-OCI, attestation and affidavits, Indian visa documentation, family documentation and New in Germany.",
   path: "/services/",
 });
 
-/** Services overview: a gallery of the six services, each with its own document composition. */
+/** Services overview: the six services, named the way the consulates name them. */
 export default function ServicesPage() {
   return (
     <>
       <PageHero
-        title="Our Services"
+        title="Our services"
         lead="Six services, named the way the consulates name them. Choose the one that matches your situation."
         crumbs={[{ name: "Services", path: "/services/" }]}
       />
-
       <section aria-label="All services" className="pb-[var(--section-y)]">
         <div className="container-site">
-          <ul className="svc-gallery">
-            {services.map((service, i) => {
-              const href = `/services/${service.slug}/`;
-              return (
-                <li key={service.slug} className="svc-gallery-item" data-flip={i % 2 === 1 ? "" : undefined}>
-                  <figure className="svc-gallery-stage" data-reveal="image">
-                    <SceneImage
-                      scene={service.scene.kind}
-                      alt={service.scene.label}
-                      sizes="(min-width: 1024px) 560px, calc(100vw - 36px)"
-                      priority={i === 0}
-                    />
-                  </figure>
-                  <div className="svc-gallery-copy">
-                    <h2 className="type-h2">
-                      <Link href={href} className="svc-gallery-title" data-cta-location="services-page">
-                        {service.title}
-                      </Link>
-                    </h2>
-                    <p className="type-lead mt-4 max-w-[34rem]">{service.summary}</p>
-                    <p className="mt-6 text-[0.9375rem] font-medium text-ink">Common requests</p>
-                    <ul className="svc-gallery-issues mt-2">
-                      {service.issues.map((issue) => (
-                        <li key={issue.id}>{issue.label}</li>
-                      ))}
-                    </ul>
-                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-                      <Link href={href} className="btn btn-light" data-cta-location="services-page">
-                        <span className="btn-face">
-                          View {service.title}
-                        </span>
-                      </Link>
-                      <Link
-                        href={enquiryHref(service)}
-                        className="link-tertiary"
-                        data-cta-location="services-page"
-                      >
-                        Get assistance
-                        <span className="sr-only"> with {service.title}</span>
-                      </Link>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="mt-16 text-[1.0625rem] text-ink-2">
-            Not sure which service fits?{" "}
-            <Link href="/contact/" className="link-tertiary">
-              Send an enquiry and describe your situation
-            </Link>
+          <ServiceList headingLevel="h2" />
+          <p className="mt-12 text-[0.9375rem] text-ink-2">
+            Not sure which one fits?{" "}
+            <Link href="/contact/" className="link-inline">
+              Describe your situation
+            </Link>{" "}
+            and we tell you.
           </p>
         </div>
       </section>

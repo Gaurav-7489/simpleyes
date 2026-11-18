@@ -8,7 +8,7 @@ import { OwnerCopy, OwnerPolicy, PendingReview } from "@/components/LegalNotice"
 
 export const metadata: Metadata = pageMetadata({
   title: "Terms & Conditions",
-  description: "The nature and scope of SimplYes documentation assistance, responsibilities, fees, cancellations, limitations and complaints.",
+  description: "The nature and scope of Simplyes documentation assistance, responsibilities, fees, cancellations, limitations and complaints.",
   path: "/terms/",
   noindex: !site.legal.reviewed,
 });

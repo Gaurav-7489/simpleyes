@@ -1,12 +1,12 @@
 /**
- * Video guides on the official SimplYes YouTube channel, in the owner-approved order (18 Nov 2026).
+ * Video guides on the official Simplyes YouTube channel, in the owner-approved order (18 Nov 2026).
  * `id` is the YouTube video ID. The first video is shown larger on the homepage.
  */
 export type VideoGuide = { id: string; title: string };
 
 export const videoGuides: VideoGuide[] = [
   { id: "U5oRO--jVbQ", title: "Passport Renewal Guide" },
-  { id: "5AqDkuUgoEE", title: "Meet SimplYes" },
+  { id: "5AqDkuUgoEE", title: "Meet Simplyes" },
   { id: "N7qH5NG0T98", title: "OCI Card Application" },
   { id: "fSd52rH97MA", title: "Indian Visa for German Citizens" },
   { id: "K_c2qhg5PSo", title: "Lost Indian Passport" },
@@ -18,7 +18,7 @@ export function getVideo(id: string): VideoGuide | undefined {
   return videoGuides.find((video) => video.id === id);
 }
 
-/** "Meet SimplYes": the short introduction shown under the five steps. */
+/** "Meet Simplyes": the short introduction shown under the five steps. */
 export const introVideoId = "5AqDkuUgoEE";
 
 /** Homepage guide cards, with their label. `urgent` uses the emergency colour. */

@@ -15,12 +15,12 @@ export const metadata: Metadata = pageMetadata({
   title: `Pricing & Service Fees | ${site.name}`,
   absoluteTitle: true,
   description:
-    "How SimplYes charges: quotation-based service fees explained before assistance begins, and how they differ from official and third-party costs.",
+    "How Simplyes charges: quotation-based service fees explained before assistance begins, and how they differ from official and third-party costs.",
   path: "/pricing/",
 });
 
 /**
- * Explains how SimplYes charges. No amounts until the owners approve them (quotation model). Approved prices
+ * Explains how Simplyes charges. No amounts until the owners approve them (quotation model). Approved prices
  * go into `pricing.serviceFees` and appear in <FeeTable> ("From €X" / "On quotation") without a redesign.
  */
 export default function PricingPage() {
