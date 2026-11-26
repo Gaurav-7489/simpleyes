@@ -16,6 +16,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Analytics } from "@/components/analytics/Analytics";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { ActivityFeedback } from "@/components/motion/ActivityFeedback";
 
 /** Headings and buttons (§16 recommendation). Self-hosted by next/font at build time — no runtime Google requests. */
 const outfit = Outfit({
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         </a>
         <MotionProvider>
           <ScrollProgress />
+          <ActivityFeedback />
           <Header />
           <main id="main" tabIndex={-1} className="outline-none">
             {children}

@@ -1,0 +1,503 @@
+/* =====================================================================================================
+   Feedback motion: buttons that respond to hover and press, and clear "working on it" states wherever
+   something is loading or being sent. Driven by attributes set in <ActivityFeedback> and the components
+   themselves (data-busy, data-ripple, data-phase, data-status). Transform/opacity only; everything settles
+   to a static, still-readable state under prefers-reduced-motion.
+   ===================================================================================================== */
+
+/* ----- Buttons: lift on hover, a light sweep across, icons nudge forward ----------------------------- */
+.btn {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* The sheen: a soft diagonal highlight that passes once on hover. */
+.btn > .btn-face {
+  position: relative;
+  z-index: 2;
+}
+
+.btn > .btn-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.32) 48%, transparent 66%);
+  transform: translateX(-120%);
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .btn:not(:disabled, [aria-disabled="true"], [data-busy]):hover {
+    transform: translateY(-2px);
+  }
+
+  .btn:not(:disabled, [aria-disabled="true"], [data-busy]):hover > .btn-face::after {
+    opacity: 1;
+    transform: translateX(120%);
+    transition: transform 700ms var(--ease-out), opacity 120ms linear;
+  }
+
+  .btn:hover .btn-icon {
+    transform: translateX(3px);
+  }
+
+  .btn:hover .lucide-arrow-up-right.btn-icon {
+    transform: translate(2px, -2px);
+  }
+
+  .btn:hover .lucide-message-circle.btn-icon {
+    animation: fb-wiggle 600ms var(--ease-out);
+  }
+}
+
+.btn:active:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(1px) scale(0.97);
+  transition-duration: 80ms;
+}
+
+/* ----- Press ripple from the pointer (set by <ActivityFeedback>) -------------------------------------- */
+.faq-chip,
+.vg-play {
+  overflow: hidden;
+}
+
+.faq-chip {
+  position: relative;
+  isolation: isolate;
+}
+
+.btn::after,
+.faq-chip::after,
+.tabbar-item::after,
+.vg-play::after {
+  content: "";
+  position: absolute;
+  left: var(--ripple-x, 50%);
+  top: var(--ripple-y, 50%);
+  width: var(--ripple-size, 200px);
+  height: var(--ripple-size, 200px);
+  margin: calc(var(--ripple-size, 200px) / -2) 0 0 calc(var(--ripple-size, 200px) / -2);
+  border-radius: 50%;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0;
+  transform: scale(0);
+  z-index: 1;
+}
+
+.tabbar-item {
+  overflow: hidden;
+}
+
+.btn[data-ripple]::after,
+.faq-chip[data-ripple]::after,
+.tabbar-item[data-ripple]::after,
+.vg-play[data-ripple]::after {
+  animation: fb-ripple 600ms var(--ease-out) forwards;
+}
+
+/* ----- Busy buttons: a moving stripe along the bottom, a pulsing icon, the "progress" cursor ----------- */
+.btn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--color-lime) 35%, #fff 50%, var(--color-lime) 65%, transparent 100%);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+}
+
+.btn-on-dark::before,
+.btn-light::before {
+  background-image: linear-gradient(90deg, transparent 0%, var(--color-accent-500) 35%, var(--color-accent-700) 50%, var(--color-accent-500) 65%, transparent 100%);
+}
+
+.btn[data-busy],
+.tabbar-item[data-busy] {
+  cursor: progress;
+}
+
+.btn[data-busy]::before {
+  opacity: 1;
+  animation: fb-stripe 1s linear infinite;
+}
+
+.btn[data-busy] svg,
+.tabbar-item[data-busy] svg {
+  animation: fb-pulse 900ms var(--ease-in-out) infinite;
+}
+
+/* The enquiry form's submit: spinning loader instead of pulsing it. */
+.btn[data-busy] .animate-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+/* "Opening WhatsApp…" style confirmation: a gentle breathe of the whole button. */
+.btn[data-busy="opening"] {
+  animation: fb-breathe 1.4s var(--ease-in-out);
+}
+
+/* ----- Page loading bar (set by <ActivityFeedback> between a link click and the new page) ------------- */
+.route-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  height: 3px;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  opacity: 0;
+  background: linear-gradient(90deg, var(--color-lime), var(--color-accent-500), var(--color-lime));
+  background-size: 200% 100%;
+  box-shadow: 0 0 10px rgb(168 222 92 / 0.7);
+}
+
+.route-progress[data-phase="loading"] {
+  opacity: 1;
+  animation:
+    fb-route-grow 8s cubic-bezier(0.1, 0.7, 0.2, 1) forwards,
+    fb-route-flow 1.2s linear infinite;
+}
+
+.route-progress[data-phase="done"] {
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 200ms var(--ease-out),
+    opacity 300ms 150ms linear;
+}
+
+/* While a page is loading, the page underneath dims a touch so the click clearly "took". */
+html:has(.route-progress[data-phase="loading"]) #main {
+  opacity: 0.72;
+  transition: opacity 250ms 120ms linear;
+}
+
+#main {
+  transition: opacity 200ms linear;
+}
+
+/* ----- Enquiry form while sending -------------------------------------------------------------------- */
+.enquiry-fields {
+  transition: opacity var(--dur-2) var(--ease-out), filter var(--dur-2) var(--ease-out);
+}
+
+form[data-status="sending"] .enquiry-fields {
+  opacity: 0.55;
+  filter: saturate(0.6);
+  pointer-events: none;
+}
+
+.send-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-ink-2);
+}
+
+.send-status-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: fb-rise 320ms var(--ease-out);
+}
+
+/* A sending / sent button is not "disabled-looking": it is working. */
+.btn[data-busy],
+.btn[data-sent] {
+  opacity: 1;
+}
+
+/* Fields that fail validation nudge once as their error appears. */
+.field[aria-invalid="true"] {
+  animation: fb-shake 420ms var(--ease-out);
+}
+
+.send-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-500);
+  animation: fb-dot 1s var(--ease-in-out) infinite;
+}
+
+.send-status-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.send-status-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Animated "…" after a busy label. */
+.busy-dots::after {
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: fb-ellipsis 1.2s steps(4, end) infinite;
+}
+
+/* Sent: the button turns lime-on-green with a check popping in, just before the thank-you page. */
+.btn[data-sent] {
+  background: var(--color-accent-900);
+}
+
+.btn[data-sent] svg {
+  animation: fb-pop 420ms var(--ease-settle) both;
+}
+
+/* Failed: the alert nudges sideways once so it is noticed. */
+.form-alert-shake {
+  animation: fb-shake 420ms var(--ease-out);
+}
+
+/* ----- Video tile: a spinner over the thumbnail until the player has loaded --------------------------- */
+.vg-frame[data-playing]:not([data-loaded])::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  border: 3px solid rgb(255 255 255 / 0.3);
+  border-top-color: var(--color-lime);
+  animation: spin 0.8s linear infinite;
+  pointer-events: none;
+}
+
+.vg-frame[data-playing]:not([data-loaded]) .vg-thumb {
+  animation: fb-breathe-dim 1.6s var(--ease-in-out) infinite;
+}
+
+/* ----- Money input ----------------------------------------------------------------------------------- */
+.money-input {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* ----- Keyframes ------------------------------------------------------------------------------------- */
+@keyframes fb-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.22;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes fb-stripe {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes fb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.82);
+    opacity: 0.55;
+  }
+}
+
+@keyframes fb-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.97);
+  }
+  60% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes fb-wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes fb-route-grow {
+  0% {
+    transform: scaleX(0);
+  }
+  10% {
+    transform: scaleX(0.35);
+  }
+  100% {
+    transform: scaleX(0.92);
+  }
+}
+
+@keyframes fb-route-flow {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fb-dot {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@keyframes fb-ellipsis {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75%,
+  100% {
+    content: "...";
+  }
+}
+
+@keyframes fb-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fb-pop {
+  0% {
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fb-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes fb-breathe-dim {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+/* ----- Reduced motion: keep the state changes (colour, stripe, dimming), drop the movement ------------- */
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .btn:active,
+  .btn[data-busy="opening"] {
+    transform: none !important;
+    animation: none;
+  }
+
+  .btn > .btn-face::after,
+  .btn::after,
+  .faq-chip::after,
+  .tabbar-item::after,
+  .vg-play::after {
+    display: none;
+  }
+
+  .btn .btn-icon,
+  .btn[data-busy] svg,
+  .tabbar-item[data-busy] svg,
+  .btn[data-sent] svg,
+  .send-status-line,
+  .field[aria-invalid="true"],
+  .send-status-dot,
+  .form-alert-shake,
+  .vg-frame[data-playing]:not([data-loaded]) .vg-thumb {
+    animation: none;
+    transform: none;
+  }
+
+  /* Still shown, but static: a full stripe instead of a moving one. */
+  .btn[data-busy]::before {
+    animation: none;
+    background-size: 100% 100%;
+  }
+
+  .route-progress[data-phase="loading"] {
+    animation: none;
+    transform: scaleX(0.6);
+  }
+
+  .vg-frame[data-playing]:not([data-loaded])::after {
+    animation-duration: 2.4s;
+  }
+}
+
+/* Nothing to report: the live region stays in place but takes no room. */
+.send-status:empty {
+  min-height: 0;
+  margin-top: 0;
+}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
-import { CircleAlert, Loader2, MessageCircle, TriangleAlert } from "lucide-react";
+import { CircleAlert, CircleCheck, Loader2, MessageCircle, TriangleAlert } from "lucide-react";
 import { track } from "@/lib/analytics";
 import { selectionWhatsappMessage, whatsappHrefForMessage } from "@/lib/whatsapp";
 import { clearEnquiryStorage, DRAFT_KEY, OTHER_ISSUE, OTHER_NOTE_KEY, readStored, writeStored } from "@/lib/enquiry-keys";
@@ -107,7 +107,11 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     document.documentElement.removeAttribute("data-form-focus");
     requestRef.current?.abort();
   }, []);
-  const [status, setStatus] = useState<"idle" | "sending" | "failed">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  /** Bumped on every failure, so the alert shakes again on a repeat failure. */
+  const [failures, setFailures] = useState(0);
+  /** What the visitor sees while sending: checking → sending → (still working, after a few seconds). */
+  const [step, setStep] = useState<"checking" | "sending" | "slow">("checking");
 
   // Pre-selection from service pages: /contact/?service=<slug>&context=pricing|corporate (read from the URL, not state).
   const search = useSyncExternalStore(
@@ -218,16 +222,20 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     const honeypot = (form.elements.namedItem(honeypotField) as HTMLInputElement | null)?.value;
     if (honeypot) {
       setStatus("failed");
+      setFailures((n) => n + 1);
       return;
     }
     if (!endpoint) {
       setStatus("failed");
+      setFailures((n) => n + 1);
       track("form_error", { field: "form", error_type: "not_configured" });
       return;
     }
 
     submitting.current = true;
     setStatus("sending");
+    setStep("checking");
+    const stepTimers = [window.setTimeout(() => setStep("sending"), 500), window.setTimeout(() => setStep("slow"), 6000)];
     const params = new URLSearchParams(window.location.search);
     const service = services.find((s) => s.slug === values.service);
     // Field order matters: the form service lists fields in the notification email in this order.
@@ -291,12 +299,17 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       } catch {
         /* storage unavailable: the thank-you page simply won't fire the conversion event */
       }
+      setStatus("sent");
+      // A short beat on the green check, so the visitor sees it went through before the page changes.
+      await new Promise((resolve) => window.setTimeout(resolve, 650));
       router.push("/thank-you/");
     } catch {
       submitting.current = false;
       setStatus("failed");
+      setFailures((n) => n + 1);
       track("form_error", { field: "form", error_type: "submission_failed" });
     } finally {
+      stepTimers.forEach((t) => window.clearTimeout(t));
       window.clearTimeout(timeout);
       requestRef.current = null;
     }
@@ -311,7 +324,8 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
     ) : null;
 
   const messageLength = values.message.trim().length;
-  const sending = status === "sending";
+  const sending = status === "sending" || status === "sent";
+  const stepLabel = { checking: "Checking your details", sending: "Sending your enquiry securely", slow: "Still sending, almost there" }[step];
 
   return (
     <form
@@ -326,6 +340,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       className="card scroll-mt-[calc(var(--header-h)+24px)] !p-6 sm:!p-8"
       aria-labelledby={id("title")}
       aria-busy={sending}
+      data-status={status}
     >
       <h2 id={id("title")} className="type-card-title !text-[1.5rem]">
         {context === "pricing" ? "Request a service quote" : context === "corporate" ? "Corporate enquiry" : "Get Assistance"}
@@ -366,7 +381,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       )}
 
       {status === "failed" && (
-        <div role="alert" className="mt-4 rounded-[12px] border border-[#f3b8b2] bg-[#fef3f2] px-4 py-3 text-sm text-[#7a271a]">
+        <div key={failures} role="alert" className="form-alert-shake mt-4 rounded-[12px] border border-[#f3b8b2] bg-[#fef3f2] px-4 py-3 text-sm text-[#7a271a]">
           <p className="font-medium">Your enquiry could not be sent.</p>
           <p className="mt-1">
             Your details are still here — please try again in a moment, or contact us on{" "}
@@ -389,7 +404,7 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
       <noscript>
         <p className="mt-4 text-sm text-ink-2">To send an online enquiry, enable JavaScript or contact us by email or WhatsApp.</p>
       </noscript>
-      <fieldset disabled={!hydrated} className="mt-6 grid min-w-0 gap-5 sm:grid-cols-2">
+      <fieldset disabled={!hydrated} className="enquiry-fields mt-6 grid min-w-0 gap-5 sm:grid-cols-2">
         <legend className="sr-only">Your enquiry details</legend>
         <div>
           <label htmlFor={id("name")} className="field-label">
@@ -654,18 +669,48 @@ export function EnquiryForm({ services, endpoint, honeypotField, whatsappHref, e
         </div>
       </fieldset>
 
-      <button type="submit" disabled={!hydrated || sending} aria-disabled={!hydrated || sending} className="btn btn-dark mt-7 w-full">
+      <button
+        type="submit"
+        disabled={!hydrated || sending}
+        aria-disabled={!hydrated || sending}
+        data-busy={status === "sending" ? "sending" : undefined}
+        data-sent={status === "sent" ? "" : undefined}
+        className="btn btn-dark mt-7 w-full"
+      >
         <span className="btn-face w-full">
-          {sending ? (
+          {status === "sent" ? (
+            <>
+              <CircleCheck aria-hidden="true" className="size-5 text-lime" strokeWidth={2} />
+              Sent!
+            </>
+          ) : sending ? (
             <>
               <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-              Sending…
+              <span className="busy-dots">Sending</span>
             </>
           ) : (
             "Send Enquiry"
           )}
         </span>
       </button>
+      <p role="status" aria-live="polite" className="send-status mt-3">
+        {sending && (
+          <span key={status === "sent" ? "sent" : step} className="send-status-line">
+            {status === "sent" ? (
+              "Received — taking you to the confirmation page."
+            ) : (
+              <>
+                <span aria-hidden="true" className="inline-flex gap-1">
+                  <span className="send-status-dot" />
+                  <span className="send-status-dot" />
+                  <span className="send-status-dot" />
+                </span>
+                {stepLabel}…
+              </>
+            )}
+          </span>
+        )}
+      </p>
       <p className="mt-3 text-center text-sm text-ink-2">Please don&apos;t include passport numbers or upload documents here.</p>
       <p className="mt-4 flex items-start justify-center gap-2 text-center text-sm text-ink-2">
         <MessageCircle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-700" strokeWidth={1.75} />
